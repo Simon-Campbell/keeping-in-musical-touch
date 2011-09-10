@@ -1,0 +1,14 @@
+.testParagraph {
+	background-image: -webkit-gradient(
+	    linear,
+	    left bottom,
+	    left top,
+	    color-stop(0.06, rgb(173,138,12)),
+	    color-stop(0.53, rgb(209,187,23))
+	);
+	background-image: -moz-linear-gradient(
+	    center bottom,
+	    rgb(173,138,12) 6%,
+	    rgb(209,187,23) 53%
+	);
+}
