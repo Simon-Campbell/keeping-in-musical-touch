@@ -3,6 +3,7 @@
 <head>
 	<title>PhoneGap</title>
 	<script type="text/javascript" charset="utf-8" src="phonegap.js"></script>
+	<script type="text/javascript" charset="utf-8" src="kimt.js"></script>
 	<link rel="stylesheet" type="text/css" href="index.css" />
 </head>
 <body>
@@ -20,9 +21,13 @@
 		The things that need to be researched are:
 	</p>
 			<ul class="testParagraph">
-			<li>Custom fonts (I have found a music font, using it will make things easier)</li>
+			<li>Custom fonts (I have found a music font, using it will make things easier-- NOT required)</li>
+				<ul class="testParagraph">
+				<li>http://groups.google.com/group/phonegap/browse_thread/thread/05083a69249ad98d/55c330a21220f9f7?pli=1</li>
+				</ul>
 			<li>Network connections</li>
 				<ul class="testParagraph">
+				<li>Socket.IO:				http://socket.io/#browser-support</li>
 				<li>Sockets for PhoneGap:	http://remysharp.com/2010/10/04/websockets-in-phonegap-projects/</li>
 				<li>JavaScript Sockets:		http://stackoverflow.com/questions/1736382/how-to-use-sockets-in-javascript-html</li>
 				</ul>
@@ -32,5 +37,9 @@
 	</p>
 			
 	<button type="button" onClick="alert('This is an alert!');">Do an alert!</button>
+	
+	<canvas id="b" width="300" height="125">Your browser doesn't support canvas :(</canvas>
+	
+	<button type="button" onClick="draw_b();">Draw on canvas!</button>
 </body>
 </html>

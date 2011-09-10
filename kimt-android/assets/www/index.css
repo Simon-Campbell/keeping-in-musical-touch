@@ -3,12 +3,12 @@
 	    linear,
 	    left bottom,
 	    left top,
-	    color-stop(0.06, rgb(173,138,12)),
-	    color-stop(0.53, rgb(209,187,23))
+	    color-stop(0.06, rgb(255,235,161)),
+	    color-stop(0.53, rgb(255,251,224))
 	);
 	background-image: -moz-linear-gradient(
 	    center bottom,
-	    rgb(173,138,12) 6%,
-	    rgb(209,187,23) 53%
+	    rgb(255,235,161) 6%,
+	    rgb(255,251,224) 53%
 	);
 }
