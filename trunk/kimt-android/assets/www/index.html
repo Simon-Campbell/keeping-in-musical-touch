@@ -2,8 +2,76 @@
 <html>
 <head>
 	<title>Keeping In Musical Touch - PhoneGap</title>
-	<script type="text/javascript" charset="utf-8" src="phonegap.js"></script>
+	<script type="text/javascript" charset="utf-8" src="phonegap-1.0.0.js"></script>
 	<script type="text/javascript" charset="utf-8" src="kimt.js"></script>
+	<script type="text/javascript" charset="utf-8" src="jquery.js"></script>
+	<script type="text/javascript">
+ 
+	function ajaxURL(url,callback)
+    {
+       var xmlHttp;
+       try {
+         // Firefox, Opera 8.0+, Safari
+         xmlHttp=new XMLHttpRequest();
+       }
+       catch (e) {
+         // Internet Explorer
+         try {
+           xmlHttp=new ActiveXObject("Msxml2.XMLHTTP");
+         }
+         catch (e) {
+           try {
+             xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");
+           }
+           catch (e) {
+             alert("Your browser does not support AJAX!");
+             return false;
+           }
+         }
+       }
+
+	var typeof_callback = typeof(callback);
+	if ((typeof_callback == "string") || (typeof_callback == "number") || (typeof_callback == "boolean")) {
+	    var locid = callback;
+
+	    xmlHttp.onreadystatechange=function() {
+		if(xmlHttp.readyState==4) {
+		    if (locelem != null) {
+			var locelem = document.getElementById(locid);
+			
+			locelem.innerHTML = xmlHttp.responseText;
+		    }
+		}
+	    }
+	}
+	else if (typeof_callback == "function") {
+	    xmlHttp.onreadystatechange=function() {
+		if(xmlHttp.readyState==4) {
+		    callback(xmlHttp);
+		}
+	    }
+	}
+	else {
+	    alert("Unrecognized type of callback value: " + typeof_callback);
+	}
+
+		xmlHttp.open("GET",url,true);
+		xmlHttp.send(null);
+    }
+    
+	
+	//ajaxURL("http://192.168.1.4:8080/greenstone3/dev?a=b&rt=s&s=ClassifierBrowse&c=kimt&cl=CL1", "greenstone");
+	
+	$.get("http://192.168.1.4:8080/greenstone3/dev?a=b&rt=s&s=ClassifierBrowse&c=kimt&cl=CL1", function(data){
+		alert("Data Loaded: " + data);
+		
+		var
+			greenstoneArea = document.getElementById('greenstone');
+			
+		greenstoneArea.innerHTML = data;
+	
+	});
+	</script>
 	<link rel="stylesheet" type="text/css" href="index.css" />
 </head>
 <body>
@@ -17,21 +85,7 @@
 		I think that with HTML5's <strong>canvas</strong> element we'll have a good chance
 		of succeeding with PhoneGap.
 	</p>
-	<p class="testParagraph">
-		The things that need to be researched are:
-	</p>
-			<ul class="testParagraph">
-			<li>Custom fonts (I have found a music font, using it will make things easier-- NOT required)</li>
-				<ul class="testParagraph">
-				<li>http://groups.google.com/group/phonegap/browse_thread/thread/05083a69249ad98d/55c330a21220f9f7?pli=1</li>
-				</ul>
-			<li>Network connections</li>
-				<ul class="testParagraph">
-				<li>Socket.IO:				http://socket.io/#browser-support</li>
-				<li>Sockets for PhoneGap:	http://remysharp.com/2010/10/04/websockets-in-phonegap-projects/</li>
-				<li>JavaScript Sockets:		http://stackoverflow.com/questions/1736382/how-to-use-sockets-in-javascript-html</li>
-				</ul>
-			</ul>
+	
 	<p class="testParagraph">
 		Yes I know this looks horrible, just testing! :p
 	</p>
@@ -44,5 +98,8 @@
 	
 	<button type="button" onClick="draw_b();">Draw on canvas!</button>
 	
+	<div id="greenstone">
+	
+	</div>	
 </body>
 </html>
