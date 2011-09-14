@@ -5,101 +5,45 @@
 	<script type="text/javascript" charset="utf-8" src="phonegap-1.0.0.js"></script>
 	<script type="text/javascript" charset="utf-8" src="kimt.js"></script>
 	<script type="text/javascript" charset="utf-8" src="jquery.js"></script>
-	<script type="text/javascript">
- 
-	function ajaxURL(url,callback)
-    {
-       var xmlHttp;
-       try {
-         // Firefox, Opera 8.0+, Safari
-         xmlHttp=new XMLHttpRequest();
-       }
-       catch (e) {
-         // Internet Explorer
-         try {
-           xmlHttp=new ActiveXObject("Msxml2.XMLHTTP");
-         }
-         catch (e) {
-           try {
-             xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");
-           }
-           catch (e) {
-             alert("Your browser does not support AJAX!");
-             return false;
-           }
-         }
-       }
-
-	var typeof_callback = typeof(callback);
-	if ((typeof_callback == "string") || (typeof_callback == "number") || (typeof_callback == "boolean")) {
-	    var locid = callback;
-
-	    xmlHttp.onreadystatechange=function() {
-		if(xmlHttp.readyState==4) {
-		    if (locelem != null) {
-			var locelem = document.getElementById(locid);
-			
-			locelem.innerHTML = xmlHttp.responseText;
-		    }
-		}
-	    }
-	}
-	else if (typeof_callback == "function") {
-	    xmlHttp.onreadystatechange=function() {
-		if(xmlHttp.readyState==4) {
-		    callback(xmlHttp);
-		}
-	    }
-	}
-	else {
-	    alert("Unrecognized type of callback value: " + typeof_callback);
-	}
-
-		xmlHttp.open("GET",url,true);
-		xmlHttp.send(null);
-    }
-    
-	
-	//ajaxURL("http://192.168.1.4:8080/greenstone3/dev?a=b&rt=s&s=ClassifierBrowse&c=kimt&cl=CL1", "greenstone");
-	
-	$.get("http://192.168.1.4:8080/greenstone3/dev?a=b&rt=s&s=ClassifierBrowse&c=kimt&cl=CL1", function(data){
-		alert("Data Loaded: " + data);
-		
-		var
-			greenstoneArea = document.getElementById('greenstone');
-			
-		greenstoneArea.innerHTML = data;
-	
-	});
-	</script>
+	<script type="text/javascript" charset="utf-8" src="greenstone.js"></script>
 	<link rel="stylesheet" type="text/css" href="index.css" />
 </head>
 <body>
+	<div class="content">
 	<h1>Hello World</h1>
-	<p class="testParagraph">This is a PhoneGap application ...</p>
-	<p class="testParagraph">
-		This is a simple HTML file with CSS. It works fine on my Android phone
-		and it also works well on the Android Tablet emulator.
+	<p>This is a test PhoneGap application.</p>
+	<p>
+		This is a simple HTML file with CSS and JavaScript. Working on an Android 2.1 phone,
+		Android 3.0.1 tablet and the Android 3.2 tablet emulator.
 	</p>
-	<p class="testParagraph">
-		I think that with HTML5's <strong>canvas</strong> element we'll have a good chance
-		of succeeding with PhoneGap.
+	<p>
+		<span style="font-family: 'LassusRegular'; font-size: 1000%;">abcd</span>
+	</p>
+	<p>
+		<button id="drawButton" type="button" onClick="draw(0.0);">
+			Draw
+		</button>
+		
+		<button type="button" onClick="rotateCanvas();">
+			Rotate
+		</button>
+		
+		<button type="button" onClick="alert('JavaScript Alert');">
+			Alert
+		</button>
 	</p>
 	
-	<p class="testParagraph">
-		Yes I know this looks horrible, just testing! :p
+	<p>
+	<canvas id="drawPad" class="drawingCanvas" width="200" height="200">
+		Your browser doesn't support canvas.
+	</canvas>
 	</p>
-	
-	<span style="font-family: 'LassusRegular'; font-size: 1000%;">abcd</span>
-	
-	<button type="button" onClick="alert('This is an alert!');">Do an alert!</button>
-	
-	<canvas id="b" width="300" height="125">Your browser doesn't support canvas :(</canvas>
-	
-	<button type="button" onClick="draw_b();">Draw on canvas!</button>
-	
-	<div id="greenstone">
-	
+
+	<div id="greenstone" class="topbottom">
+		Greenstone &lt;div&gt; .. need to fill with remote content.
 	</div>	
+	
+	</div>
+
 </body>
 </html>
