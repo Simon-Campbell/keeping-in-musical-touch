@@ -28,7 +28,7 @@
 		    android:layout_width="fill_parent" 
 		    android:layout_height="wrap_content" 
 		    android:hint="Address" 
-		    android:id="@+id/editTextAddress">
+		    android:id="@+id/editTextAddress" android:text="@string/defaultAddress" android:lines="1">
 		    <requestFocus></requestFocus>
 	    </EditText>
 		</LinearLayout>

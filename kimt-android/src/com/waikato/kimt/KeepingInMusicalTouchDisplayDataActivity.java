@@ -1,18 +1,20 @@
 package com.waikato.kimt;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.io.InputStream;
 
 public class KeepingInMusicalTouchDisplayDataActivity extends Activity{
 
@@ -54,8 +56,8 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity{
     	TextView tvTitle = (TextView) findViewById(R.id.textViewTitle);
     	
     	// Set the title to be that of the full address
-    	tvTitle.setText(fullAddress);
-    	
+    	tvTitle.setText(fullAddress.substring(0, 32) + " ...");
+
         URL url = null;
 
         try {
@@ -67,32 +69,39 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity{
         	
         	// Create an array of bytes for the input stream to
         	// be written to
-        	byte[] b = new byte[512];
+        	byte[] b = new byte[1024];
+        	int bytesRead;
         	
         	// We'll dump the byte array to this string
-        	String dumpString	= "";
-
-        	// Keep reading the input stream, then write to the array of
-        	// bytes while there's data to be read.
-			while (input.read(b) != -1) {
-				// Loop through the byte array and append each character
+        	StringBuilder dumpString = new StringBuilder(1024);
+        	
+        	do {
+            	// Keep reading the input stream, then write to the array of
+            	// bytes while there's data to be read.
+        		bytesRead = input.read(b);
+        		
+        		// Loop through the byte array and append each character
 				// to the dump string
-				for (int i = 0; i < b.length; i++) {
-					dumpString += (Character.toString((char)b[i]));
+				for (int i = 0; i < bytesRead; i++) {
+					dumpString.append((char)b[i]);
 				}
-			}
-			input.close();
+        	} while (bytesRead != -1);
+        	
 			// Set the dump text view to the value of the dump
 			// string
+			GreenstoneUtilities.formatTextView((TextView) findViewById(R.id.textViewFormatted), dumpString.toString());
 			
-			//only display the data if the fectch, else display an error. 
+			//only display the data if the fetch, else display an error. 
 			if (dumpString.equals("") == false) {
 				tvDump.setText(dumpString);
 			} else {
 				tvDump.setText("Error Getting URL");
 			}
 
+			// Allow scrolling of the dumped text
+			tvDump.setMovementMethod(new ScrollingMovementMethod());
 			
+			input.close();
         } catch (MalformedURLException e) {
         	e.printStackTrace();
         } catch (IOException e) {
@@ -117,5 +126,6 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity{
         setResult(RESULT_OK, intent);
         finish();
         return;
-    } 
+    }
+    
 }

@@ -58,13 +58,19 @@ public class KeepingInMusicalTouchActivity extends Activity {
     	// Get an integer representation of the port number:
     	//	This is not required now but if we wish to send binary
     	//	data via sockets it will be.
-    	int port = Integer.valueOf(editPort.getText().toString());
+    	@SuppressWarnings("unused")
+		int port = Integer.valueOf(editPort.getText().toString());
     	
     	// Get the address that has been entered into the address textbox
     	String address	= editAddress.getText().toString();
     	
     	// Put the full address together so we can open it via URL()
-    	String fullAddress	= "http://" + address + ":" + Integer.toString(port);
+    	String fullAddress;
+    	
+    	if (!address.startsWith("http://"))
+    		fullAddress = "http://" + address;
+    	else
+    		fullAddress = address;
     	
     	return fullAddress;
     }
