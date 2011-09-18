@@ -3,28 +3,47 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:orientation="vertical"
   android:layout_width="fill_parent"
-  android:layout_height="fill_parent" android:weightSum="1">
-    <TextView 
-    android:layout_height="wrap_content" 
-    android:textAppearance="?android:attr/textAppearanceLarge" 
-    android:text="TextView" 
-    android:layout_width="fill_parent" 
-    android:id="@+id/textViewTitle">
-    </TextView>
-    <TextView 
-    android:layout_height="wrap_content" 
-    android:text="TextView" 
-    android:layout_width="fill_parent" 
-    android:layout_weight="0.71" 
-    android:id="@+id/textViewFormattedData">
-    </TextView>
-    <TextView
-    android:layout_height="94dp" 
+  android:layout_height="fill_parent" 
+  android:padding="4dp">
+   <LinearLayout 
+   	android:padding="4dp" 
+   	android:orientation="horizontal" 
+   	android:layout_height="wrap_content" 
+   	android:layout_width="fill_parent" 
+   	android:weightSum="1">
+       <LinearLayout 
+       	android:orientation="vertical" 
+       	android:layout_height="wrap_content" 
+       	android:layout_width="wrap_content"
+       	android:padding="2dp">
+          <TextView 
+           	android:layout_width="fill_parent" 
+           	android:text="@string/title" 
+           	android:id="@+id/textViewTitle" 
+           	android:layout_height="fill_parent">
+       	</TextView>
+       </LinearLayout>
+       <LinearLayout 
+       	android:orientation="vertical" 
+       	android:layout_height="wrap_content" 
+       	android:layout_width="fill_parent" 
+       	android:gravity="right"
+       	android:padding="2dp">
+       	<Button 
+        	android:layout_height="fill_parent" 
+        	android:layout_width="fill_parent" 
+        	android:id="@+id/button_back"  
+        	android:text="@string/back">
+       	</Button>
+       </LinearLayout>
+   </LinearLayout>
+   <TextView
+    android:layout_height="fill_parent" 
     android:textAppearance="?android:attr/textAppearanceSmall" 
     android:layout_weight="0.28" 
-    android:text="TextView" 
+    android:text="@string/dumpString" 
     android:layout_width="fill_parent" 
-    android:id="@+id/textViewDump">
-    </TextView>
-    
+    android:id="@+id/textViewDump"
+    android:padding="4dp">
+   </TextView>
 </LinearLayout>

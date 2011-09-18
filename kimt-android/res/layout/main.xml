@@ -7,32 +7,63 @@
 <TextView  
     android:layout_width="fill_parent" 
     android:text="@string/hello"
-    android:id="@+id/datadump" android:layout_height="45dp"/>
-<LinearLayout 
-android:layout_width="fill_parent" 
-android:id="@+id/linearLayout1" 
-android:layout_height="wrap_content" 
-android:weightSum="1">
-    <EditText 
-    android:layout_width="165dp" 
-    android:layout_height="wrap_content" 
-    android:hint="Address" 
-    android:id="@+id/editTextAddress">
-    </EditText>
-    <EditText 
-    android:layout_height="wrap_content" 
-    android:layout_weight="1" 
-    android:layout_width="wrap_content" 
-    android:text="@string/httpPort" 
-    android:hint="Port" 
-    android:id="@+id/editTextPort">
-        <requestFocus></requestFocus>
-    </EditText>
-    <Button 
-    android:layout_height="wrap_content" 
-    android:layout_width="wrap_content" 
-    android:text="@string/showBtn" 
-    android:id="@+id/btnShow">
-    </Button>
-</LinearLayout>
+    android:id="@+id/datadump" android:layout_height="45dp">
+ </TextView>
+	<LinearLayout 
+	android:layout_width="fill_parent" 
+	android:id="@+id/linearLayout1" 
+	android:layout_height="wrap_content" 
+	android:weightSum="1"
+	android:orientation="horizontal"
+	android:padding="2dp">
+	<LinearLayout
+		android:layout_width="195dp" 
+		android:id="@+id/linearLayout1" 
+		android:layout_height="wrap_content" 
+		android:weightSum="1"
+		android:orientation="vertical"
+		android:gravity="left"
+		android:padding="2dp">
+	    <EditText 
+		    android:layout_width="fill_parent" 
+		    android:layout_height="wrap_content" 
+		    android:hint="Address" 
+		    android:id="@+id/editTextAddress">
+		    <requestFocus></requestFocus>
+	    </EditText>
+		</LinearLayout>
+	<LinearLayout
+		android:layout_width="wrap_content" 
+		android:id="@+id/linearLayout1" 
+		android:layout_height="wrap_content" 
+		android:weightSum="1"
+		android:orientation="vertical"
+		android:gravity="right"
+		android:padding="2dp">
+		    <EditText 
+			    android:layout_height="wrap_content" 
+			    android:layout_weight="1" 
+			    android:layout_width="wrap_content" 
+			    android:text="@string/httpPort" 
+			    android:hint="Port" 
+			    android:id="@+id/editTextPort"
+			    android:layout_gravity="right">
+		    </EditText>
+    </LinearLayout>
+    <LinearLayout
+		android:layout_width="wrap_content" 
+		android:id="@+id/linearLayout1" 
+		android:layout_height="wrap_content" 
+		android:orientation="vertical"
+		android:gravity="right"
+		android:padding="2dp">
+		    <Button 
+			    android:layout_height="fill_parent" 
+			    android:layout_width="fill_parent" 
+			    android:text="@string/showBtn" 
+			    android:id="@+id/btnShow"
+			    android:layout_gravity="right">
+		    </Button>
+	    </LinearLayout>
+	</LinearLayout>
 </LinearLayout>
