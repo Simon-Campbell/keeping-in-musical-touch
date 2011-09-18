@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 public class KeepingInMusicalTouchDisplayDataActivity extends Activity{
@@ -24,7 +23,8 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity{
         this.setContentView(R.layout.gsdisplay);
         
         //This defines and sets the button that allows the user to go back
-        Button next = (Button) findViewById(R.id.button_back);
+        //Button next = (Button) findViewById(R.id.btnShow);
+        Button next = (Button) findViewById(R.id.button_back); 
         next.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent intent = new Intent();
