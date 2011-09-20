@@ -23,6 +23,7 @@ class GreenstoneUtilities {
 	 */
 	public static void formatTextView(TextView tv, String xmlString) {
 		StringBuilder formattedString = new StringBuilder(1024); 	
+		
 	    try {
 	        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder db = dbf.newDocumentBuilder();
