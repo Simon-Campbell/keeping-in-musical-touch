@@ -2,7 +2,7 @@
 <manifest package="com.waikato.kimt"
       android:versionCode="1"
       android:versionName="1.0" xmlns:android="http://schemas.android.com/apk/res/android">
-      <uses-permission android:name="android.permission.INTERNET" />
+   
     <uses-sdk android:minSdkVersion="7" />
 	<uses-permission android:name="android.permission.INTERNET" />
 
@@ -14,7 +14,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".KeepingInMusicalTouchDisplayDataActivity"></activity>
+        <activity android:name=".KeepingInMusicalTouchDisplayDataActivity">
+        </activity>
 
     </application>
 </manifest>
