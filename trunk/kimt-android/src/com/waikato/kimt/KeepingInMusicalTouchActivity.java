@@ -4,7 +4,10 @@ package com.waikato.kimt;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -20,6 +23,10 @@ public class KeepingInMusicalTouchActivity extends Activity {
         // Manually set up the onClick event for the show button,
         // we can do this through main.xml also.
         Button btnShow = (Button) findViewById(R.id.btnShow);
+        Button btnLoad = (Button) findViewById(R.id.btnLoad);
+        
+        
+        
         // Create an click listener and make it run our custom
         // method elsewhere.
         btnShow.setOnClickListener(new View.OnClickListener() {
@@ -41,6 +48,23 @@ public class KeepingInMusicalTouchActivity extends Activity {
 				
 			}
 		});
+        
+        btnLoad.setOnClickListener(new View.OnClickListener() {
+        	
+        	@Override
+        	public void onClick(View v) {
+        		
+        		//get the url from the screen
+        		String fullAddress = btnShow_onClick(v);
+        		
+        		//display the url in the webview
+        		WebView myWebView = (WebView) findViewById(R.id.myWebView);
+        		myWebView.getSettings().setJavaScriptEnabled(true);
+        		myWebView.getSettings().setDefaultFontSize(19);
+        		myWebView.loadUrl(fullAddress);
+        		myWebView.getSettings().setSupportZoom(true);
+        	}
+        });      
     }
     
     /**

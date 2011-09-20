@@ -9,7 +9,7 @@
     android:text="@string/hello"
     android:id="@+id/datadump" android:layout_height="45dp">
  </TextView>
-	<LinearLayout 
+<LinearLayout 
 	android:layout_width="fill_parent" 
 	android:id="@+id/linearLayout1" 
 	android:layout_height="wrap_content" 
@@ -28,8 +28,10 @@
 		    android:layout_width="fill_parent" 
 		    android:layout_height="wrap_content" 
 		    android:hint="Address" 
-		    android:id="@+id/editTextAddress" android:text="@string/defaultAddress" android:lines="1">
-		    <requestFocus></requestFocus>
+		    android:id="@+id/editTextAddress" 
+		    android:text="@string/defaultAddress"
+		    android:singleLine="true">
+		    <!--  <requestFocus></requestFocus>-->
 	    </EditText>
 		</LinearLayout>
 	<LinearLayout
@@ -66,4 +68,30 @@
 		    </Button>
 	    </LinearLayout>
 	</LinearLayout>
+	<LinearLayout 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:gravity="right"
+		android:layout_gravity="right">
+		<Button 
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/btnLoad"
+			android:text="@string/btnLoad"
+			android:gravity="right"
+			android:layout_gravity="right">
+			
+		</Button>
+	</LinearLayout>
+	<LinearLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content">
+	<WebView
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/myWebView">
+		
+	</WebView>
+	</LinearLayout>
+		
 </LinearLayout>
