@@ -11,6 +11,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -52,7 +53,10 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity{
 //		this.setContentView(R.layout.gsdisplay);
 		
 		// Get the dump and title textviews via their id numbers.
-    	TextView tvDump	 = (TextView) findViewById(R.id.textViewDump);
+//    	WebView tvDump	 = (WebView) findViewById(R.id.textViewDump);
+//    	tvDump.getSettings().setJavaScriptEnabled(true);
+    	
+    	TextView tvDump = (TextView) findViewById(R.id.textViewDump);
     	TextView tvTitle = (TextView) findViewById(R.id.textViewTitle);
     	
     	// Set the title to be that of the full address
@@ -93,13 +97,14 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity{
 			
 			//only display the data if the fetch, else display an error. 
 			if (dumpString.equals("") == false) {
+//				tvDump.loadData(dumpString.toString(), "", "");
 				tvDump.setText(dumpString);
 			} else {
-				tvDump.setText("Error Getting URL");
+//				tvDump.loadData("<h1> Error parsing data </h1>", "text/html", "utf-8");
 			}
 
 			// Allow scrolling of the dumped text
-			tvDump.setMovementMethod(new ScrollingMovementMethod());
+//			tvDump.setMovementMethod(new ScrollingMovementMethod());
 			
 			input.close();
         } catch (MalformedURLException e) {

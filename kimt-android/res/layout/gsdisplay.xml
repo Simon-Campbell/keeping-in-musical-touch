@@ -37,5 +37,5 @@
        </LinearLayout>
    </LinearLayout>
    <TextView android:textAppearance="?android:attr/textAppearanceSmall" android:layout_height="wrap_content" android:text="@string/formattedString" android:layout_width="fill_parent" android:id="@+id/textViewFormatted" android:layout_weight="0.48"></TextView>
-   <TextView android:layout_width="fill_parent" android:textAppearance="?android:attr/textAppearanceSmall" android:padding="4dp" android:id="@+id/textViewDump" android:text="@string/dumpString" android:layout_height="129dp" android:scrollbars="vertical" android:layout_weight="0.34" android:scrollbarStyle="insideInset" android:fadeScrollbars="false"></TextView>
+   <TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/textViewDump"/>
 </LinearLayout>
