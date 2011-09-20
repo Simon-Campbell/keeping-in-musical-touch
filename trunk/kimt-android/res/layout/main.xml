@@ -4,11 +4,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:weightSum="1">
-<TextView  
-    android:layout_width="fill_parent" 
-    android:text="@string/hello"
-    android:id="@+id/datadump" android:layout_height="45dp">
- </TextView>
 <LinearLayout 
 	android:layout_width="fill_parent" 
 	android:id="@+id/linearLayout1" 
@@ -24,7 +19,7 @@
 		android:orientation="vertical"
 		android:gravity="left"
 		android:padding="2dp">
-	    <EditText 
+	    <TextView 
 		    android:layout_width="fill_parent" 
 		    android:layout_height="wrap_content" 
 		    android:hint="Address" 
@@ -32,41 +27,22 @@
 		    android:text="@string/defaultAddress"
 		    android:singleLine="true">
 		    <!--  <requestFocus></requestFocus>-->
-	    </EditText>
+	    </TextView>
 		</LinearLayout>
-	<LinearLayout
-		android:layout_width="wrap_content" 
-		android:id="@+id/linearLayout1" 
-		android:layout_height="wrap_content" 
-		android:weightSum="1"
-		android:orientation="vertical"
-		android:gravity="right"
-		android:padding="2dp">
-		    <EditText 
-			    android:layout_height="wrap_content" 
-			    android:layout_weight="1" 
-			    android:layout_width="wrap_content" 
-			    android:text="@string/httpPort" 
-			    android:hint="Port" 
-			    android:id="@+id/editTextPort"
-			    android:layout_gravity="right">
-		    </EditText>
-    </LinearLayout>
     <LinearLayout
 		android:layout_width="wrap_content" 
-		android:id="@+id/linearLayout1" 
 		android:layout_height="wrap_content" 
-		android:orientation="vertical"
 		android:gravity="right"
-		android:padding="2dp">
+		android:layout_gravity="right">
 		    <Button 
-			    android:layout_height="fill_parent" 
-			    android:layout_width="fill_parent" 
+			    android:layout_height="wrap_content" 
+			    android:layout_width="wrap_content" 
 			    android:text="@string/showBtn" 
 			    android:id="@+id/btnShow"
+			    android:gravity="right"
 			    android:layout_gravity="right">
 		    </Button>
-	    </LinearLayout>
+	    </LinearLayout> 
 	</LinearLayout>
 	<LinearLayout 
 		android:layout_width="wrap_content"
