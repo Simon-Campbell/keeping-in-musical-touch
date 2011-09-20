@@ -1,24 +1,18 @@
 package com.waikato.kimt;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.io.InputStream;
-
-public class KeepingInMusicalTouchDisplayDataActivity extends Activity{
-
+public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
+	GreenstoneMusicLibrary
+		gml = new GreenstoneMusicLibrary("http://www.nzdl.org/greenstone3-nema/dev;jsessionid=08C1CB94BDBF8322F72548075D809910?a=d&ed=1&book=off&c=musical-touch&d=");
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -39,47 +33,11 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity{
 
 		//get the data from activity that called this one (in this case its the url full address from the main window)
 		Bundle bundle = this.getIntent().getExtras();
-		String url = bundle.getString("url");
+		String url	  = bundle.getString("url");
 
-		//set the title
-		TextView tvTitle = (TextView) findViewById(R.id.textViewTitle);
-		if (url.length() > 32) {
-			tvTitle.setText(url.substring(0, 32) + " ...");
-		}
-
-
-		//create the class that does the loading of the data
-		new getAndDisplayData().execute(url);
-
-	}
-
-	//using class Async to do the work
-	private class getAndDisplayData extends AsyncTask<String, Void, String> {
-
-		//get the data in the background. This means that the thread with UI will not be blocked 
-		protected String doInBackground(String... fullAddress) {
-			String result = Network.getData(fullAddress[0]);
-			return result;
-		}
-
-		//the result of the above method will call this method and pass in the result. 
-		//I belive it is ok for this method to update the UI (only the main UI thread (...DisplayDataActivity thread) should be updating UI elements)
-		protected void onPostExecute(String result) {
-
-			// Set the dump text view to the value of the dump
-			// string
-			GreenstoneUtilities.formatTextView((TextView) findViewById(R.id.textViewFormatted), result);
-			TextView tvDump = (TextView) findViewById(R.id.textViewDump);
-			//only display the data if the fetch, else display an error. 
-			if (result.equals("") == false) {
-				//				tvDump.loadData(dumpString.toString(), "", "");
-				tvDump.setText(result);
-				tvDump.setMovementMethod(new ScrollingMovementMethod());
-			} else {
-//								tvDump.loadData("<h1> Error parsing data </h1>", "text/html", "utf-8");
-			}		
-		}
-
+		// Set the current sheet in the library to be that of
+		// the ID entered.
+		gml.setCurrentSheet(url, this);
 	}
 
 	@Override
@@ -100,5 +58,4 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity{
 		finish();
 		return;
 	}
-
 }

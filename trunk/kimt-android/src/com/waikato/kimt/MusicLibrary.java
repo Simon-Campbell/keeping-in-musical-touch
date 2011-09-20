@@ -1,5 +1,7 @@
 package com.waikato.kimt;
 
+import android.app.Activity;
+
 public interface MusicLibrary {
 	/**
 	 * Connect to an online music library.
@@ -11,7 +13,7 @@ public interface MusicLibrary {
 	 * Set the music sheet that is focused in the library
 	 * @param sheetID The ID of the music sheet to focus on
 	 */
-	public void			setCurrentSheet(String sheetID);
+	public void			setCurrentSheet(String sheetID, Activity displayActivity);
 	
 	/**
 	 * Gets the music sheet that current has focus

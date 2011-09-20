@@ -1,16 +1,33 @@
 package com.waikato.kimt;
 
-public class GreenstoneMusicLibrary implements MusicLibrary {
+import android.app.Activity;
 
+public class GreenstoneMusicLibrary implements MusicLibrary {
+	private MusicSheet	current;
+	private String		trackUri;
+	
+	/**
+	 * Will connect to the specified Greenstone music library
+	 * at the specified URI.
+	 * @param uri
+	 * 	The URI to connect to. It's expected to be a Greenstone3 server.
+	 */
+	public GreenstoneMusicLibrary(String uri) {
+		this.connect(uri);
+	}
+	
 	@Override
 	public void connect(String uri) {
-		// TODO Auto-generated method stub
-
+		this.trackUri = uri;
 	}
 
+	public String getUri() {
+		return trackUri;
+	}
+	
 	@Override
-	public void setCurrentSheet(String sheetID) {
-		// TODO Auto-generated method stub 
+	public void setCurrentSheet(String sheetID, Activity displayActivity) {
+		this.current = new MusicSheet(this, displayActivity, sheetID);
 	}
 
 	@Override

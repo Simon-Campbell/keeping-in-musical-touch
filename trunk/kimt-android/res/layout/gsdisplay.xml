@@ -8,14 +8,12 @@
    <LinearLayout 
    	android:padding="4dp" 
    	android:orientation="horizontal" 
-   	android:layout_height="wrap_content" 
    	android:layout_width="fill_parent" 
-   	android:weightSum="1">
+   	android:weightSum="1" android:layout_height="wrap_content">
        <LinearLayout 
        	android:orientation="vertical" 
-       	android:layout_height="wrap_content" 
        	android:layout_width="wrap_content"
-       	android:padding="2dp">
+       	android:padding="2dp" android:layout_height="64dp">
           <TextView 
            	android:layout_width="fill_parent" 
            	android:text="@string/title" 
@@ -23,19 +21,8 @@
            	android:layout_height="fill_parent">
        	</TextView>
        </LinearLayout>
-       <LinearLayout 
-       	android:orientation="vertical" 
-       	android:layout_height="wrap_content" 
-       	android:layout_width="fill_parent" 
-       	android:gravity="right"
-       	android:padding="2dp">
-       	<Button 
-        	android:layout_height="fill_parent" 
-        	android:id="@+id/button_back"  
-        	android:text="@string/back" android:layout_width="wrap_content">
-       	</Button>
-       </LinearLayout>
+       <Button android:layout_height="fill_parent" android:text="@string/back" android:layout_width="wrap_content" android:id="@+id/button_back" android:layout_gravity="right"></Button>
    </LinearLayout>
    <TextView android:textAppearance="?android:attr/textAppearanceSmall" android:layout_height="wrap_content" android:text="@string/formattedString" android:layout_width="fill_parent" android:id="@+id/textViewFormatted" android:layout_weight="0.48"></TextView>
-   <TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/textViewDump"/>
+   <TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/textViewDump" android:layout_weight="0.34" android:text="@string/dumpString"/>
 </LinearLayout>

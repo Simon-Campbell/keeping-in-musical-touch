@@ -4,9 +4,7 @@ package com.waikato.kimt;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -87,18 +85,8 @@ public class KeepingInMusicalTouchActivity extends Activity {
 		//    	@SuppressWarnings("unused")
 		//		int port = Integer.valueOf(editPort.getText().toString());
 
-		// Get the address that has been entered into the address textbox
-		String address	= editAddress.getText().toString();
-
-		// Put the full address together so we can open it via URL()
-		String fullAddress;
-
-		if (!address.startsWith("http://"))
-			fullAddress = "http://" + address;
-		else
-			fullAddress = address;
-
-		return fullAddress;
+		return
+				editAddress.getText().toString();
 	}
 
 }

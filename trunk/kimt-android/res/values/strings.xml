@@ -8,6 +8,6 @@
     <string name="back">Back</string>
     <string name="title">HTML Content</string>
     <string name="formattedString">Formatted XML Data</string>
-    <string name="defaultAddress">http://www.nzdl.org/greenstone3-nema/dev;jsessionid=08C1CB94BDBF8322F72548075D809910?a=d&amp;ed=1&amp;book=off&amp;c=musical-touch&amp;d=HASH0151f62687a74edac75640ee&amp;excerptid=gs-document-text&amp;view=simple&amp;pagePrefix=dvorak-als-die-alte-mutter-a4&amp;pageSuffix=.png&amp;numPages=3&amp;pageWidth=426&amp;pageHeight=603&amp;scaleFactor=0.7161520190023754&amp;o=xml</string>
+    <string name="defaultAddress">HASH0151f62687a74edac75640ee</string>
     <string name="btnLoad">Load</string>
 </resources>
