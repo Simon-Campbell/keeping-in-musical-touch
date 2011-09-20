@@ -61,7 +61,8 @@ public class KeepingInMusicalTouchActivity extends Activity {
         		WebView myWebView = (WebView) findViewById(R.id.myWebView);
         		myWebView.getSettings().setJavaScriptEnabled(true);
         		myWebView.getSettings().setDefaultFontSize(19);
-        		myWebView.loadUrl(fullAddress);
+        		String data = Network.getData(fullAddress);
+        		myWebView.loadData(data, "", "");
         		myWebView.getSettings().setSupportZoom(true);
         	}
         });      
