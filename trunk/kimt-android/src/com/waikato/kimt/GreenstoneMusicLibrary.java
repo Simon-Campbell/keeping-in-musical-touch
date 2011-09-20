@@ -11,7 +11,6 @@ public class GreenstoneMusicLibrary implements MusicLibrary {
 	@Override
 	public void setCurrentSheet(String sheetID) {
 		// TODO Auto-generated method stub 
-
 	}
 
 	@Override
