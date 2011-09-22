@@ -9,5 +9,7 @@
     <string name="title">HTML Content</string>
     <string name="formattedString">Formatted XML Data</string>
     <string name="defaultAddress">HASH0151f62687a74edac75640ee</string>
+    <string name="btnBack">Back</string>
+    <string name="btnForward">Forward</string>
     <string name="btnLoad">Load</string>
 </resources>

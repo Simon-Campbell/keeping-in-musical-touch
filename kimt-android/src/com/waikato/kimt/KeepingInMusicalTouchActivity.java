@@ -1,27 +1,37 @@
 package com.waikato.kimt;
 
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class KeepingInMusicalTouchActivity extends Activity {
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);    
+		super.onCreate(savedInstanceState);  
+		getWindow().requestFeature(Window.FEATURE_PROGRESS);
 		this.setContentView(R.layout.main);
+		
 
 
 		//UI Buttons
 		Button btnShow = (Button) findViewById(R.id.btnShow);
 		Button btnLoad = (Button) findViewById(R.id.btnLoad);
+		
+		
 
 
 		//Listner for button
@@ -30,11 +40,13 @@ public class KeepingInMusicalTouchActivity extends Activity {
 			public void onClick(View v) {
 
 				//get the data that the user entered
-				String fullAddress = btnShow_onClick(v);
-
+				String fullAddress = getString(R.id.textViewTitle);
+				
+				GreenstoneMusicLibrary gml = new GreenstoneMusicLibrary("http://www.nzdl.org/greenstone3-nema/dev;jsessionid=08C1CB94BDBF8322F72548075D809910?a=d&ed=1&book=off&c=musical-touch&d=");
 				//package the data to that it can be sent to next activity
 				Bundle bundle = new Bundle();
 				bundle.putString("url", fullAddress);
+				//bundle.put
 
 				//call the next activity (the other view) and send the data to it
 				Intent myIntent = new Intent(v.getContext(), KeepingInMusicalTouchDisplayDataActivity.class); //creating
@@ -51,18 +63,7 @@ public class KeepingInMusicalTouchActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 
-				//get the url from the screen
-				String fullAddress = btnShow_onClick(v);
-
-				//display the url in the webview
-				WebView myWebView = (WebView) findViewById(R.id.myWebView);
-				myWebView.getSettings().setJavaScriptEnabled(true);
-				myWebView.getSettings().setDefaultFontSize(19);
-				String data = Network.getData(fullAddress);
-				//        		myWebView.loadData(data, "text/html", "utf-8");
-				myWebView.loadUrl("http://www.nzdl.org/greenstone3-nema/dev;jsessionid=08C1CB94BDBF8322F72548075D809910?a=d&amp;ed=1&amp;book=off&amp;c=musical-touch&amp;d=HASH0151f62687a74edac75640ee&amp;excerptid=gs-document-text&amp;view=simple&amp;pagePrefix=dvorak-als-die-alte-mutter-a4&amp;pageSuffix=.png&amp;numPages=3&amp;pageWidth=426&amp;pageHeight=603&amp;scaleFactor=0.7161520190023754&amp;o=xml");
-				myWebView.getSettings().setSupportZoom(true);
-
+				updateWebView();
 			}
 		});      
 	}
@@ -71,22 +72,35 @@ public class KeepingInMusicalTouchActivity extends Activity {
 	 * The click event handler for the show button.
 	 * @param view
 	 */
-
-	public String btnShow_onClick(View v)
-	{
-		// Find the edit box for address and port, then assign them to
-		// these local variables.
-		TextView editAddress= (TextView) findViewById(R.id.editTextAddress);
-		//    	EditText editPort = (EditText) findViewById(R.id.editTextPort);
-
-		// Get an integer representation of the port number:
-		//	This is not required now but if we wish to send binary
-		//	data via sockets it will be.
-		//    	@SuppressWarnings("unused")
-		//		int port = Integer.valueOf(editPort.getText().toString());
-
-		return
-				editAddress.getText().toString();
+	
+	public void updateWebView() {
+		//display the url in the webview
+		WebView myWebView = (WebView) findViewById(R.id.myWebView);
+		
+		
+		final Activity activity = this;
+		
+		 myWebView.setWebChromeClient(new WebChromeClient() {
+		   public void onProgressChanged(WebView view, int progress) {
+		     // Activities and WebViews measure progress with different scales.
+		     // The progress meter will automatically disappear when we reach 100%
+		     activity.setProgress(progress * 1000);
+		   }
+		 });
+		 
+		 myWebView.setWebViewClient(new WebViewClient() {
+			   public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+			     Toast.makeText(activity, "Oh no! " + description, Toast.LENGTH_SHORT).show();
+			   }
+			 });
+		
+		myWebView.getSettings().setJavaScriptEnabled(true);
+		myWebView.getSettings().setDefaultFontSize(19);
+		myWebView.setVisibility(1);
+		
+		String string = "http://www.nzdl.org/greenstone3-nema/dev";
+		myWebView.loadUrl(string);
+		myWebView.getSettings().setSupportZoom(true);
 	}
 
 }

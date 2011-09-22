@@ -7,11 +7,9 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
-	GreenstoneMusicLibrary
-		gml = new GreenstoneMusicLibrary("http://www.nzdl.org/greenstone3-nema/dev;jsessionid=08C1CB94BDBF8322F72548075D809910?a=d&ed=1&book=off&c=musical-touch&d=");
+	
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -33,11 +31,22 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 
 		//get the data from activity that called this one (in this case its the url full address from the main window)
 		Bundle bundle = this.getIntent().getExtras();
-		String url	  = bundle.getString("url");
+		String url= bundle.getString("url");
+		
+	
+		//String url = arrayList.get(1);
+		//String str = arrayList.get(1);
+		//Object obj = (Object)str;
+		GreenstoneMusicLibrary gml = new GreenstoneMusicLibrary("http://www.nzdl.org/greenstone3-nema/dev;jsessionid=08C1CB94BDBF8322F72548075D809910?a=d&ed=1&book=off&c=musical-touch&d=");
 
+		//moved async and networking to musicSheet
+		
 		// Set the current sheet in the library to be that of
 		// the ID entered.
-		gml.setCurrentSheet(url, this);
+		//gml.setCurrentSheet(url, this);
+		
+		
+		
 	}
 
 	@Override
