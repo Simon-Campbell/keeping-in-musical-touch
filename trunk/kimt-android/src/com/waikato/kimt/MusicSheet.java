@@ -123,14 +123,15 @@ public class MusicSheet {
 			tvFormatted.setText(getTitle() + "\r\n");
 			
 			
-		/*	//only display the data if the fetch, else display an error. 
+			
+			//only display the data if the fetch, else display an error. 
 			if (result.equals("") == false) {
 				//				tvDump.loadData(dumpString.toString(), "", "");
 				tvDump.setText(result);
 				tvDump.setMovementMethod(new ScrollingMovementMethod());
 			} else {
 //								tvDump.loadData("<h1> Error parsing data </h1>", "text/html", "utf-8");
-			}	*/
+			}	
 			
 			isSynced = true;
 		}

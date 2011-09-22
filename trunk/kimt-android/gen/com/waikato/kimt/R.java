@@ -14,10 +14,10 @@ public final class R {
         public static final int icon=0x7f020000;
     }
     public static final class id {
+        public static final int btnBack=0x7f050005;
         public static final int btnLoad=0x7f050007;
         public static final int btnShow=0x7f050006;
         public static final int button_back=0x7f050001;
-        public static final int editTextAddress=0x7f050005;
         public static final int linearLayout1=0x7f050004;
         public static final int myWebView=0x7f050008;
         public static final int textViewDump=0x7f050003;
@@ -31,7 +31,9 @@ public final class R {
     public static final class string {
         public static final int app_name=0x7f040001;
         public static final int back=0x7f040005;
-        public static final int btnLoad=0x7f040009;
+        public static final int btnBack=0x7f040009;
+        public static final int btnForward=0x7f04000a;
+        public static final int btnLoad=0x7f04000b;
         public static final int defaultAddress=0x7f040008;
         public static final int dumpString=0x7f040004;
         public static final int formattedString=0x7f040007;
