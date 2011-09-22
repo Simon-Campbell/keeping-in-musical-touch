@@ -1,8 +1,5 @@
 package com.waikato.kimt;
 
-
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,27 +9,31 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 
 public class KeepingInMusicalTouchActivity extends Activity {
+	GreenstoneMusicLibrary
+		gml = null;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);  
-		getWindow().requestFeature(Window.FEATURE_PROGRESS);
-		this.setContentView(R.layout.main);
+		super.onCreate(savedInstanceState);
 		
+		this.getWindow().requestFeature(Window.FEATURE_PROGRESS);
+		this.setContentView(R.layout.main);
 
+		Bundle
+			saved = this.getIntent().getExtras();
+		
+		if (saved != null)
+			gml = new GreenstoneMusicLibrary(saved.get("library_location") + "dev;jsessionid=08C1CB94BDBF8322F72548075D809910?a=d&ed=1&book=off&c=musical-touch&d=");
 
 		//UI Buttons
 		Button btnShow = (Button) findViewById(R.id.btnShow);
 		Button btnLoad = (Button) findViewById(R.id.btnLoad);
-		
-		
-
+		Button btnBack = (Button) findViewById(R.id.btnBack);
 
 		//Listner for button
 		btnShow.setOnClickListener(new View.OnClickListener() {
@@ -42,7 +43,6 @@ public class KeepingInMusicalTouchActivity extends Activity {
 				//get the data that the user entered
 				String fullAddress = getString(R.id.textViewTitle);
 				
-				GreenstoneMusicLibrary gml = new GreenstoneMusicLibrary("http://www.nzdl.org/greenstone3-nema/dev;jsessionid=08C1CB94BDBF8322F72548075D809910?a=d&ed=1&book=off&c=musical-touch&d=");
 				//package the data to that it can be sent to next activity
 				Bundle bundle = new Bundle();
 				bundle.putString("url", fullAddress);
@@ -66,6 +66,16 @@ public class KeepingInMusicalTouchActivity extends Activity {
 				updateWebView();
 			}
 		});      
+		
+		btnBack.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent
+					loginIntent = new Intent(v.getContext(), KeepingInMusicalTouchLoginActivity.class);
+				startActivityForResult(loginIntent, 0);
+			}
+		});
 	}
 
 	/**

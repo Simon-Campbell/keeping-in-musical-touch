@@ -107,19 +107,20 @@ public class MusicSheet {
 		
 		//get the data in the background. This means that the thread with UI will not be blocked 
 		protected String doInBackground(String... address) {
-			Log.v("debugging", address[0]);
 			return Network.getData(address[0]);		
 		}
 
 		//the result of the above method will call this method and pass in the result. 
 		//I belive it is ok for this method to update the UI (only the main UI thread (...DisplayDataActivity thread) should be updating UI elements)
 		protected void onPostExecute(String result) {
+			setDataFromGreenstoneXML(result);
+			isSynced = true;
+			
 			// Set the dump text view to the value of the dump
 			// string
 			TextView tvFormatted=	(TextView) displayActivity.findViewById(R.id.textViewFormatted);
 			TextView tvDump		=	(TextView) displayActivity.findViewById(R.id.textViewDump);
 			
-			setDataFromGreenstoneXML(result);
 			tvFormatted.setText(getTitle() + "\r\n");
 			
 			
@@ -132,10 +133,6 @@ public class MusicSheet {
 			} else {
 //								tvDump.loadData("<h1> Error parsing data </h1>", "text/html", "utf-8");
 			}	
-			
-			isSynced = true;
 		}
-
 	}
-
 }
