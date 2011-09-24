@@ -5,10 +5,11 @@ import java.util.ArrayList;
 
 /**
  * A single unique group in the server
+ * Can have subgroups nested within itself
  * @author Greg C
- *
+ * @param <T>
  */
-public class Group implements Networkable
+public class Group implements Networkable<Group>
 {
 	private String groupName; public String getGroupName() { return groupName; }
 	private String groupOwner; public String getGroupNOwner() { return groupOwner; }
@@ -49,11 +50,12 @@ public class Group implements Networkable
 
 	@Override
 	/**
-	 * Returns a string containing a csv form of this Group instance
-	 * This information can be sent to the client when selecting groups to join
+	 * Serialises the Group object in the parameters, by generating a string formatted as a csv line.
+	 * This information can then be passed to a client when viewing different groups
 	 */
-	public String serialiseAsCsv() 
+	public String serialiseAsCsv(Group objToSerialise) 
 	{
+		// TODO Auto-generated method stub
 		return null;
 	}
 }
