@@ -5,10 +5,10 @@ package com.waikato.kimt.server;
  * @author Greg C
  *
  */
-public interface Networkable 
+public interface Networkable<T>
 {
 	/**
 	 * Allows the class to serialise itself to csv form
 	 */
-	String serialiseAsCsv();
+	String serialiseAsCsv(T objToSerialise);
 }
