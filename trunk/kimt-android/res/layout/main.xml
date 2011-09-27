@@ -10,7 +10,7 @@
 	android:layout_height="wrap_content" 
 	
 	android:orientation="horizontal"
-	android:gravity="right"
+	android:gravity="fill_horizontal"
 	android:padding="2dp">
 	<LinearLayout
 		android:layout_width="195dp" 
@@ -28,8 +28,7 @@
 			    android:gravity="left"
 			    android:layout_gravity="left">
 		    </Button>
-		    
-		</LinearLayout>
+	</LinearLayout>
     <LinearLayout
 		android:layout_width="wrap_content" 
 		android:layout_height="wrap_content" 
@@ -56,21 +55,16 @@
 			android:text="@string/btnLoad"
 			android:gravity="right"
 			android:layout_gravity="right">
-			
 		</Button>
 	</LinearLayout>
 	</LinearLayout>
-	
 	<LinearLayout
 		android:layout_width="wrap_content"
 		android:layout_height="fill_parent">
-	<WebView
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		android:visibility="invisible"
-		android:id="@+id/myWebView">
-		
-	</WebView>
+	<ListView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:id="@+id/myListView">
+	</ListView>
 	</LinearLayout>
-		
 </LinearLayout>
