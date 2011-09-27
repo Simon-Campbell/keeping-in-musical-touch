@@ -44,7 +44,7 @@ public class MusicView {
 		
 		// Get the syncher in GreenstoneMusicLibrary and set
 		// it's library ..
-		gml.getSyncer().setLibrary(gml);
+		//gml.getSyncer().setLibrary(gml);
 	}
 
 }
