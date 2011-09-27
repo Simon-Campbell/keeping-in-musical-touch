@@ -3,8 +3,9 @@ package com.waikato.kimt;
 import android.app.Activity;
 
 public class GreenstoneMusicLibrary implements MusicLibrary {
-	private MusicSheet	current;
-	private String		trackUri;
+	private MusicSheet			current;
+	private String				trackUri;
+	private DigitalLibrarySync	dls;
 	
 	/**
 	 * Will connect to the specified Greenstone music library
@@ -19,10 +20,17 @@ public class GreenstoneMusicLibrary implements MusicLibrary {
 	@Override
 	public void connect(String uri) {
 		this.trackUri = uri;
+		
+		if (dls == null) {
+		}
 	}
 
 	public String getUri() {
 		return trackUri;
+	}
+	
+	public DigitalLibrarySync getSyncer() {
+		return null;
 	}
 	
 	@Override
@@ -40,6 +48,16 @@ public class GreenstoneMusicLibrary implements MusicLibrary {
 	public MusicSheet find(String searchTerm, SearchMode sm) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public MusicView getCurrentView() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public class GreenstoneEventListener {
+		
 	}
 
 }

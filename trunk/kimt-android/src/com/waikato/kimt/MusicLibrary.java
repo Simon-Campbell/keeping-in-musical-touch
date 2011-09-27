@@ -22,6 +22,13 @@ public interface MusicLibrary {
 	public MusicSheet	getCurrentSheet();
 	
 	/**
+	 * Gets the current view that will be synchronised with the
+	 * rest of the
+	 * @return
+	 */
+	public MusicView	getCurrentView();
+	
+	/**
 	 * Search for the specified music sheet using the
 	 * specified search mode
 	 * @param searchTerm The term to search for

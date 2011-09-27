@@ -41,9 +41,6 @@ public class MusicSheet {
 		
 		this.currentPage= 0;
 		this.pages		= 1337;
-		
-		Log.v("debugging", this.sheetID);
-		Log.v("debugging", this.fullAddress);
 	
 		new AsyncGreenstoneXMLDownload().execute(this.fullAddress);
 	}
