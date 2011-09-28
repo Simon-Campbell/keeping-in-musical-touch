@@ -1,7 +1,5 @@
 package com.waikato.kimt;
 
-import android.app.Activity;
-
 public interface MusicLibrary {
 	/**
 	 * Connect to an online music library.
