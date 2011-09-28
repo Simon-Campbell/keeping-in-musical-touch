@@ -3,8 +3,6 @@ package com.waikato.kimt;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.Activity;
-
 public class GreenstoneMusicLibrary implements MusicLibrary {
 	private MusicSheet			current;
 	private String				trackUri;

@@ -13,11 +13,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import android.os.AsyncTask;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
-import android.widget.TextView;
-
-import android.app.Activity;
 
 
 public class MusicSheet {
@@ -56,6 +52,10 @@ public class MusicSheet {
 		return this.title;
 	}
 	
+	public String getAuthor() {
+		return this.author;
+	}
+	
 	private void setTitle(String title) {
 		this.title = title;
 	}
@@ -81,8 +81,8 @@ public class MusicSheet {
 	        
 	        // Iterate the parameter list
 	        for (int i = 0; i < nodes.getLength(); i++) {
-	           Element element = (Element) nodes.item(i);
-	           NodeList metaInfos = element.getElementsByTagName("metadata");
+	           Element	element = (Element) nodes.item(i);
+	           NodeList	metaInfos = element.getElementsByTagName("metadata");
 	           
 	           for (int j = 0; j < metaInfos.getLength(); j++) {
 	        	   Element metaInfo	= (Element) metaInfos.item(j);
@@ -90,11 +90,20 @@ public class MusicSheet {
     	           
     	           if (name.compareTo("mp.title") == 0) {
     	        	   setTitle(GreenstoneUtilities.getCharacterDataFromElement(metaInfo));   
-    	           }
-    	           
+    	           }    	           
 	           }
 	        }
 	        
+	        String
+	        	defaultNoMetaString = "N/A";
+	        
+	        if (this.author == null) {
+	        	this.author	= defaultNoMetaString;
+	        }
+	        if (this.title == null) {
+	        	this.title	= defaultNoMetaString;
+	        }
+
 			// Notify anybody who is subscribed to the MusicSheet that
 			// the meta-data has been downloaded.
 			this.notifyMetaDataDownloaded();

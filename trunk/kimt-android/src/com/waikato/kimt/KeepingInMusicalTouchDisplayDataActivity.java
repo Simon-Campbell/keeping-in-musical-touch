@@ -3,7 +3,6 @@ package com.waikato.kimt;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -47,7 +46,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 				TextView
 					tvFormatted=	(TextView) findViewById(R.id.textViewFormatted);
 				
-				tvFormatted.setText("Title: " + ms.getTitle() + "\r\n");
+				tvFormatted.setText("Author: " + ms.getAuthor() + "\r\nTitle: " + ms.getTitle() + "\r\n");
 			}
 			
 		});

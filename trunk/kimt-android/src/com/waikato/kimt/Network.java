@@ -15,14 +15,10 @@ public class Network {
 
 		try {
 			// Point the URL object at the full address
-			Log.v("debugging", "before open URL");
 			url	= new URL(fullAddress);
-			Log.v("debugging", url.toString());
 
 			// Create a new input stream from the URL
 			InputStream input = url.openStream();
-			Log.v("debugging", "after openStream()");
-			
 			// Create an array of bytes for the input stream to
 			// be written to
 			byte[] b = new byte[1024];
@@ -48,7 +44,6 @@ public class Network {
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			Log.v("debugging", e.toString());
 			e.printStackTrace();
 		}
 
