@@ -6,7 +6,7 @@ import org.w3c.dom.Node;
 
 import android.widget.TextView;
 
-class GreenstoneUtilities {
+public class GreenstoneUtilities {
 	/**
 	 * A method that will parse an input string in an XML format and place the
 	 * data in the textview
