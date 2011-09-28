@@ -13,7 +13,7 @@ public interface MusicLibrary {
 	 * Set the music sheet that is focused in the library
 	 * @param sheetID The ID of the music sheet to focus on
 	 */
-	public void			setCurrentSheet(String sheetID, Activity displayActivity);
+	public void			setCurrentSheet(String sheetID);
 	
 	/**
 	 * Gets the music sheet that current has focus

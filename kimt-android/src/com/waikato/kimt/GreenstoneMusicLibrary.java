@@ -1,5 +1,8 @@
 package com.waikato.kimt;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 
 public class GreenstoneMusicLibrary implements MusicLibrary {
@@ -20,9 +23,6 @@ public class GreenstoneMusicLibrary implements MusicLibrary {
 	@Override
 	public void connect(String uri) {
 		this.trackUri = uri;
-		
-		if (dls == null) {
-		}
 	}
 
 	public String getUri() {
@@ -34,8 +34,15 @@ public class GreenstoneMusicLibrary implements MusicLibrary {
 	}
 	
 	@Override
-	public void setCurrentSheet(String sheetID, Activity displayActivity) {
-		this.current = new MusicSheet(this, displayActivity, sheetID);
+	public void setCurrentSheet(String sheetID) {
+		this.current = new MusicSheet(this, sheetID);
+		this.current.setOnSheetMetaDataUpdateListener(new MusicSheet.MetaDataDownloadListener() {
+			
+			@Override
+			public void onMetaDataDownloaded(MusicSheet ms) {
+				notifySheetMetaDataUpdate();
+			}
+		});
 	}
 
 	@Override
@@ -56,8 +63,21 @@ public class GreenstoneMusicLibrary implements MusicLibrary {
 		return null;
 	}
 	
-	public class GreenstoneEventListener {
-		
+	private List<SyncedSheetUpdateListener>
+		registeredMetaUpdateListeners = new ArrayList<SyncedSheetUpdateListener>();
+	
+	public void setOnSheetMetaDataUpdateListener(SyncedSheetUpdateListener gul) {
+		registeredMetaUpdateListeners.add(gul);
+	}
+	
+	private void notifySheetMetaDataUpdate() {
+		for (SyncedSheetUpdateListener g : registeredMetaUpdateListeners) {
+			g.onMetaDataUpdate(current);
+		}
+	}
+	
+	public interface SyncedSheetUpdateListener {
+		public void onMetaDataUpdate(MusicSheet m);
 	}
 
 }

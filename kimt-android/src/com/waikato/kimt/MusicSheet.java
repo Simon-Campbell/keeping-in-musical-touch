@@ -1,6 +1,8 @@
 package com.waikato.kimt;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,7 +24,6 @@ public class MusicSheet {
 	private String					sheetID;
 	private String 					fullAddress;
 	private GreenstoneMusicLibrary	owner;
-	private Activity				displayActivity;
 	private MusicSheet				async;
 
 	private String title;
@@ -33,11 +34,9 @@ public class MusicSheet {
 	
 	private boolean isSynced = false;
 	
-	public MusicSheet(GreenstoneMusicLibrary owner, Activity displayActivity, String sheetID) {
-		this.owner			= owner;
+	public MusicSheet(GreenstoneMusicLibrary owner, String sheetID) {
 		this.sheetID		= sheetID;
 		this.fullAddress	= owner.getUri() + sheetID + "&o=xml";
-		this.displayActivity= displayActivity;
 		
 		this.currentPage= 0;
 		this.pages		= 1337;
@@ -77,6 +76,9 @@ public class MusicSheet {
 	        nodes = ((Element) nodes.item(0)).getElementsByTagName("documentNode");
 	        nodes = ((Element) nodes.item(0)).getElementsByTagName("metadataList");
 	        
+	        Log.v("onMetaDataUpdate", "Before iterating parameters ..");
+	        Log.v("onMetaDataUpdate", nodes.item(0).toString());
+	        
 	        // Iterate the parameter list
 	        for (int i = 0; i < nodes.getLength(); i++) {
 	           Element element = (Element) nodes.item(i);
@@ -87,10 +89,15 @@ public class MusicSheet {
     	           String name		= metaInfo.getAttribute("name");
     	           
     	           if (name.compareTo("mp.title") == 0) {
-    	        	   setTitle(GreenstoneUtilities.getCharacterDataFromElement(metaInfo));
+    	        	   setTitle(GreenstoneUtilities.getCharacterDataFromElement(metaInfo));   
     	           }
+    	           
 	           }
 	        }
+	        
+			// Notify anybody who is subscribed to the MusicSheet that
+			// the meta-data has been downloaded.
+			this.notifyMetaDataDownloaded();
 	    }
 	    catch (Exception e) {
 	        e.printStackTrace();
@@ -98,10 +105,27 @@ public class MusicSheet {
 
 	}
 	
+	/**
+	 * This region of code takes care of the 
+	 */
+	private List<MetaDataDownloadListener>
+		registeredMetaDataListeners = new ArrayList<MetaDataDownloadListener>();
+	
+	public interface MetaDataDownloadListener {
+		public void onMetaDataDownloaded(MusicSheet ms);
+	}
+	
+	public void setOnSheetMetaDataUpdateListener(MetaDataDownloadListener mddl) {
+		registeredMetaDataListeners.add(mddl);
+	}
+	
+	protected void notifyMetaDataDownloaded() {
+		for (MetaDataDownloadListener mddl : registeredMetaDataListeners)
+			mddl.onMetaDataDownloaded(this);
+	}
+	
 	//using class Async to do the work
 	private class AsyncGreenstoneXMLDownload extends AsyncTask<String, Void, String> {
-		MusicSheet ms = null;
-		
 		//get the data in the background. This means that the thread with UI will not be blocked 
 		protected String doInBackground(String... address) {
 			return Network.getData(address[0]);		
@@ -111,25 +135,6 @@ public class MusicSheet {
 		//I belive it is ok for this method to update the UI (only the main UI thread (...DisplayDataActivity thread) should be updating UI elements)
 		protected void onPostExecute(String result) {
 			setDataFromGreenstoneXML(result);
-			isSynced = true;
-			
-			// Set the dump text view to the value of the dump
-			// string
-			TextView tvFormatted=	(TextView) displayActivity.findViewById(R.id.textViewFormatted);
-			TextView tvDump		=	(TextView) displayActivity.findViewById(R.id.textViewDump);
-			
-			tvFormatted.setText(getTitle() + "\r\n");
-			
-			
-			
-			//only display the data if the fetch, else display an error. 
-			if (result.equals("") == false) {
-				//				tvDump.loadData(dumpString.toString(), "", "");
-				tvDump.setText(result);
-				tvDump.setMovementMethod(new ScrollingMovementMethod());
-			} else {
-//								tvDump.loadData("<h1> Error parsing data </h1>", "text/html", "utf-8");
-			}	
 		}
 	}
 }
