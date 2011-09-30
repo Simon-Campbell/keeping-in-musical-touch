@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import android.util.Log;
-
 public class Network {
 	
 	public static String getData(String fullAddress) {
