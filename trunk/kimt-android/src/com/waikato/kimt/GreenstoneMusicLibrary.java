@@ -5,6 +5,7 @@ import java.util.List;
 
 public class GreenstoneMusicLibrary implements MusicLibrary {
 	private MusicSheet			current;
+
 	private String				trackUri;
 	private DigitalLibrarySync	dls;
 	
