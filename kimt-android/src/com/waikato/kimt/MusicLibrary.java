@@ -1,5 +1,8 @@
 package com.waikato.kimt;
 
+/**
+ * @author  Simon
+ */
 public interface MusicLibrary {
 	/**
 	 * Connect to an online music library.
@@ -15,13 +18,12 @@ public interface MusicLibrary {
 	
 	/**
 	 * Gets the music sheet that current has focus
-	 * @return The music sheet that currently has focus
+	 * @return   The music sheet that currently has focus
 	 */
 	public MusicSheet	getCurrentSheet();
 	
 	/**
-	 * Gets the current view that will be synchronised with the
-	 * rest of the
+	 * Gets the current view that will be synchronised with the rest of the
 	 * @return
 	 */
 	public MusicView	getCurrentView();

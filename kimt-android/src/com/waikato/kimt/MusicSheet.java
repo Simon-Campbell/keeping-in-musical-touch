@@ -20,6 +20,7 @@ public class MusicSheet {
 	private String					sheetID;
 	private String 					fullAddress;
 	private GreenstoneMusicLibrary	owner;
+
 	private MusicSheet				async;
 
 	private String title;
@@ -51,7 +52,7 @@ public class MusicSheet {
 	public String getTitle() {
 		return this.title;
 	}
-	
+
 	public String getAuthor() {
 		return this.author;
 	}
@@ -115,7 +116,7 @@ public class MusicSheet {
 	}
 	
 	/**
-	 * This region of code takes care of the 
+	 * This region of code takes care of the
 	 */
 	private List<MetaDataDownloadListener>
 		registeredMetaDataListeners = new ArrayList<MetaDataDownloadListener>();

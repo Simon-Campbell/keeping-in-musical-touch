@@ -4,19 +4,36 @@ public class MusicView {
 	private double x;
 	private double y;
 	
+	private MusicSheet ms;
+	
+	public MusicView(MusicSheet ms, double x, double y) {
+		this.ms = ms;
+		
+		this.x = x;
+		this.y = y;
+	}
+	
 	/**
-	 * @return The x-coordinate of where the synchronised view is.
+	 * @return  The x-coordinate of where the synchronised view is.
 	 */
 	public double getX() {
 		return x;
 	}
 
 	/**
-	 * @return The y-coordinate of where the synchronised view is.
+	 * @return  The y-coordinate of where the synchronised view is.
 	 */
 	public double getY() {
 		return y;
 	}
+	
+	/**
+	 * @return The music sheet that this view is looking at.
+	 */
+	public MusicSheet getMusicSheet() {
+		return ms;
+	}
+	
 	/**
 	 * Set the view of the current client.
 	 * @param x The x-coordinate of the new view.
@@ -39,11 +56,13 @@ public class MusicView {
 	 * @param y
 	 * 	The y-coordinate of the new view.
 	 */
-	public void setPosition(GreenstoneMusicLibrary gml, double x, double y) {
+	public void setPosition(KIMTSync ks, double x, double y) {
 		this.setPosition(x, y);
 		
 		// Get the syncher in GreenstoneMusicLibrary and set
 		// it's library ..
+		ks.setRemoteView(this);
+		
 		//gml.getSyncer().setLibrary(gml);
 	}
 
