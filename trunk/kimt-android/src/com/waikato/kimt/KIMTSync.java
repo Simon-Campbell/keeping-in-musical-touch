@@ -94,6 +94,12 @@ public class KIMTSync implements DigitalLibrarySync, Serializable {
 			
 			try {
 				oos = new ObjectOutputStream(s.getOutputStream());
+				
+				// The program name/version
+				oos.writeChars("KIMT 1.0");
+				// The text command that is sent over the network
+				oos.writeChars("LIBRARY UPLOAD");
+				
 				oos.writeObject(current);
 				
 			} catch (IOException e) {
