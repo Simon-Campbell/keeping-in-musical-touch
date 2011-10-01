@@ -9,20 +9,16 @@ import java.util.ArrayList;
  * @author Greg C
  * @param <T>
  */
-public class Group implements Networkable<Group>
+public class Group
 {
 	private String groupName; public String getGroupName() { return groupName; }
-	private String groupOwner; public String getGroupNOwner() { return groupOwner; }
-	private ArrayList<Group> subgroups;
+	private String groupOwner; public String getGroupOwner() { return groupOwner; }
 	private URL gsURL;
-	private Group parent;
 	
-	public Group(String groupName, String groupOwner, String urlAddr, Group parent)
+	public Group(String groupName, String groupOwner, String urlAddr)
 	{
 		this.groupName = groupName;
 		this.groupOwner = groupOwner;
-		if (parent != this)
-			this.parent = parent;
 		
 		try
 		{
@@ -40,22 +36,25 @@ public class Group implements Networkable<Group>
 	 * @param urlAddr
 	 * @param parent
 	 */
-	public void insert(String groupName, String urlAddr, Group parent)
+	public void insert(String groupName, String urlAddr)
 	{
-		if (groupName != null && urlAddr != null && parent != null)
+		if (groupName != null && urlAddr != null)
 		{
-			Group g = new Group(groupName, null, urlAddr, parent);
+			Group g = new Group(groupName, null, urlAddr);
 		}
 	}
 
-	@Override
 	/**
 	 * Serialises the Group object in the parameters, by generating a string formatted as a csv line.
 	 * This information can then be passed to a client when viewing different groups
 	 */
-	public String serialiseAsCsv(Group objToSerialise) 
+	public String serialiseAsCsv() 
 	{
+		String csvLine = getGroupName() + "," + 
+				getGroupOwner()  + "," + 
+				gsURL + "\n";
+		
 		// TODO Auto-generated method stub
-		return null;
+		return csvLine;
 	}
 }
