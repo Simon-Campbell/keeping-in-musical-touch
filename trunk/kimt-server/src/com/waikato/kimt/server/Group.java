@@ -57,4 +57,26 @@ public class Group
 		// TODO Auto-generated method stub
 		return csvLine;
 	}
+	
+	/**
+	 * Performs an equality check by comparing group names
+	 * @param other
+	 * @return
+	 */
+	public boolean equals(Group other)
+	{
+		if (getGroupName().equals(other.getGroupName()))
+			return true;
+		return false;
+	}
+	
+	/**
+	 * Prints information about this group to the console
+	 */
+	public void print()
+	{
+		System.out.println("Name: " + getGroupName() + "; Owner: " + getGroupOwner() + "; URL:" + gsURL);
+	}
+	
+	
 }

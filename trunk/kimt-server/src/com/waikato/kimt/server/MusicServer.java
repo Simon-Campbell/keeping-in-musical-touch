@@ -14,16 +14,18 @@ import java.util.ArrayList;
 public class MusicServer implements Runnable
 {
 	ServerSocket server;
-	ArrayList<Group> groups;
+	GroupManager groupManager;
 	boolean serverRunning = true;
 	
 	public MusicServer(int port)
 	{
 		host(port);
+		groupManager = new GroupManager();
 		Group g = new Group("Name","Owner","http://www.test.com");
-		groups.add(g);
+		groupManager.insert(g);
 		Group h = new Group("Name 2","Owner 2","http://www.testnumber2.com");
-		groups.add(h);
+		groupManager.insert(h);
+		groupManager.print();
 	}
 	
 	/**
@@ -35,7 +37,6 @@ public class MusicServer implements Runnable
 		try
 		{
 			server = new ServerSocket(port);
-			groups = new ArrayList<Group>();
 			serverRunning = true;
 			
 			Thread t = new Thread(this);
@@ -146,7 +147,7 @@ public class MusicServer implements Runnable
 			String gURL = requests[4];
 			
 			Group g = new Group(gName, gOwner, gURL);
-			groups.add(g);
+			groupManager.insert(g);
 		}
 	}
 	
@@ -157,7 +158,7 @@ public class MusicServer implements Runnable
 	private String groupDataToXML()
 	{
 		String sxml = "<?xml version=\"1.0\"?><root>";
-		for(Group g : groups)
+		for(Group g : groupManager.getGroups())
 		{
 			sxml += "<group><name>"+g.getGroupName()+"</name><owner>"+g.getGroupOwner()+"</owner></group>";
 		}
@@ -166,10 +167,14 @@ public class MusicServer implements Runnable
 		return sxml;
 	}
 	
+	/**
+	 * Serialises the group data as a CSV formatted string, with each entry separated by a new line character
+	 * @return
+	 */
 	private String groupDataToCSV()
 	{
 		String csvData = "";
-		for(Group g : groups)
+		for(Group g : groupManager.getGroups())
 		{
 			csvData += g.serialiseAsCsv();
 		}
