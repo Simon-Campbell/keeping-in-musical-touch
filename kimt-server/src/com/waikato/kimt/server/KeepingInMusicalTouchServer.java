@@ -7,7 +7,7 @@ public class KeepingInMusicalTouchServer {
 	 */
 	public static void main(String[] args) {
 		SyncServer
-			s = new SyncServer(8000);
+			s = new SyncServer(8002);
 	}
 
 }

@@ -19,7 +19,7 @@ import com.waikato.kimt.groupmanager.GroupManager;
 public class SyncServer implements Runnable
 {
 	ServerSocket server;
-	GroupManager groupManager;
+	volatile GroupManager groupManager;
 	
 	public SyncServer(int port)
 	{
@@ -29,8 +29,12 @@ public class SyncServer implements Runnable
 		groupManager.insert(g);
 		Group h = new Group("Name 2","Owner 2","http://www.testnumber2.com");
 		groupManager.insert(h);
+		Group i = new Group("Roberts Band","Robert","http://www.google.com");
+		groupManager.insert(i);
 		groupManager.print();
 	}
+	
+	public final String version = "VERSION: kimt 0.1\n";
 	
 	/**
 	 * Hosts a new instance of a server
@@ -90,7 +94,7 @@ public class SyncServer implements Runnable
 					{
 						System.out.println(s);
 					}
-						
+					
 					//If request is a get request - used to provide clients with group information
 					if (reqArray[0].equals("GET"))
 					{
