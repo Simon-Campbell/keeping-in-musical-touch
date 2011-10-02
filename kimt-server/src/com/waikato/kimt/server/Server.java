@@ -16,7 +16,7 @@ import java.util.ArrayList;
  */
 public class Server 
 {
-	private	ArrayList<Group> groups;
+	private	volatile GroupManager groupManager;
 	
 	/**
 	 * The port that the server will listen for data on.
@@ -32,7 +32,7 @@ public class Server
 	
 	public Server()
 	{
-		groups = new ArrayList<Group>();
+		groupManager = new GroupManager();
 		
 		// Start executing the socket thread so that
 		// data can be read
