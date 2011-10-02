@@ -1,6 +1,7 @@
 package com.waikato.kimt;
 
 import java.io.StringReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,7 +52,15 @@ public class GreenstoneMusicLibrary implements MusicLibrary {
 	
 	@Override
 	public void setCurrentSheet(String sheetID) {
-		this.current = new MusicSheet(this, sheetID);
+		// Find the track in the cache if it is cached.
+		this.current = findInCache(sheetID);
+		
+		// If a null value was returned then the sheet
+		// wasn't cached, so create a new MusicSheet object
+		// and download it.
+		if (this.current == null)
+			this.current = new MusicSheet(this, sheetID, true);
+		
 		this.current.setOnSheetMetaDataUpdateListener(new MusicSheet.MetaDataDownloadListener() {
 			
 			@Override
@@ -61,6 +70,24 @@ public class GreenstoneMusicLibrary implements MusicLibrary {
 		});
 	}
 
+	public Boolean isCached(String sheetID) {
+		return findInCache(sheetID) != null;
+	}
+	
+	public MusicSheet findInCache(String sheetID) {
+		MusicSheet found = null;
+		
+		if (cache != null) {
+			for (MusicSheet ms : cache) {
+				if (ms.getSheetID().compareTo(sheetID) == 0) {
+					found = ms; break;
+				}
+			}
+		}
+		
+		return found;
+	}
+	
 	@Override
 	public MusicSheet getCurrentSheet() {
 		// TODO Auto-generated method stub
@@ -113,16 +140,13 @@ public class GreenstoneMusicLibrary implements MusicLibrary {
 		public void onLibraryDownloaded(GreenstoneMusicLibrary gml);
 	}
 	
-	private void setCacheFromGreenstoneXML(String xmlString) {
+	private void setCacheFromGreenstoneXML(String uri) {
 	    try {
 	    	cache = new LinkedList<MusicSheet>();
 	    	
 	        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder db = dbf.newDocumentBuilder();
-	        
-	        InputSource is = new InputSource();
-	        is.setCharacterStream(new StringReader(xmlString));
-	        
+	        InputSource is = new InputSource((new URL(uri)).openStream());
 	        Document doc = db.parse(is);
 	        NodeList nodes = doc.getElementsByTagName("page");
           
@@ -154,9 +178,9 @@ public class GreenstoneMusicLibrary implements MusicLibrary {
 	        				metaType = finalElement.getAttribute("name");
 	        			
 	        			if (metaType.compareTo("mp.title") == 0) {
-	        				ms.setAuthor(GreenstoneUtilities.getCharacterDataFromElement(finalElement));
+	        				ms.setAuthor(XMLUtilities.getCharacterDataFromElement(finalElement));
 	        			} else if (metaType.compareTo("mp.composer") == 0) {
-	        				ms.setTitle(GreenstoneUtilities.getCharacterDataFromElement(finalElement));
+	        				ms.setTitle(XMLUtilities.getCharacterDataFromElement(finalElement));
 	        			}
 	        		}
 	        	}
@@ -174,10 +198,7 @@ public class GreenstoneMusicLibrary implements MusicLibrary {
 
 		@Override
 		protected Boolean doInBackground(GreenstoneMusicLibrary... params) {
-			String
-				xml = Network.getData("http://www.nzdl.org/greenstone3-nema/dev?a=q&sa=&rt=rd&s=TextQuery&c=musical-touch&startPage=1&s1.query=b&s1.index=MT&o=xml");
-		
-			setCacheFromGreenstoneXML(xml);
+			setCacheFromGreenstoneXML("http://www.nzdl.org/greenstone3-nema/dev?a=q&sa=&rt=rd&s=TextQuery&c=musical-touch&startPage=1&s1.query=b&s1.index=MT&o=xml");
 			
 			return true;
 		}

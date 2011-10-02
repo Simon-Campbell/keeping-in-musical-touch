@@ -1,6 +1,6 @@
 package com.waikato.kimt;
 
-import java.io.StringReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,11 +17,8 @@ import android.util.Log;
 
 
 public class MusicSheet {
-	private String					sheetID;
-	private String 					fullAddress;
-	private GreenstoneMusicLibrary	owner;
-
-	private MusicSheet				async;
+	private String	sheetID;
+	private String 	fullAddress;
 
 	private String title;
 	private String author;
@@ -29,16 +26,19 @@ public class MusicSheet {
 	private int	pages;
 	private int currentPage;
 	
-	private boolean isSynced = false;
-	
 	public MusicSheet(GreenstoneMusicLibrary owner, String sheetID) {
+		this(owner, sheetID, false);
+	}
+	
+	public MusicSheet(GreenstoneMusicLibrary owner, String sheetID, Boolean download) {
 		this.sheetID		= sheetID;
 		this.fullAddress	= owner.getUri() + sheetID + "&o=xml";
 		
 		this.currentPage= 0;
 		this.pages		= 1337;
-	
-		new AsyncGreenstoneXMLDownload().execute(this.fullAddress);
+		
+		if (download)
+			new AsyncGreenstoneXMLDownload().execute(this.fullAddress);	
 	}
 	
 	public String toString() {
@@ -65,37 +65,47 @@ public class MusicSheet {
 		this.title = title;
 	}
 	
-	private void setDataFromGreenstoneXML(String xmlString) {
+	public String getSheetID() {
+		return this.sheetID;
+	}
+	
+	private void setDataFromGreenstoneXML(String uri) {
 	    try {
 	        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder db = dbf.newDocumentBuilder();
-	        
-	        InputSource is = new InputSource();
-	        is.setCharacterStream(new StringReader(xmlString));
-	        
+	        InputSource is = new InputSource((new URL(uri)).openStream());
 	        Document doc = db.parse(is);
+
+	        Log.v("Unbugging", uri);
 	        NodeList nodes = doc.getElementsByTagName("page");
-          
+
+	        Log.v("Unbugging", "Test 2");
 	        nodes = ((Element) nodes.item(0)).getElementsByTagName("pageResponse");
 	        nodes = ((Element) nodes.item(0)).getElementsByTagName("document");
 	        nodes = ((Element) nodes.item(0)).getElementsByTagName("documentNode");
 	        nodes = ((Element) nodes.item(0)).getElementsByTagName("metadataList");
-	        
-	        Log.v("onMetaDataUpdate", "Before iterating parameters ..");
-	        Log.v("onMetaDataUpdate", nodes.item(0).toString());
-	        
+
+	        Log.v("Unbugging", "Test 3");
 	        // Iterate the parameter list
 	        for (int i = 0; i < nodes.getLength(); i++) {
+	        	Log.v("Unbugging", Integer.toString(i));
 	           Element	element = (Element) nodes.item(i);
 	           NodeList	metaInfos = element.getElementsByTagName("metadata");
+	           
+	           Log.v("Unbugging", element.toString() + " | " + XMLUtilities.getCharacterDataFromElement(element));
 	           
 	           for (int j = 0; j < metaInfos.getLength(); j++) {
 	        	   Element metaInfo	= (Element) metaInfos.item(j);
     	           String name		= metaInfo.getAttribute("name");
+	        	   
+    	           Log.v("Unbugging", name + " | " + XMLUtilities.getCharacterDataFromElement(metaInfo));
     	           
-    	           if (name.compareTo("mp.title") == 0) {
-    	        	   setTitle(GreenstoneUtilities.getCharacterDataFromElement(metaInfo));   
-    	           }    	           
+    	           if (name.compareTo("mp.title") == 0 || (title == null && name.compareTo("Title") == 0)) {
+    	        	   this.title = XMLUtilities.getCharacterDataFromElement(metaInfo);   
+    	           } else if (name.compareTo("mp.composer") == 0 || (title == null && name.compareTo("Composer") == 0)) {
+    	        	   this.author= XMLUtilities.getCharacterDataFromElement(metaInfo);
+    	           } else {
+    	           }
 	           }
 	        }
 	        
@@ -109,9 +119,6 @@ public class MusicSheet {
 	        	this.title	= defaultNoMetaString;
 	        }
 
-			// Notify anybody who is subscribed to the MusicSheet that
-			// the meta-data has been downloaded.
-			this.notifyMetaDataDownloaded();
 	    }
 	    catch (Exception e) {
 	        e.printStackTrace();
@@ -139,16 +146,18 @@ public class MusicSheet {
 	}
 	
 	//using class Async to do the work
-	private class AsyncGreenstoneXMLDownload extends AsyncTask<String, Void, String> {
+	private class AsyncGreenstoneXMLDownload extends AsyncTask<String, Void, Void> {
 		//get the data in the background. This means that the thread with UI will not be blocked 
-		protected String doInBackground(String... address) {
-			return Network.getData(address[0]);		
+		protected Void doInBackground(String... address) {
+			setDataFromGreenstoneXML(address[0]); return null;
 		}
 
 		//the result of the above method will call this method and pass in the result. 
 		//I belive it is ok for this method to update the UI (only the main UI thread (...DisplayDataActivity thread) should be updating UI elements)
-		protected void onPostExecute(String result) {
-			setDataFromGreenstoneXML(result);
+		protected void onPostExecute(Void result) {
+			// Notify anybody who is subscribed to the MusicSheet that
+			// the meta-data has been downloaded.
+			notifyMetaDataDownloaded();
 		}
 	}
 }

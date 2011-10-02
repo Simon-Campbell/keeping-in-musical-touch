@@ -6,16 +6,8 @@ import org.w3c.dom.Node;
 
 import android.widget.TextView;
 
-public class GreenstoneUtilities {
-	/**
-	 * A method that will parse an input string in an XML format and place the
-	 * data in the textview
-	 * @param tv	The textview to assign the formatted data to
-	 * @param input	The string input formatted as an XML string
-	 */
-	public static void formatTextView(TextView tv, String xmlString) {
-	}
-
+public class XMLUtilities {
+	
 	public static String getCharacterDataFromElement(Element e) {
 		Node child = e.getFirstChild();
 		
