@@ -42,7 +42,7 @@ public class MusicSheet {
 	}
 	
 	public String toString() {
-		return "MusicSheet" + this.title + " " + this.currentPage / this.pages;
+		return "MusicSheet" + this.title + " " + this.author + " " + this.currentPage + "/" + this.pages;
 	}
 	
 	public String getFullAddress() {
@@ -57,7 +57,11 @@ public class MusicSheet {
 		return this.author;
 	}
 	
-	private void setTitle(String title) {
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+	
+	public void setTitle(String title) {
 		this.title = title;
 	}
 	

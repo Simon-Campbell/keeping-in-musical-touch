@@ -33,7 +33,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 		GreenstoneMusicLibrary
 			gml = new GreenstoneMusicLibrary("http://www.nzdl.org/greenstone3-nema/dev;jsessionid=08C1CB94BDBF8322F72548075D809910?a=d&ed=1&book=off&c=musical-touch&d=");
 		
-		gml.setOnSheetMetaDataUpdateListener(new GreenstoneMusicLibrary.SyncedSheetUpdateListener() {
+		gml.setMetaDataUpdateListener(new GreenstoneMusicLibrary.SyncedSheetUpdateListener() {
 			
 			@Override
 			public void onMetaDataUpdate(MusicSheet ms) {
@@ -48,7 +48,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 				
 				tvFormatted.setText("Author: " + ms.getAuthor() + "\r\nTitle: " + ms.getTitle() + "\r\n");
 			}
-			
+
 		});
 		
 
