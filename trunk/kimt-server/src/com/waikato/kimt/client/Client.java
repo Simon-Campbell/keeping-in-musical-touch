@@ -35,16 +35,19 @@ public class Client extends Thread
 	ObjectInputStream ois;
 	BufferedWriter writer;
 	
+	public final String version = "VERSION: kimt 0.1\n";
+	
 	/**
 	 * Sends a request to the remote server.
 	 * e.g. GET LIBRARY
-	 * @param msg
+	 * @param msg The string command to send
 	 */
 	public void sendRequest(String msg)
 	{
 		try
 		{
 			msg += "\n";
+			writer.write(version);
 			writer.write(msg);
 			writer.flush();
 		}
@@ -54,26 +57,45 @@ public class Client extends Thread
 		}
 	}
 	
+	/**
+	 * Reads an object from the specified stream
+	 * @param input ObjectInputStream to read from
+	 * @return Returns an object or null
+	 */
+	public Object readObject(ObjectInputStream input)
+	{
+		try
+		{
+			return input.readObject();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public void run()
 	{
 		try
 		{
-			FileWriter w = new FileWriter("D:\\gm.txt");
+			//debug stuff
+			FileWriter w = new FileWriter("E:\\GroupManagerClientState.txt");
 			
 			while(true)
 			{
 				//Reads a generic object from the server
-				Object o = ois.readObject();
+				//Object o = ois.readObject();
+				Object o = readObject(ois);
 				
 				//If the received object is an instance of GroupManager, then update groupmanager
 				if (o instanceof GroupManager)
 					groupManager = (GroupManager)o;
 
+				//debug stuff
 				groupManager.print();
-				
 				w.write(groupManager.toString());
-				w.close();
-				
+				w.close();				
 				System.out.println("derp");
 			}
 		}
