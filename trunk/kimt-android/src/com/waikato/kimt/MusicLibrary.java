@@ -8,7 +8,7 @@ public interface MusicLibrary {
 	 * Connect to an online music library.
 	 * @param uri The URI of the online music library
 	 */
-	public void			connect(String uri);
+//	public void			connect(String uri);
 	
 	/**
 	 * Set the music sheet that is focused in the library
@@ -36,4 +36,6 @@ public interface MusicLibrary {
 	 * @return The first music sheet to match the search terms
 	 */
 	public MusicSheet	find(String searchTerm, SearchMode sm);
+
+	void connect();
 }
