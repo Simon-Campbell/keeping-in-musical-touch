@@ -62,8 +62,6 @@ public class MusicView {
 		// Get the syncher in GreenstoneMusicLibrary and set
 		// it's library ..
 		ks.setRemoteView(this);
-		
-		//gml.getSyncer().setLibrary(gml);
 	}
 
 }
