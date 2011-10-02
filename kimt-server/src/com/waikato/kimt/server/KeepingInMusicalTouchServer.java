@@ -6,8 +6,8 @@ public class KeepingInMusicalTouchServer {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Server
-			s = new Server();
+		SyncServer
+			s = new SyncServer(8000);
 	}
 
 }
