@@ -22,6 +22,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 		//Button next = (Button) findViewById(R.id.btnShow);
 		Button next = (Button) findViewById(R.id.button_back); 
 		next.setOnClickListener(new View.OnClickListener() {
+			@Override
 			public void onClick(View view) {
 				Intent intent = new Intent();
 				setResult(RESULT_OK, intent);
@@ -31,22 +32,26 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 		});
 
 		GreenstoneMusicLibrary
-			gml = new GreenstoneMusicLibrary("http://www.nzdl.org/greenstone3-nema/dev;jsessionid=08C1CB94BDBF8322F72548075D809910?a=d&ed=1&book=off&c=musical-touch&d=");
+			gml = new GreenstoneMusicLibrary("http://www.nzdl.org/greenstone3-nema/dev;jsessionid=29143F04EB8E354FB59B9A41204DB97A?a=d&ed=1&book=off&c=musical-touch&d=");
 		
 		gml.setMetaDataUpdateListener(new GreenstoneMusicLibrary.SyncedSheetUpdateListener() {
 			
 			@Override
 			public void onMetaDataUpdate(MusicSheet ms) {
 				Log.v("onMetaDataUpdate", "The music data has been downloaded ..");
-				Log.v("onMetaDataUpdate", ms.getFullAddress());
-				Log.v("onMetaDataUpdate", ms.getTitle());
-
-				// Set the dump text view to the value of the dump
-				// string
-				TextView
-					tvFormatted=	(TextView) findViewById(R.id.textViewFormatted);
 				
-				tvFormatted.setText("Author: " + ms.getAuthor() + "\r\nTitle: " + ms.getTitle() + "\r\n");
+				if (ms != null) {
+					Log.v("onMetaDataUpdate", ms.getFullAddress());
+					Log.v("onMetaDataUpdate", ms.getTitle());
+					Log.v("onMetaDataUpdate", ms.getAuthor());
+	
+					// Set the dump text view to the value of the dump
+					// string
+					TextView
+						tvFormatted=	(TextView) findViewById(R.id.textViewFormatted);
+					
+					tvFormatted.setText("ID: " + ms.getSheetID() + "\nAuthor: " + ms.getAuthor() + "\nTitle: " + ms.getTitle() + "\n");
+				}
 			}
 
 		});
@@ -54,11 +59,10 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 
 
 		//get the data from activity that called this one (in this case its the url full address from the main window)
-		Bundle bundle = this.getIntent().getExtras();
-		String url= bundle.getString("url");
-		Log.v("Test", url);
+	//	Bundle bundle = this.getIntent().getExtras();
+	//	String url= bundle.getString("url");
 		
-		gml.setCurrentSheet("HASH0151f62687a74edac75640ee");
+		gml.setCurrentSheet("HASH2749a69bf54b32c3e4fee4");
 	}
 
 	@Override
@@ -73,6 +77,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 		return super.onKeyDown(keyCode, event);
 	}
 
+	@Override
 	public void onBackPressed() {
 		Intent intent = new Intent();
 		setResult(RESULT_OK, intent);
