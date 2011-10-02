@@ -1,0 +1,10 @@
+#summary A list of the client/server commands and what they do.
+#labels Phase-Design,Phase-Implementation
+
+= Introduction =
+This is a list of the client/server commands and what they do.
+
+= Details =
+||GET SYNC||Will request the current sync object from the sync server.||
+||GET LIBRARY||Will request the most up-to-date library object from the sync server.||
+||PUT SYNC||Will upload the clients sync object if the server allows it. The sync server will respond with either a "FORBIDDEN" or "SUCCESS" code. If sucessful, an update notification will then be broadcast to all clients giving them the opportunity to use *GET SYNC*||
