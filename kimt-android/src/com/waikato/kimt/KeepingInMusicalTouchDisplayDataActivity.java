@@ -17,6 +17,13 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);    
 		this.setContentView(R.layout.gsdisplay);
+		
+
+		//get the data from activity that called this one (in this case its the url full address from the main window)
+		Bundle bundle = this.getIntent().getExtras();
+		String url= bundle.getString("url");
+		TextView tvFormatted = (TextView) findViewById(R.id.textViewFormatted);
+		tvFormatted.setText(url);
 
 		//This defines and sets the button that allows the user to go back
 		//Button next = (Button) findViewById(R.id.btnShow);
@@ -31,38 +38,34 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 
 		});
 
-		GreenstoneMusicLibrary
-			gml = new GreenstoneMusicLibrary("http://www.nzdl.org/greenstone3-nema/dev;jsessionid=29143F04EB8E354FB59B9A41204DB97A?a=d&ed=1&book=off&c=musical-touch&d=");
-		
-		gml.setMetaDataUpdateListener(new GreenstoneMusicLibrary.SyncedSheetUpdateListener() {
+//		GreenstoneMusicLibrary
+//			gml = new GreenstoneMusicLibrary("http://www.nzdl.org/greenstone3-nema/dev;jsessionid=29143F04EB8E354FB59B9A41204DB97A?a=d&ed=1&book=off&c=musical-touch&d=");
+//		
+//		gml.setMetaDataUpdateListener(new GreenstoneMusicLibrary.SyncedSheetUpdateListener() {
 			
-			@Override
-			public void onMetaDataUpdate(MusicSheet ms) {
-				Log.v("onMetaDataUpdate", "The music data has been downloaded ..");
-				
-				if (ms != null) {
-					Log.v("onMetaDataUpdate", ms.getFullAddress());
-					Log.v("onMetaDataUpdate", ms.getTitle());
-					Log.v("onMetaDataUpdate", ms.getAuthor());
-	
-					// Set the dump text view to the value of the dump
-					// string
-					TextView
-						tvFormatted=	(TextView) findViewById(R.id.textViewFormatted);
-					
-					tvFormatted.setText("ID: " + ms.getSheetID() + "\nAuthor: " + ms.getAuthor() + "\nTitle: " + ms.getTitle() + "\n");
-				}
-			}
-
-		});
+//			@Override
+//			public void onMetaDataUpdate(MusicSheet ms) {
+//				Log.v("onMetaDataUpdate", "The music data has been downloaded ..");
+//				
+//				if (ms != null) {
+//					Log.v("onMetaDataUpdate", ms.getFullAddress());
+//					Log.v("onMetaDataUpdate", ms.getTitle());
+//					Log.v("onMetaDataUpdate", ms.getAuthor());
+//	
+//					// Set the dump text view to the value of the dump
+//					// string
+//					
+//					
+//					
+//				}
+//			}
+//
+//		});
 		
 
 
-		//get the data from activity that called this one (in this case its the url full address from the main window)
-	//	Bundle bundle = this.getIntent().getExtras();
-	//	String url= bundle.getString("url");
 		
-		gml.setCurrentSheet("HASH2749a69bf54b32c3e4fee4");
+//		gml.setCurrentSheet("HASH2749a69bf54b32c3e4fee4");
 	}
 
 	@Override
