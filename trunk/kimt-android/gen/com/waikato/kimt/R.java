@@ -16,16 +16,13 @@ public final class R {
     }
     public static final class id {
         public static final int autoCompleteTextViewLibraryLocation=0x7f050009;
-        public static final int btnBack=0x7f05000c;
-        public static final int btnLoad=0x7f05000e;
         public static final int btnSetLibrary=0x7f05000b;
-        public static final int btnShow=0x7f05000d;
         public static final int button_back=0x7f050001;
         public static final int editText1=0x7f05000a;
         public static final int linearLayout1=0x7f050004;
         public static final int linearLayout2=0x7f050005;
         public static final int linearLayout3=0x7f050008;
-        public static final int myListView=0x7f05000f;
+        public static final int myListView=0x7f05000c;
         public static final int textView1=0x7f050006;
         public static final int textView2=0x7f050007;
         public static final int textViewDump=0x7f050003;

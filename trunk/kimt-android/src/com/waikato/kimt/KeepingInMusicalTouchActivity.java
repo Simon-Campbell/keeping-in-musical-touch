@@ -12,7 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 public class KeepingInMusicalTouchActivity extends Activity {
@@ -54,9 +53,6 @@ public class KeepingInMusicalTouchActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				// When clicked, show a toast with the TextView text
-//				Toast.makeText(getApplicationContext(), ,
-//						Toast.LENGTH_SHORT).show();
 				
 				String fullAddress = ((TextView) view).getText().toString();
 				
@@ -74,17 +70,6 @@ public class KeepingInMusicalTouchActivity extends Activity {
 			}
 		});
 
-		//UI Buttons
-		Button btnShow = (Button) findViewById(R.id.btnShow);
-		//Button btnBack = (Button) findViewById(R.id.btnBack);
-
-		//Listner for button
-		btnShow.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-
-
-			}
-		});   
+		  
 	}
 }
