@@ -40,7 +40,7 @@ public class KeepingInMusicalTouchActivity extends Activity {
 				
 				for (MusicSheet m : gml.getCache()) {
 					String
-						s = m.getTitle() + " by " + m.getAuthor();
+						s = m.getTitle() + " by " + m.getAuthor() + " [" + m.getSheetID() + "]";
 					
 					adapter.add(s);
 				}

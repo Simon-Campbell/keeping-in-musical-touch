@@ -34,7 +34,9 @@ public class GreenstoneMusicLibrary implements MusicLibrary {
 	 * 	The URI to connect to. It's expected to be a Greenstone3 server.
 	 */
 	public GreenstoneMusicLibrary(String uri) {
-		this.trackUri = uri;
+		this.trackUri	= uri;
+		this.cache		= new LinkedList<MusicSheet>();
+    	
 	}
 	
 	@Override
@@ -142,14 +144,12 @@ public class GreenstoneMusicLibrary implements MusicLibrary {
 	
 	private void setCacheFromGreenstoneXML(String uri) {
 	    try {
-	    	cache = new LinkedList<MusicSheet>();
-	    	
 	        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder db = dbf.newDocumentBuilder();
-	        InputSource is = new InputSource((new URL(uri)).openStream());
-	        Document doc = db.parse(is);
-	        NodeList nodes = doc.getElementsByTagName("page");
-          
+	        InputSource is	= new InputSource((new URL(uri)).openStream());
+	        Document doc	= db.parse(is);
+	        NodeList nodes	= doc.getElementsByTagName("page");
+  
 	        nodes = ((Element) nodes.item(0)).getElementsByTagName("pageResponse");
 	        nodes = ((Element) nodes.item(0)).getElementsByTagName("documentNodeList");
 	        nodes = ((Element) nodes.item(0)).getElementsByTagName("documentNode");
@@ -159,33 +159,37 @@ public class GreenstoneMusicLibrary implements MusicLibrary {
 	        for (int docID = 0; docID < nodes.getLength(); docID++) {
 	        	Element
 	        		e  = (Element) nodes.item(docID);
+	        	String
+	        		sheetID = e.getAttribute("nodeID");
 	        	
-	        	MusicSheet
-	        		ms = new MusicSheet(this, e.getAttribute("nodeID"));
-	        	
-	        	NodeList
-	        		metadataListNodes = e.getElementsByTagName("documentNode");
-		        
-	        	for (int i = 0; i < metadataListNodes.getLength(); i++) {
-	        		NodeList
-	        			metadataNodes = ((Element) metadataListNodes.item(i)).getElementsByTagName("metadata");
-	        		
-	        		for (int j = 0; j < metadataNodes.getLength(); j++) {
-	        			Element
-	        				finalElement = (Element) metadataNodes.item(j);
-	        			
-	        			String
-	        				metaType = finalElement.getAttribute("name");
-	        			
-	        			if (metaType.compareTo("mp.title") == 0) {
-	        				ms.setAuthor(XMLUtilities.getCharacterDataFromElement(finalElement));
-	        			} else if (metaType.compareTo("mp.composer") == 0) {
-	        				ms.setTitle(XMLUtilities.getCharacterDataFromElement(finalElement));
-	        			}
-	        		}
+	        	if (!isCached(sheetID)) {
+		        	MusicSheet
+		        		ms = new MusicSheet(this, sheetID, false);
+		
+		        	NodeList
+		        		metadataListNodes = e.getElementsByTagName("metadataList");
+			        
+		        	for (int i = 0; i < metadataListNodes.getLength(); i++) {
+		        		NodeList
+		        			metadataNodes = ((Element) metadataListNodes.item(i)).getElementsByTagName("metadata");
+		        		
+		        		for (int j = 0; j < metadataNodes.getLength(); j++) {
+		        			Element
+		        				finalElement = (Element) metadataNodes.item(j);
+		        			
+		        			String
+		        				metaType = finalElement.getAttribute("name");
+		        		
+		        			if (metaType.compareTo("mp.title") == 0) {
+		        				ms.setAuthor(XMLUtilities.getCharacterDataFromElement(finalElement));
+		        			} else if (metaType.compareTo("mp.composer") == 0) {
+		        				ms.setTitle(XMLUtilities.getCharacterDataFromElement(finalElement));
+		        			}
+		        		}
+		        	}
+		        	
+		        	cache.add(ms);
 	        	}
-	        	Log.v("Debugging", ms.getTitle() + " " + ms.getAuthor());
-	        	cache.add(ms);
 	        }
 	    }
 	    catch (Exception e) {
@@ -198,15 +202,15 @@ public class GreenstoneMusicLibrary implements MusicLibrary {
 
 		@Override
 		protected Boolean doInBackground(GreenstoneMusicLibrary... params) {
-			setCacheFromGreenstoneXML("http://www.nzdl.org/greenstone3-nema/dev?a=q&sa=&rt=rd&s=TextQuery&c=musical-touch&startPage=1&s1.query=b&s1.index=MT&o=xml");
+			for (char search = 'a'; search <= 'z'; search++)
+				setCacheFromGreenstoneXML("http://www.nzdl.org/greenstone3-nema/dev?a=q&sa=&rt=rd&s=TextQuery&c=musical-touch&startPage=1&s1.query=" + Character.toString(search) + "&s1.index=MT&o=xml");
 			
 			return true;
 		}
 		
 		@Override
 		protected void onPostExecute(Boolean isSuccessful) {
-			notifyLibraryDownloaded();
-			
+			notifyLibraryDownloaded();	
 		}
 	}
 	
