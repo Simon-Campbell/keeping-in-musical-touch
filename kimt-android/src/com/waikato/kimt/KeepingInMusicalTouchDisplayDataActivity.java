@@ -25,16 +25,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 		TextView tvFormatted = (TextView) findViewById(R.id.textViewFormatted);
 		tvFormatted.setText(url);
 		
-		ImageView image = (ImageView) findViewById(R.id.imageSheet);
-		//This defines and sets the button that allows the user to go back
-		Button next = (Button) findViewById(R.id.button_back); 
-		next.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				onBackPressed();
-			}
-
-		});
+		ImageView image = (ImageView) findViewById(R.id.imageSheet);		
 	}
 
 	@Override
