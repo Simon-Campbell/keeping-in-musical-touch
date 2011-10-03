@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -19,7 +18,7 @@ public class KeepingInMusicalTouchActivity extends Activity {
 	gml = null;
 
 	/** Called when the activity is first created. */
-	//@Override
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.main);
@@ -38,12 +37,9 @@ public class KeepingInMusicalTouchActivity extends Activity {
 				adapter.clear();
 
 				for (MusicSheet m : gml.getCache()) {
-					String
-					s = m.getTitle() + " by " + m.getAuthor() + " [" + m.getSheetID() + "]";
-
+					String s = m.getTitle() + " by " + m.getAuthor() + " [" + m.getSheetID() + "]";
 					adapter.add(s);
 				}
-
 				listview.invalidate();
 			}
 		});
@@ -59,12 +55,11 @@ public class KeepingInMusicalTouchActivity extends Activity {
 				//package the data to that it can be sent to next activity
 				Bundle bundle = new Bundle();
 				bundle.putString("url", fullAddress);
-				//bundle.put
 
 				//call the next activity (the other view) and send the data to it
-				Intent myIntent = new Intent(getApplicationContext(), KeepingInMusicalTouchDisplayDataActivity.class); //creating
-				myIntent.putExtras(bundle); //data
-				startActivityForResult(myIntent, 0); //starting    
+				Intent myIntent = new Intent(getApplicationContext(), KeepingInMusicalTouchDisplayDataActivity.class);
+				myIntent.putExtras(bundle);
+				startActivityForResult(myIntent, 0);    
 
 
 			}
