@@ -4,7 +4,7 @@ to get group information and retrieve state.
 
 = Introduction =
 
-The kimt-server is based off the simple premise of messages. All information is stored in a wrapper class which is then deflated and sent over a serial connection. The receiving end then blows the deflated clas back up. A simple enquiry of the KitmMessage object allows the use of polymorphism to determine the actual type. Any information to be transmitted is wrapped in the appropriate KimtMessage object and then sent via the NetworkMonitor.
+The kimt-server networking architecture is based off the simple premise of messages. All information is stored in a wrapper class which is then deflated and sent over a serial connection. The receiving end then blows the deflated clas back up. A simple enquiry of the KitmMessage object allows the use of polymorphism to determine the actual type. Any information to be transmitted is wrapped in the appropriate KimtMessage object and then sent via the NetworkMonitor.
 
 = Details =
 
