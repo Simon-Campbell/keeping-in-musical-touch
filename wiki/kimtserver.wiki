@@ -11,3 +11,7 @@ The kimt-server networking architecture is based off the simple premise of messa
 *NetworkMonitor:* Manages a single remote connection. Provides methods to retrieve and send messages.
 
 *KimtMessage:* Base class for messages, a simple wrapper for network transmission. Can be sent and read using the NetworkMonitor
+
+= Packages =
+com.waikato.kimt.server.shared
+Collection of java classes that are stored on both the client and server. Used to facilitate data communication.
