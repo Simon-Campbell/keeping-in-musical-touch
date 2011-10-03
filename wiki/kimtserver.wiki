@@ -8,6 +8,6 @@ The kimt-server networking architecture is based off the simple premise of messa
 
 = Details =
 
-*NetworkMonitor:* Manages a single remote connection.
+*NetworkMonitor:* Manages a single remote connection. Provides methods to retrieve and send messages.
 
-*KimtMessage:* Base class for messages, a simple wrapper for network transmission.
+*KimtMessage:* Base class for messages, a simple wrapper for network transmission. Can be sent and read using the NetworkMonitor
