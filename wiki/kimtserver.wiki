@@ -3,5 +3,7 @@ The kimt-server is a simple synchronization server that allocates clients to gro
 
 com.waikato.kimt.networking
 Simple networking framework.
+
 -NetworkMonitor: Sits at either end of a connection (server / client) and mediates data transfer between the two.
+
 -NetMessage: Base object which can be inherited. Used to store information for sending over the network via NetworkMonitor.
