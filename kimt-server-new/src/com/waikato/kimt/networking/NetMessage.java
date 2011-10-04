@@ -29,4 +29,9 @@ public class NetMessage implements Serializable
 	{
 		this.message = msg;
 	}
+	
+	public NetMessage()
+	{
+		
+	}
 }
