@@ -2,6 +2,7 @@ package com.waikato.kimt.testclient;
 
 import java.net.Socket;
 
+import com.waikato.kimt.networking.DerivedMessage;
 import com.waikato.kimt.networking.NetMessage;
 import com.waikato.kimt.networking.NetworkMonitor;
 
@@ -16,7 +17,7 @@ public class Client
 	{
 		try
 		{
-			Socket s = new Socket("localhost",12345);
+			Socket s = new Socket("localhost",12310);
 			NetworkMonitor network = new NetworkMonitor(s);
 			NetMessage m;
 			System.out.println("Client started");
@@ -25,9 +26,18 @@ public class Client
 			{
 				m = network.readMessage();
 				if (m != null)
-				{
-					System.out.println(m.message);
-					network.disposeMessage();
+				{	
+					if (m instanceof DerivedMessage)	//If message is derived
+					{
+						DerivedMessage d = (DerivedMessage)m;
+						System.out.println(d.message + " | " + d.msg.message);
+						network.disposeMessage();
+					}
+					else	//Basic NetMessage
+					{
+						System.out.println(m.message);
+						network.disposeMessage();
+					}
 				}
 			}
 		}

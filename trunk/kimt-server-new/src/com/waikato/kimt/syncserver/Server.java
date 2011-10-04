@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import com.waikato.kimt.networking.DerivedMessage;
 import com.waikato.kimt.networking.NetMessage;
 import com.waikato.kimt.networking.NetworkMonitor;
 
@@ -17,7 +18,7 @@ public class Server
 	public static void main(String[] args)
 	{
 		@SuppressWarnings("unused")
-		Server server = new Server(12345);
+		Server server = new Server(12310);
 	}
 	
 	/*
@@ -76,10 +77,23 @@ public class Server
 				
 				while(true)
 				{
-					NetMessage msg = new NetMessage("derp " + i);
-					network.sendMessage(msg);
-					Thread.sleep(100);
-					i++;
+					try
+					{
+						//DerivedMessage msg = new DerivedMessage();
+						NetMessage msg = new NetMessage("Package: " + i);
+						network.sendMessage(msg);
+						Thread.sleep(1000);
+						i++;
+					}
+					catch (IOException ex)
+					{
+						System.err.println(ex.getMessage());
+						return;
+					} 
+					catch (InterruptedException e) 
+					{
+						e.printStackTrace();
+					}
 				}
 			}
 			catch (IOException ex)
@@ -87,10 +101,6 @@ public class Server
 				ex.getStackTrace();
 				System.err.println(ex.getMessage());
 			} 
-			catch (InterruptedException e) 
-			{
-				e.printStackTrace();
-			}
 		}
 	}
 }

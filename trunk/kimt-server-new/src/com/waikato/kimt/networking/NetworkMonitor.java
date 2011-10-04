@@ -1,5 +1,6 @@
 package com.waikato.kimt.networking;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -18,8 +19,18 @@ import java.util.Observable;
 public class NetworkMonitor extends Observable
 {
 	Socket socket;
-	boolean sending = true;
+	boolean sending = false;
 	boolean reading = true;
+	
+	public synchronized void setSending(boolean val)
+	{
+		sending = val;
+	}
+	
+	public synchronized boolean getSending()
+	{
+		return sending;
+	}
 
 	ArrayList<NetMessage> outgoingQueue;
 	
@@ -28,8 +39,10 @@ public class NetworkMonitor extends Observable
 		this.socket = socket;
 		outgoingQueue = new ArrayList<NetMessage>();
 		
+		output = new ObjectOutputStream(socket.getOutputStream());
+		input = new ObjectInputStream(socket.getInputStream());
+		
 		new NetworkReader().start();
-		new NetworkQueueTransmitter().start();
 	}
 	
 	NetMessage latest;
@@ -68,6 +81,12 @@ public class NetworkMonitor extends Observable
 	public void sendMessage(NetMessage msg) throws IOException
 	{
 		outgoingQueue.add(msg);
+		
+		if (getSending() == false)
+		{
+			//setSending(true);
+			new NetworkQueueTransmitter().start();	//Only way to call transmitter is via this method
+		}
 	}
 	
 	/**
@@ -85,6 +104,8 @@ public class NetworkMonitor extends Observable
 		}
 	}
 	
+	ObjectInputStream input;
+	
 	/***
 	 * Responsible for reading data from the network. 
 	 * This data is then made available for other objects to access
@@ -101,21 +122,24 @@ public class NetworkMonitor extends Observable
 		{
 			try
 			{
-				ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
+				//ObjectInputStream b = new ObjectInputStream(new BufferedReader(socket.getInputStream()));
+				
+				
+				//ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
 				NetMessage newMsg;
 				
 				while(reading) //While thread should poll for incoming data (i.e. for the lifetime of this NetworkMonitor)
 				{	
 					try	//Try to read incoming message, handle any exceptions
 					{
-						
 						newMsg = (NetMessage)input.readObject();	//Block until message is read
 						if (newMsg != null)	//If a message has been read, store and notify observers
 						{
+							//System.out.println(newMsg + " ");
 							setMessage(newMsg);
-							//System.out.println(newMsg.message);
 							setChanged();
 							notifyObservers();
+							Thread.sleep(10);
 						}
 					}
 					catch (IOException ex)
@@ -126,6 +150,10 @@ public class NetworkMonitor extends Observable
 					{
 						System.err.println("Received message is of non supported type: " + ex.getMessage());
 						latest = null;
+					}
+					catch (InterruptedException ex)
+					{
+						System.err.println("Interrupted sleep: " + ex.getMessage());
 					}
 				}
 				
@@ -139,6 +167,8 @@ public class NetworkMonitor extends Observable
 		}
 	}
 	
+	ObjectOutputStream output;
+	
 	/**
 	 * Responsible for writing contents of queue to the network connection
 	 * Oldest data is written first
@@ -147,9 +177,85 @@ public class NetworkMonitor extends Observable
 	 */
 	class NetworkQueueTransmitter extends Thread
 	{
-		/**
-		 * Threaded NetworkMonitor code, for writing the contents of the local NetMessage queue to the network
-		 */
+		public NetworkQueueTransmitter()
+		{
+			setSending(true);
+		}
+		
+		public void run()
+		{
+			boolean looped = true;
+			
+			try
+			{
+				//ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
+				output.flush();
+				//System.out.println("output created and flushed");
+				
+				while(outgoingQueue.size() > 0)	//While there are items to write
+				{
+					try
+					{
+						//System.out.println("Sent item size: " + outgoingQueue.size());
+						NetMessage msg = outgoingQueue.remove(0);
+						output.writeObject(msg);
+						output.flush();
+					}
+					catch (IOException ex)
+					{
+						System.err.println("Error sending message: " + ex.getMessage());
+						looped = false;
+					}
+				}
+				
+				/*
+				while(looped)	//Loop while there is stuff to send
+				{
+					if (outgoingQueue.size() > 0)	//If there is data to send
+					{
+						try	//Try to send the oldest item in the queue, exceptions are then handled
+						{
+							System.out.println("Sent item size: " + outgoingQueue.size());
+							NetMessage msg = outgoingQueue.remove(0);
+							output.writeObject(msg);
+							output.flush();
+						}
+						catch (IOException ex)
+						{
+							System.err.println("Error sending message: " + ex.getMessage());
+							looped = false;
+						}
+					}
+					else
+					{
+						output.flush();
+						output.close();
+						looped = false;
+					}
+				}
+				*/
+			}
+			catch (IOException ex)
+			{
+				System.err.println("Error with ObjectOutputStream: " + ex.getMessage() + " " + outgoingQueue.size() + " items left in the queue");
+			}
+			finally
+			{
+				setSending(false);
+			}
+		}
+	}
+	
+
+	/**
+	 * Responsible for writing contents of queue to the network connection
+	 * Oldest data is written first
+	 * @author Greg C
+	 *
+	 */
+	/*
+	class NetworkQueueTransmitter extends Thread
+	{
 		public void run()
 		{
 			try
@@ -180,4 +286,5 @@ public class NetworkMonitor extends Observable
 			}
 		}
 	}
+	*/
 }
