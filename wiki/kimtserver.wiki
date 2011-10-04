@@ -1,17 +1,7 @@
 #labels Phase-Design,Phase-Implementation
-The kimt-server is a simple synchronisation server all clients connect to
-to get group information and retrieve state.
+The kimt-server is a simple synchronization server that allocates clients to groups and provides a mean of synchronising multiple clients.
 
-= Introduction =
-
-The kimt-server networking architecture is based off the simple premise of messages. All information is stored in a wrapper class which is then deflated and sent over a serial connection. The receiving end then blows the deflated clas back up. A simple enquiry of the KitmMessage object allows the use of polymorphism to determine the actual type. Any information to be transmitted is wrapped in the appropriate KimtMessage object and then sent via the NetworkMonitor.
-
-= Details =
-
-*NetworkMonitor:* Manages a single remote connection. Provides methods to retrieve and send messages.
-
-*KimtMessage:* Base class for messages, a simple wrapper for network transmission. Can be sent and read using the NetworkMonitor
-
-= Packages =
-com.waikato.kimt.server.shared
-Collection of java classes that are stored on both the client and server. Used to facilitate data communication.
+com.waikato.kimt.networking
+Simple networking framework.
+-NetworkMonitor: Sits at either end of a connection (server / client) and mediates data transfer between the two.
+-NetMessage: Base object which can be inherited. Used to store information for sending over the network via NetworkMonitor.
