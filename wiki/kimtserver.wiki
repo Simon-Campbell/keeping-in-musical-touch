@@ -1,6 +1,10 @@
 #labels Phase-Design,Phase-Implementation
 The kimt-server is a simple synchronization server that allocates clients to groups and provides a mean of synchronising multiple clients.
 
+It currently uses a simple Networking Framework involving the use of NetworkMonitors and NetMessages.
+
+It's important to note that this system uses Serialized objects, and any objects that are to be wrapped and send need to be Serializable.
+
 Simple networking framework.
 _com.waikato.kimt.networking_
 || *Class Name:* || *Description:* ||
