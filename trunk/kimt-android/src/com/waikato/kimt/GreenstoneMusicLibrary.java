@@ -1,5 +1,6 @@
 package com.waikato.kimt;
 
+import java.io.Serializable;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
@@ -18,14 +19,16 @@ import org.xml.sax.InputSource;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class GreenstoneMusicLibrary implements MusicLibrary {
+public class GreenstoneMusicLibrary implements MusicLibrary, Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private MusicSheet				current;
 	private LinkedList<MusicSheet>	cache;
 	
 	private String				trackUri;
 	private DigitalLibrarySync	dls;
-	
-	private String[]			trackList;
 	
 	/**
 	 * Will connect to the specified Greenstone music library
@@ -92,18 +95,11 @@ public class GreenstoneMusicLibrary implements MusicLibrary {
 	
 	@Override
 	public MusicSheet getCurrentSheet() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.current;
 	}
 
 	@Override
-	public MusicSheet find(String searchTerm, SearchMode sm) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public MusicView getCurrentView() {
+	public List<MusicSheet> find(String searchTerm, SearchMode sm) {
 		// TODO Auto-generated method stub
 		return null;
 	}

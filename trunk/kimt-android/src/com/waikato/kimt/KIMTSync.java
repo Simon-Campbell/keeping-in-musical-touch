@@ -19,8 +19,9 @@ public class KIMTSync implements DigitalLibrarySync, Serializable {
 	private String	connectionLocation	= "localhost";
 	private int		connectionPort		= 55936;
 	
-	private MusicLibrary	current		;
-	private Socket			kimtSocket	;
+	private MusicLibrary	currentLibrary;
+	private MusicView		currentView;
+	private Socket			kimtSocket;
 	
 	/**
 	 * The serial version of this object. Update when the object changes.
@@ -51,20 +52,20 @@ public class KIMTSync implements DigitalLibrarySync, Serializable {
 	}
 	
 	@Override
-	public boolean isValidRemoteLibrary(String location) {
+	public boolean isValidSyncLocation(String location) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public MusicLibrary getRemoteLibrary() {
-		return this.current;
+		return this.currentLibrary;
 	}
+	
 	@Override
 	public void downloadRemoteLibrary() {
 		new DownloadLibraryTask().execute(kimtSocket);
 	}
 
-	@Override
 	public void setRemoteLibrary(MusicLibrary ml) {
 		new UploadLibraryTask().execute(kimtSocket);
 	}
@@ -76,7 +77,7 @@ public class KIMTSync implements DigitalLibrarySync, Serializable {
 	
 	@Override
 	public String toString() {
-		return this.connectionLocation + ":" + Integer.toString(this.connectionPort) + " " + this.current.toString();
+		return this.connectionLocation + ":" + Integer.toString(this.connectionPort) + " " + this.currentLibrary.toString();
 	}
 	
 	private class UploadLibraryTask extends AsyncTask<Socket, Integer, Boolean> {
@@ -100,7 +101,7 @@ public class KIMTSync implements DigitalLibrarySync, Serializable {
 				// The text command that is sent over the network
 				oos.writeChars("LIBRARY UPLOAD");
 				
-				oos.writeObject(current);
+				oos.writeObject(currentLibrary);
 				
 			} catch (IOException e) {
 				uploaded = false;
@@ -266,6 +267,48 @@ public class KIMTSync implements DigitalLibrarySync, Serializable {
 				}
 			}
 		}
+	}
+
+	@Override
+	public boolean login(String userName) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void downloadRemoteSync() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void downloadRemoteView() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public MusicView getRemoteView() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setLocalView(MusicView mv) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public MusicView getLocalView() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getLibraryLocation() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

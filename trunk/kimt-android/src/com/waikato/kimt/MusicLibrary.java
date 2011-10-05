@@ -1,5 +1,7 @@
 package com.waikato.kimt;
 
+import java.util.List;
+
 /**
  * @author  Simon
  */
@@ -21,13 +23,7 @@ public interface MusicLibrary {
 	 * @return   The music sheet that currently has focus
 	 */
 	public MusicSheet	getCurrentSheet();
-	
-	/**
-	 * Gets the current view that will be synchronised with the rest of the
-	 * @return
-	 */
-	public MusicView	getCurrentView();
-	
+
 	/**
 	 * Search for the specified music sheet using the
 	 * specified search mode
@@ -35,7 +31,7 @@ public interface MusicLibrary {
 	 * @param sm The type of search to search for
 	 * @return The first music sheet to match the search terms
 	 */
-	public MusicSheet	find(String searchTerm, SearchMode sm);
+	public List<MusicSheet> find(String searchTerm, SearchMode sm);
 
 	void connect();
 }
