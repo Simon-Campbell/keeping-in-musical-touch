@@ -23,7 +23,7 @@ public class KeepingInMusicalTouchActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.main);
 
-		final ArrayAdapter<String> adapter = new ArrayAdapter<String> (this, R.layout.listview);
+		final ArrayAdapter<String> adapter = new ArrayAdapter<String> (this, R.layout.listview, R.id.myListTextView);
 		final ListView listview = (ListView)findViewById(R.id.myListView);
 
 		listview.setAdapter(adapter);
