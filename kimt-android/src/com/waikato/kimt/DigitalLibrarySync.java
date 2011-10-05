@@ -5,6 +5,16 @@ package com.waikato.kimt;
  */
 public interface DigitalLibrarySync {
 	/**
+	 * Log the username onto the server.
+	 * @param c
+	 *	The username to log into the server.
+	 * @return
+	 * 	A boolean indicating whether the client
+	 * 	is the leader or not.
+	 */
+	boolean login(String userName);
+	
+	/**
 	 * Test if the location of the digital library syncer is valid.
 	 * @param location
 	 * 	The location of the library you'd like to test.
@@ -12,29 +22,35 @@ public interface DigitalLibrarySync {
 	 *	A boolean indicating whether or not the library is valid i.e.
 	 * 	a response has been returned.
 	 */
-	boolean	isValidRemoteLibrary(String location);
-	
-	/**
-	 * Returns the most up-to-date version of a MusicLibrary object from the Keeping In Musical Touch syncher.
-	 * @return   An up-to-date MusicLibrary object containing the current  state of the project.
-	 */
-	MusicLibrary	getRemoteLibrary();
-	
-	/**
-	 * Set the library in the library syncher if this device has permissions to do so (decided by remote device) 
-	 * @param ml  The new music library for other devices to set.
-	 * @return  A boolean indicating whether the process was successful   or not.
-	 */
-	void	setRemoteLibrary(MusicLibrary ml);
-	
+	boolean	isValidSyncLocation(String location);
+
 	/**
 	 * Will download the remote library and fire off the appropriate
 	 * listener event.
 	 */
-	void	downloadRemoteLibrary();
+	void downloadRemoteLibrary();
+	void downloadRemoteSync();
+	void downloadRemoteView();
+
+	void setRemoteView(MusicView mv);
+	MusicView getRemoteView();
 	
-	void	setOnSyncUpdateListener(SyncedLibraryUpdateListener	slul);
-
-	void	setRemoteView(MusicView mv);
+	void setLocalView(MusicView mv);
+	MusicView getLocalView();
+	
+	/**
+	 * Get the location of the music library that the
+	 * server is synchronising with.
+	 * @return
+	 * 	The location of the library that is being synchronised
+	 */
+	String getLibraryLocation();
+	
+	/**
+	 * Set an update listener for the sync server
+	 * @param slul
+	 * 	The sync listener that will listen to
+	 *	the server updates.
+	 */
+	void setOnSyncUpdateListener(SyncedLibraryUpdateListener slul);
 }
-

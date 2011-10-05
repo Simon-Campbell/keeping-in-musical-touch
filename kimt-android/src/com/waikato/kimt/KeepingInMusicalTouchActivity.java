@@ -5,17 +5,19 @@ import com.waikato.kimt.GreenstoneMusicLibrary.SyncedLibraryBrowserUpdateListene
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 
 public class KeepingInMusicalTouchActivity extends Activity {
 	GreenstoneMusicLibrary
-	gml = null;
+		gml = null;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -50,7 +52,12 @@ public class KeepingInMusicalTouchActivity extends Activity {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				
-				String fullAddress = ((TextView) view).getText().toString();
+				LinearLayout
+					listLayout = (LinearLayout) view;
+				
+				String fullAddress = ((TextView) listLayout.findViewById(R.id.myListTextView)).getText().toString();
+				
+				//String fullAddress = ((TextView) view).getText().toString();
 				
 				//package the data to that it can be sent to next activity
 				Bundle bundle = new Bundle();
