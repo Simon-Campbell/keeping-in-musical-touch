@@ -1,10 +1,14 @@
 package com.waikato.kimt;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
+
 import com.waikato.kimt.GreenstoneMusicLibrary.SyncedLibraryBrowserUpdateListener;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -27,7 +31,7 @@ public class KeepingInMusicalTouchActivity extends Activity {
 
 		final ArrayAdapter<String> adapter = new ArrayAdapter<String> (this, R.layout.listview, R.id.myListTextView);
 		final ListView listview = (ListView)findViewById(R.id.myListView);
-
+		
 		listview.setAdapter(adapter);
 
 		gml = new GreenstoneMusicLibrary(getString(R.string.defaultLibraryLocation) + "dev;jsessionid=08C1CB94BDBF8322F72548075D809910?a=d&ed=1&book=off&c=musical-touch&d=");
@@ -46,6 +50,30 @@ public class KeepingInMusicalTouchActivity extends Activity {
 			}
 		});
 
+		String musicalTouchAddress = getString(R.string.kimt_ip);
+		int musicalTouchPort = Integer.parseInt(getString(R.string.kimt_port));
+		
+		try {
+			Log.v("Debugging", musicalTouchAddress + ":" + Integer.toString(musicalTouchPort));
+			
+			KIMTSync
+				ks = new KIMTSync(musicalTouchAddress, musicalTouchPort);
+			
+			ks.startListening(new Handler(), new Runnable() {
+				
+				@Override
+				public void run() {
+					Log.v("Debugging", "IN UR THREADS");
+				}
+			});
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			
 		listview.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
