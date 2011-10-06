@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.util.Log;
 
 public class KIMTSync implements DigitalLibrarySync, Serializable {
 	private String	connectionLocation	= "localhost";
@@ -34,8 +36,10 @@ public class KIMTSync implements DigitalLibrarySync, Serializable {
 	
 	public KIMTSync(String location, int port) throws UnknownHostException, IOException {
 		this.connectionLocation	= location;
-		this.connectionPort		= port;
-		this.kimtSocket			= new Socket(location, port);
+		this.connectionPort		= port;//
+		this.kimtSocket			= new Socket(InetAddress.getByName(location), port);
+		
+		Log.v("Debugging", "KIMTSync loaded ..");
 	}
 	
 	/**
@@ -230,41 +234,39 @@ public class KIMTSync implements DigitalLibrarySync, Serializable {
 		 */
 		private Handler		 handler;
 		private Runnable	 updater;
-		private ServerSocket listenSocket;
 		
 		public BroadcastListener(Handler handler, Runnable updater) throws IOException {
 			this.handler		= handler;
 			this.updater		= updater;
-			this.listenSocket	= new ServerSocket(connectionPort);
 		}
 		
 		public void run() {
-			Socket s			= null;
-			BufferedReader br	= null;
+			BufferedReader br ;
+			String line ;
 			
-			while (true) {
-				try {
-					s			= listenSocket.accept();
-					br			= new BufferedReader(new InputStreamReader(s.getInputStream()));
+			Log.v("Debugging", "Starting BroadcastListener ..");
+			
+			try {
+				char[] buf	= new char[1024];
+
+				Log.v("Debugging", "Before creating reader ..");
+				br = new BufferedReader(new InputStreamReader(kimtSocket.getInputStream()));
+				Log.v("Debugging", "Before reading ..");
+				Log.v("Debugging", "Created reader on " + kimtSocket.getInetAddress().toString() + ":" + Integer.toString(kimtSocket.getPort()));
+				
+				int bytesRead = br.read(buf);
+				
+				while (bytesRead != -1) {
+					line = new String(buf);
+
+					Log.v("Debugging", "KIMTSync heard: " + line);	
+					handler.post(updater);
 					
-					String line = br.readLine();
-					
-					if (line != null) {
-						handler.post(updater);
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} finally {
-					if (s != null)
-						try {
-							s.close();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					
+					bytesRead = br.read(buf);
 				}
+					
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}
