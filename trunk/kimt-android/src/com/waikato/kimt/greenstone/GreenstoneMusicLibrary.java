@@ -1,7 +1,6 @@
-package com.waikato.kimt;
+package com.waikato.kimt.greenstone;
 
 import java.io.Serializable;
-import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -12,12 +11,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import android.os.AsyncTask;
-import android.util.Log;
+
+import com.waikato.kimt.sync.DigitalLibrarySync;
+import com.waikato.kimt.util.XMLUtilities;
 
 public class GreenstoneMusicLibrary implements MusicLibrary, Serializable {
 	/**
@@ -195,8 +195,9 @@ public class GreenstoneMusicLibrary implements MusicLibrary, Serializable {
 
 		@Override
 		protected Boolean doInBackground(GreenstoneMusicLibrary... params) {
-			for (char search = 'a'; search <= 'z'; search++)
+			for (char search = 'a'; search <= 'z'; search++) {
 				setCacheFromGreenstoneXML("http://www.nzdl.org/greenstone3-nema/dev?a=q&sa=&rt=rd&s=TextQuery&c=musical-touch&startPage=1&s1.query=" + Character.toString(search) + "&s1.index=MT&o=xml");
+			}
 			
 			return true;
 		}

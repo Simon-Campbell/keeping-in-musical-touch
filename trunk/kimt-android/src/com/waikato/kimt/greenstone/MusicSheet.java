@@ -1,4 +1,4 @@
-package com.waikato.kimt;
+package com.waikato.kimt.greenstone;
 
 import java.io.Serializable;
 import java.net.URL;
@@ -12,6 +12,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+
+import com.waikato.kimt.util.XMLUtilities;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

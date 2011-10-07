@@ -1,4 +1,6 @@
-package com.waikato.kimt;
+package com.waikato.kimt.sync;
+
+import com.waikato.kimt.greenstone.MusicView;
 
 /**
  * An interface for objects who wish to listen to upload

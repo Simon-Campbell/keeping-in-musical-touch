@@ -1,6 +1,8 @@
-package com.waikato.kimt;
+package com.waikato.kimt.greenstone;
 
 import java.io.Serializable;
+
+import com.waikato.kimt.sync.KIMTSync;
 
 public class MusicView implements Serializable {
 	/**

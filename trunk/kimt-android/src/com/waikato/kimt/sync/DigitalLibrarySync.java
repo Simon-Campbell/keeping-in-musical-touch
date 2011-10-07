@@ -1,4 +1,6 @@
-package com.waikato.kimt;
+package com.waikato.kimt.sync;
+
+import com.waikato.kimt.greenstone.MusicView;
 
 /**
  * @author  Simon
