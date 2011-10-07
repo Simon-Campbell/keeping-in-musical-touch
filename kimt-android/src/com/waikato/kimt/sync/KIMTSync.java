@@ -1,4 +1,4 @@
-package com.waikato.kimt;
+package com.waikato.kimt.sync;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,7 +7,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -16,6 +15,9 @@ import java.util.List;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
+
+import com.waikato.kimt.greenstone.MusicLibrary;
+import com.waikato.kimt.greenstone.MusicView;
 
 public class KIMTSync implements DigitalLibrarySync, Serializable {
 	private String	connectionLocation	= "localhost";
@@ -36,7 +38,7 @@ public class KIMTSync implements DigitalLibrarySync, Serializable {
 	
 	public KIMTSync(String location, int port) throws UnknownHostException, IOException {
 		this.connectionLocation	= location;
-		this.connectionPort		= port;//
+		this.connectionPort		= port;
 		this.kimtSocket			= new Socket(InetAddress.getByName(location), port);
 		
 		Log.v("Debugging", "KIMTSync loaded ..");

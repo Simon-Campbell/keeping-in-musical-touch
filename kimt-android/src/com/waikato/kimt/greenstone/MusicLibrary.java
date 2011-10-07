@@ -1,4 +1,4 @@
-package com.waikato.kimt;
+package com.waikato.kimt.greenstone;
 
 import java.util.List;
 

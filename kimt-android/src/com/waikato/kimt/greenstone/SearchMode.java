@@ -1,4 +1,4 @@
-package com.waikato.kimt;
+package com.waikato.kimt.greenstone;
 
 public enum SearchMode {
 	ID,		// search by id

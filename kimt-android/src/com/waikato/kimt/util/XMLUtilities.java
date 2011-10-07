@@ -1,10 +1,8 @@
-package com.waikato.kimt;
+package com.waikato.kimt.util;
 
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-
-import android.widget.TextView;
 
 public class XMLUtilities {
 	
