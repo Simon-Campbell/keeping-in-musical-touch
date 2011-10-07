@@ -1,13 +1,29 @@
 package com.waikato.kimt;
 
+import java.io.IOException;
+
+import com.waikato.kimt.server.SyncServer;
+
 public class KIMTServer {
-	public static final int serverPort = 51002;
+	public static final int defaultServerPort = ('k' + 'i' + 'm' + 't') * 128;
 	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		System.out.println("Server has been started!");
+		SyncServer ss;
+		
+		System.out.println("[KIMTServer] Loading ..");
+		
+		try {
+			ss = new SyncServer(defaultServerPort);
+			ss.start();
+		
+			System.out.println("[KIMTServer] KIMTSyncServer loaded");
+			
+		} finally {
+		
+		}
 	}
 
 }
