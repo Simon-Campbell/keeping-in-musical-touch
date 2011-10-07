@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -39,8 +41,9 @@ public class KIMTSync implements DigitalLibrarySync, Serializable {
 	public KIMTSync(String location, int port) throws UnknownHostException, IOException {
 		this.connectionLocation	= location;
 		this.connectionPort		= port;
-		this.kimtSocket			= new Socket(InetAddress.getByName(location), port);
 		
+		Log.v("Debugging", "Creating connection");
+		kimtSocket			= new Socket(InetAddress.getByName(location), port);
 		Log.v("Debugging", "KIMTSync loaded ..");
 	}
 	
@@ -84,6 +87,30 @@ public class KIMTSync implements DigitalLibrarySync, Serializable {
 	@Override
 	public String toString() {
 		return this.connectionLocation + ":" + Integer.toString(this.connectionPort) + " " + this.currentLibrary.toString();
+	}
+	
+	private class LoginUserTask extends AsyncTask<String, Integer, Void> {
+
+		@Override
+		protected Void doInBackground(String... params) {
+			try {
+				OutputStream os = kimtSocket.getOutputStream();
+				ObjectOutputStream out = new ObjectOutputStream(os);
+				
+				out.writeChars(new String("KIMT 1.0"));
+				out.writeChars(new String("LOGIN " + params[0]));
+				out.flush();
+				
+			//	out.close();
+				os.close();
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			return null;
+		}
+		
 	}
 	
 	private class UploadLibraryTask extends AsyncTask<Socket, Integer, Boolean> {
@@ -246,12 +273,15 @@ public class KIMTSync implements DigitalLibrarySync, Serializable {
 			BufferedReader br ;
 			String line ;
 			
+			Log.v("Debugging", "Connecting socket ..");
+		
 			Log.v("Debugging", "Starting BroadcastListener ..");
 			
 			try {
+		
 				char[] buf	= new char[1024];
 
-				Log.v("Debugging", "Before creating reader ..");
+				Log.v("Debugging", "Before creating reader ...");
 				br = new BufferedReader(new InputStreamReader(kimtSocket.getInputStream()));
 				Log.v("Debugging", "Before reading ..");
 				Log.v("Debugging", "Created reader on " + kimtSocket.getInetAddress().toString() + ":" + Integer.toString(kimtSocket.getPort()));
@@ -275,7 +305,8 @@ public class KIMTSync implements DigitalLibrarySync, Serializable {
 
 	@Override
 	public boolean login(String userName) {
-		// TODO Auto-generated method stub
+		new LoginUserTask().execute(userName);
+		
 		return false;
 	}
 
