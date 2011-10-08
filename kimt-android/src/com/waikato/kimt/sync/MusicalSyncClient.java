@@ -36,8 +36,7 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		this.dataframe	= new MusicalDataFrame();
 		this.inSync		= false;
 		this.kimtSocket = new Socket(location.getAddress(), location.getPort());
-	
-		// this.isLeader	= this.sync.login(userName);
+		this.login(userName);
 	}
 	
 	public boolean isLeader() {
@@ -73,8 +72,8 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 	}
 	
 	private void writeHeaders(ObjectOutputStream out, String command) throws IOException {
-		out.writeChars("KIMT 1.0");
-		out.writeChars(command);
+		out.writeObject("KIMT 1.0");
+		out.writeObject(command);
 	}
 
 	
@@ -205,11 +204,11 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		@Override
 		protected Integer doInBackground(String... params) {
 			try {
-				OutputStream os = kimtSocket.getOutputStream();
-				ObjectOutputStream out = new ObjectOutputStream(os);
+				OutputStream os			= kimtSocket.getOutputStream();
+				ObjectOutputStream out	= new ObjectOutputStream(os);
 				
 				writeHeaders(out, "LOGIN");
-				out.writeChars(params[0]);
+				out.writeObject(params[0]);
 				
 				out.flush();
 				//out.close();
