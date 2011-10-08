@@ -42,4 +42,6 @@ public interface SyncedLibraryUpdateListener {
 	 * 	The new music view that all clients share.
 	 */
 	public void onSyncViewUpdate(MusicView mv);
+	
+	public void onLoggedIn(boolean isLeader);
 }
