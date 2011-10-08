@@ -2,6 +2,7 @@ package com.waikato.kimt.server;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -240,15 +241,17 @@ public class SyncServer
 						currentClient = c;	//save current client for exception handler
 						
 						//Read any received data
-						Object read = c.getObjectInput().readObject();
+						Object read = null;
 						
 						//Decode received data if available
-						if (read != null)
+						while ((read = c.getObjectInput().readObject()) != null)
 						{
 							if (read instanceof NetMessage)
 							{
 								NetMessage m = (NetMessage)read;
 								//System.out.println(c + " sent: " + m.message);
+							} else if (read instanceof String) {
+								System.out.println("String: " + (String)read);
 							}
 						}
 						
@@ -259,6 +262,8 @@ public class SyncServer
 				}
 				
 				//Thread.sleep(10);
+			} catch (EOFException ex) {
+				System.out.println("End of file reached");
 			}
 			catch (SocketException ex)
 			{
