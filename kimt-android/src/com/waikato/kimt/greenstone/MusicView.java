@@ -2,7 +2,9 @@ package com.waikato.kimt.greenstone;
 
 import java.io.Serializable;
 
-import com.waikato.kimt.sync.KIMTSync;
+import android.graphics.Bitmap;
+
+import com.waikato.kimt.sync.MusicalDataFrame;
 
 public class MusicView implements Serializable {
 	/**
@@ -14,6 +16,7 @@ public class MusicView implements Serializable {
 	private double y;
 	
 	private MusicSheet ms;
+	private Bitmap displayable;
 	
 	public MusicView(MusicSheet ms, double x, double y) {
 		this.ms = ms;
@@ -65,12 +68,8 @@ public class MusicView implements Serializable {
 	 * @param y
 	 * 	The y-coordinate of the new view.
 	 */
-	public void setPosition(KIMTSync ks, double x, double y) {
+	public void setPosition(MusicalDataFrame ks, double x, double y) {
 		this.setPosition(x, y);
-		
-		// Get the syncher in GreenstoneMusicLibrary and set
-		// it's library ..
-		ks.setRemoteView(this);
 	}
 
 }

@@ -16,7 +16,7 @@ import org.xml.sax.InputSource;
 
 import android.os.AsyncTask;
 
-import com.waikato.kimt.sync.DigitalLibrarySync;
+import com.waikato.kimt.sync.MusicalLibrarySync;
 import com.waikato.kimt.util.XMLUtilities;
 
 public class GreenstoneMusicLibrary implements MusicLibrary, Serializable {
@@ -48,7 +48,7 @@ public class GreenstoneMusicLibrary implements MusicLibrary, Serializable {
 		return trackUri;
 	}
 	
-	public DigitalLibrarySync getSyncer() {
+	public MusicalLibrarySync getSyncer() {
 		return null;
 	}
 	

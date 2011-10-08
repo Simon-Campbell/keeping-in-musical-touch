@@ -1,7 +1,5 @@
 package com.waikato.kimt;
 
-import java.io.IOException;
-
 import com.waikato.kimt.server.SyncServer;
 
 public class KIMTServer {
