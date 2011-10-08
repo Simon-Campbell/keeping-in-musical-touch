@@ -1,6 +1,7 @@
 package com.waikato.kimt.client;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
 import android.app.Activity;
@@ -15,12 +16,14 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.waikato.kimt.KIMTServer;
 import com.waikato.kimt.R;
 import com.waikato.kimt.greenstone.GreenstoneMusicLibrary;
 import com.waikato.kimt.greenstone.GreenstoneMusicLibrary.SyncedLibraryBrowserUpdateListener;
 import com.waikato.kimt.greenstone.MusicSheet;
-import com.waikato.kimt.sync.KIMTSync;
+import com.waikato.kimt.sync.MusicalSyncClient;
 
 
 public class KeepingInMusicalTouchActivity extends Activity {
@@ -53,31 +56,29 @@ public class KeepingInMusicalTouchActivity extends Activity {
 			}
 		});
 
-		String musicalTouchAddress = getString(R.string.kimt_ip);
-		int musicalTouchPort = Integer.parseInt(getString(R.string.kimt_port));
+		String musicalTouchAddress	= getString(R.string.kimt_ip);
+		int musicalTouchPort		= KIMTServer.defaultServerPort;
 		
 		try {
 			Log.v("Debugging", musicalTouchAddress + ":" + Integer.toString(musicalTouchPort));
 			
-			KIMTSync
-				ks = new KIMTSync(musicalTouchAddress, musicalTouchPort);
+			InetSocketAddress
+				inetSocketAddress = new InetSocketAddress(musicalTouchAddress, musicalTouchPort);
 			
-			ks.startListening(new Handler(), new Runnable() {
-				
+			MusicalSyncClient
+				musicalSyncClient = new MusicalSyncClient("TestUser", inetSocketAddress);
+			
+			musicalSyncClient.startListening(new Handler(), new Runnable() {
 				@Override
 				public void run() {
-					Log.v("Debugging", "IN UR THREADS");
+					Toast.makeText(getApplicationContext(), "UPDATE RECEIVED", Toast.LENGTH_SHORT).show();
 				}
 			});
 			
-			ks.login("Simon");
-			
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Toast.makeText(getApplicationContext(), "UNABLE TO CONNECT TO SYNC SERVER", Toast.LENGTH_SHORT);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Toast.makeText(getApplicationContext(), "UNABLE TO CONNECT TO SYNC SERVER", Toast.LENGTH_SHORT);
 		}
 			
 		listview.setOnItemClickListener(new OnItemClickListener() {
