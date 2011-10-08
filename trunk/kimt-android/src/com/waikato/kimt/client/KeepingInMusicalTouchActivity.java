@@ -74,6 +74,7 @@ public class KeepingInMusicalTouchActivity extends Activity {
 					Toast.makeText(getApplicationContext(), "UPDATE RECEIVED", Toast.LENGTH_SHORT).show();
 				}
 			});
+
 			
 		} catch (UnknownHostException e) {
 			Toast.makeText(getApplicationContext(), "UNABLE TO CONNECT TO SYNC SERVER", Toast.LENGTH_SHORT);

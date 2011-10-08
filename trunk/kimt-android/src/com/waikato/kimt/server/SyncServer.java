@@ -14,6 +14,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 
 import com.waikato.kimt.networking.NetMessage;
+import com.waikato.kimt.sync.CommandType;
 
 public class SyncServer 
 {
@@ -238,6 +239,9 @@ public class SyncServer
 				{					
 					for(Client c : getClients())
 					{
+						int objectCount = 0;
+						CommandType commandType = CommandType.UNKNOWN;
+						
 						currentClient = c;	//save current client for exception handler
 						
 						//Read any received data
@@ -251,13 +255,39 @@ public class SyncServer
 								NetMessage m = (NetMessage)read;
 								//System.out.println(c + " sent: " + m.message);
 							} else if (read instanceof String) {
-								System.out.println("String: " + (String)read);
+								String data = (String) read;
+								
+								// Reading the protocol, should probably put into a new
+								// method when possible.
+								if (objectCount == 0) {
+									if (data.compareTo("KIMT 1.0") != 0) {
+										System.out.println("This is not supported KIMT protocol-- read stopping.");
+										System.out.println("Protocol: " + data);
+										
+										break;
+									}
+								} else if (objectCount == 1) {
+									// Reading the command ..
+									if (data.compareTo("LOGIN") == 0)
+										commandType = CommandType.LOGIN;
+									
+								} else {
+									if (commandType == CommandType.LOGIN) {
+										// Next in line should be the name of the person
+										// connecting.
+										System.out.println(data + " has connected");
+										
+										// TODO:
+										//	Possibly improve this if we get time. For now, index 0
+										//	in the array seems fair to be the owner.
+										c.getObjectOutput().writeObject(clients.get(0) == c);
+										c.getObjectOutput().flush();
+									}
+								}
+								
+								objectCount++;
 							}
 						}
-						
-						c.push(new NetMessage("MSG: " + c.i)); c.i++;
-						c.getObjectOutput().writeObject(c.pop());
-						c.getObjectOutput().flush();
 					}
 				}
 				

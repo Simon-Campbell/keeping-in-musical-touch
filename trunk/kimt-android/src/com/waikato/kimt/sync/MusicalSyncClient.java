@@ -2,6 +2,7 @@ package com.waikato.kimt.sync;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -175,11 +176,17 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		@Override
 		protected Boolean doInBackground(MusicalDataFrame... params) {
 			OutputStream os;
+			InputStream is;
+			
 			ObjectOutputStream out;
+			ObjectInputStream in;
 			
 			try {
 				os	= kimtSocket.getOutputStream();
+				is  = kimtSocket.getInputStream();
+				
 				out = new ObjectOutputStream(os);
+				in = new ObjectInputStream(is);
 				
 				writeHeaders(out, "PUT SYNC");
 				out.writeObject(dataframe);
@@ -204,15 +211,21 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		@Override
 		protected Integer doInBackground(String... params) {
 			try {
-				OutputStream os			= kimtSocket.getOutputStream();
+				OutputStream os	= kimtSocket.getOutputStream();
+				InputStream is	= kimtSocket.getInputStream();
+				Object read = null;
+				
 				ObjectOutputStream out	= new ObjectOutputStream(os);
+				ObjectInputStream in = new ObjectInputStream(is);
 				
 				writeHeaders(out, "LOGIN");
-				out.writeObject(params[0]);
 				
+				out.writeObject(params[0]);
 				out.flush();
-				//out.close();
-				os.close();
+//				
+//				while ((read = in.readObject()) != null) {
+//					
+//				}
 				
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -364,10 +377,17 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 			s.onSyncUpdateNotification();
 		}
 	}
+	
+	private void notifyLoggedIn(boolean isLeader) {
+		for (SyncedLibraryUpdateListener s : registeredLibraryUpdateListeners) {
+			s.onLoggedIn(isLeader);
+		}
+	}
 
 	@Override
 	public void setOnSyncUpdateListener(SyncedLibraryUpdateListener slul) {
 		registeredLibraryUpdateListeners.add(slul);
 	}
+
 
 }
