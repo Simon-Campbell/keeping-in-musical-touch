@@ -1,7 +1,10 @@
 package com.waikato.kimt.server;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 
 public class MusicalLoginCommand implements MusicalCommand {
@@ -13,10 +16,15 @@ public class MusicalLoginCommand implements MusicalCommand {
 		if (obj instanceof String) {
 			client.name = (String) obj;
 			
+			System.out.println("User " + client.name + " has logged in.");
+
+			ObjectOutputStream out = null ;
+			
 			// If the client is the first in the array then we'll tell the client
 			// that it is the leader
-			client.getObjectOutput().writeObject(server.clients.get(0) == client);
-			client.getObjectOutput().flush();
+			out = new ObjectOutputStream(client.socket.getOutputStream());
+			out.writeObject(server.clients.get(0) == client);
+			out.flush();
 		}
 	}
 

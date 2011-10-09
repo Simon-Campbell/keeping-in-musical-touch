@@ -282,10 +282,12 @@ public class SyncServer
 								MusicalCommand
 									mc = MusicalCommandFactory.getMusicalCommand(in);
 								
-								if (mc != null) {
-									mc.process(in, SyncServer.this, client);
-								
-									System.out.println("Called " + mc.toString() + ".process()");
+								if (mc != null) { 
+									try {
+										mc.process(in, SyncServer.this, client); 
+									} catch (Exception e) {
+										System.err.println(e.toString());
+									}
 								} else {
 									System.err.println("The command '" + MusicalCommandFactory.getLastCommand() + "' is not recognized.");
 								}
