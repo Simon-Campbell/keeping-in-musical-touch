@@ -1,10 +1,8 @@
 package com.waikato.kimt.sync;
 
-import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -25,7 +23,7 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 	private String	 userName;
 	
 	private MusicalDataFrame dataframe;
-	private Socket kimtSocket;
+	private InetSocketAddress kimtAddress;
 	
 	private boolean isLeader;
 	private boolean	inSync;
@@ -37,7 +35,7 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		
 		this.dataframe	= new MusicalDataFrame();
 		this.inSync		= false;
-		this.kimtSocket = new Socket(location.getAddress(), location.getPort());
+		this.kimtAddress= location;
 		
 		this.login(userName);
 	}
@@ -137,6 +135,7 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		}
 		
 		public void run() {
+			Socket broadcastSocket;
 			ObjectInputStream in;
 			ObjectOutputStream out;
 		
@@ -146,10 +145,12 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 			try {
 				Log.v("Debugging", "Before creating reader ...");
 				
-				in = new ObjectInputStream(kimtSocket.getInputStream());
-				out = new ObjectOutputStream(kimtSocket.getOutputStream());
+				broadcastSocket = new Socket(kimtAddress.getAddress(), kimtAddress.getPort());
 				
-				Log.v("Debugging", "Created reader on " + kimtSocket.getInetAddress().toString() + ":" + Integer.toString(kimtSocket.getPort()));
+				in	= new ObjectInputStream(broadcastSocket.getInputStream());
+				out = new ObjectOutputStream(broadcastSocket.getOutputStream());
+				
+				Log.v("Debugging", "Created reader on " + broadcastSocket.getInetAddress().toString() + ":" + Integer.toString(broadcastSocket.getPort()));
 			
 				while (true) {
 					
@@ -163,12 +164,6 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 								String msg = (String) obj;
 								
 								Log.v("Debugging", "BroadcastListener heard: " + msg);
-								
-								out.writeObject("KIMT 1.0");
-								out.writeObject("THANKS");
-								out.flush();
-								
-								Log.v("Debugging", "The data has been written");
 							}
 							
 							handler.post(updater);
@@ -180,7 +175,7 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 				}
 				
 			} catch (EOFException e) {
-				Log.v("Debugging", "End of file ..");
+				Log.v("Debugging", "End of file has been reached.");
 			}
 			catch (IOException e) {
 				e.printStackTrace();
@@ -196,6 +191,8 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 	private class UploadSyncTask extends AsyncTask<MusicalDataFrame, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(MusicalDataFrame... params) {
+			Socket s;
+			
 			OutputStream os;
 			InputStream is;
 			
@@ -203,14 +200,17 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 			ObjectInputStream in;
 			
 			try {
-				os	= kimtSocket.getOutputStream();
-				is  = kimtSocket.getInputStream();
+				s = new Socket(kimtAddress.getAddress(), kimtAddress.getPort());
+				
+				os	= s.getOutputStream();
+				is  = s.getInputStream();
 				
 				out = new ObjectOutputStream(os);
 				in = new ObjectInputStream(is);
 				
 				writeHeaders(out, "PUT SYNC");
 				out.writeObject(dataframe);
+				out.close();
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -231,18 +231,23 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		
 		@Override
 		protected Integer doInBackground(String... params) {
+			Socket s = null;
+			
 			try {
-				OutputStream os	= kimtSocket.getOutputStream();
-				InputStream		is = kimtSocket.getInputStream();
-				Object			read = null;
+				s = new Socket(kimtAddress.getAddress(), kimtAddress.getPort());
 				
-				ObjectOutputStream	out	= new ObjectOutputStream(os);
+				OutputStream os		= s.getOutputStream();
+				InputStream	 is		= s.getInputStream();
+				Object		 read	= null;
+				
+				ObjectOutputStream	out= new ObjectOutputStream(os);
 				ObjectInputStream	in = new ObjectInputStream(is);
 				
 				writeHeaders(out, "LOGIN");
 				
 				out.writeObject(params[0]);
 				out.flush();				
+				out.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -283,13 +288,7 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 				
 				e.printStackTrace();
 			} finally {
-				if (oos != null)
-					try {
-						oos.close();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+
 			}
 			
 			return uploaded; 
@@ -326,13 +325,6 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} finally {
-				if (ois != null)
-					try {
-						ois.close();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
 			}
 			
 			return
