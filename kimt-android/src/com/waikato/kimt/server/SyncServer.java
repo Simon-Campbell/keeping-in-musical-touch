@@ -8,19 +8,25 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 
-import com.waikato.kimt.networking.NetMessage;
-import com.waikato.kimt.sync.CommandType;
+import com.waikato.kimt.sync.MusicalDataFrame;
 
 public class SyncServer 
 {
 	public static final String SETTINGS_FOLDER = "settings";
 	public static final String SETTINGS_FILENAME = "kimt-server.settings";
 	public static final String VERSION = "KIMT 1.0";
+	
+	/**
+	 * The MusicalDataFrame that a new client will be sent
+	 * when connecting to the server.
+	 */
+	private volatile MusicalDataFrame current ;
 	
 	ServerSocket ss;
 	int port;
@@ -165,6 +171,21 @@ public class SyncServer
 		return clients.remove(cli);
 	}
 	
+	public void setSync(MusicalDataFrame sync) throws IOException {
+		synchronized (current) {
+			this.current = sync;
+			
+			// TODO:
+			//	Test this ability to broadcast sync to all
+			//	clients.
+			for (Client c : clients) {
+				c.getObjectOutput().writeObject(VERSION);
+				c.getObjectOutput().writeObject("PUT SYNC");
+				c.getObjectOutput().writeObject(this.current);
+			}
+		}
+	}
+	
 	/**
 	 * Threaded child listening and registering any new received connections.
 	 * Connected clients are stored in an ArrayList<Client> for easy access.
@@ -222,19 +243,29 @@ public class SyncServer
 		{
 			System.out.println("Client logic thread started");
 			
+			
 			try
 			{
+				ObjectOutputStream out = client.getObjectOutput();
+				
+				out.writeObject("KIMT 1.0");
+				out.writeObject("WELCOME");
+				out.flush();
+				
 				while(isRunning())
 				{
 					int objectCount = 0;
-					CommandType commandType = CommandType.UNKNOWN;
 					
 					//Read any received data
 					Object read = null;
 					
 					//Decode received data if available
+					System.out.println("Trying to read an object ..");
+					
 					while ((read = client.getObjectInput().readObject()) != null)
 					{
+						System.out.println("Object has been read ..");
+						
 						if (read instanceof String) 
 						{
 							String data = (String) read;
@@ -244,7 +275,7 @@ public class SyncServer
 							// method when possible.
 							if (objectCount == 0) 
 							{
-								if (data.compareTo("KIMT 1.0") != 0) 
+								if (data.compareTo(VERSION) != 0) 
 								{
 									System.out.println("This is not supported KIMT protocol-- read stopping.");
 									System.out.println("Protocol: " + data);
@@ -254,52 +285,17 @@ public class SyncServer
 							} 
 							else if (objectCount == 1) 
 							{
-								// Reading the command ..
-								if (data.compareTo("LOGIN") == 0)
-									commandType = CommandType.LOGIN;
+								MusicalCommand
+									mc = MusicalCommandFactory.getMusicalCommand(client.getObjectInput());
 								
-								if (data.compareTo("PUT_SYNC") == 0)
-									commandType = CommandType.PUT_SYNC;
+								mc.process(client.getObjectInput(), SyncServer.this, client);
 								
-								if (data.compareTo("GET_SYNC") == 0)
-									commandType = CommandType.GET_SYNC;
+								System.out.println("Called " + mc.toString() + ".process()");
 								
-								if (commandType == CommandType.PUT_SYNC)
-								{
-									System.out.println("Put sync");
-									objectCount = 0;
-								}
-								if (commandType == CommandType.GET_SYNC)
-								{
-									System.out.println("Get sync");
-									objectCount = 0;
-								}
-								if (commandType == CommandType.UNKNOWN)
-								{
-									System.out.println("Unknown command type");
-									objectCount = 0;
-								}
+								// The object has been processed 
+								objectCount = 0;
 							}
-							else 
-							{
-								if (commandType == CommandType.LOGIN) 
-								{
-									// Next in line should be the name of the person
-									// connecting.
-									client.name = data;
-									System.out.println(client.name + " has connected");
-									
-									// TODO:
-									//	Possibly improve this if we get time. For now, index 0
-									//	in the array seems fair to be the owner.
-									client.getObjectOutput().writeObject(clients.get(0) == client);
-									client.getObjectOutput().flush();
-									
-									objectCount = 0;
-								}
-							}
-							
-							objectCount++;
+
 						}
 					}
 					
