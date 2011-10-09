@@ -21,8 +21,9 @@ public class Client
 	public Client(Socket socket) throws IOException
 	{
 		this.socket = socket;
-		input = new ObjectInputStream(this.socket.getInputStream());
-		output = new ObjectOutputStream(this.socket.getOutputStream());
+		
+	//	input	= new ObjectInputStream(this.socket.getInputStream());
+	//	output	= new ObjectOutputStream(this.socket.getOutputStream());
 		
 		received = new ArrayList<String>();
 	}

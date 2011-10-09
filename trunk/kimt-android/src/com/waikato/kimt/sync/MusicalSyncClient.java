@@ -38,6 +38,7 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		this.dataframe	= new MusicalDataFrame();
 		this.inSync		= false;
 		this.kimtSocket = new Socket(location.getAddress(), location.getPort());
+		
 		this.login(userName);
 	}
 	
@@ -166,6 +167,8 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 								out.writeObject("KIMT 1.0");
 								out.writeObject("THANKS");
 								out.flush();
+								
+								Log.v("Debugging", "The data has been written");
 							}
 							
 							handler.post(updater);
