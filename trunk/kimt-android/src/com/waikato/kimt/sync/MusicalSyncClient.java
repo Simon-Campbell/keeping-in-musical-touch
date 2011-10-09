@@ -1,6 +1,7 @@
 package com.waikato.kimt.sync;
 
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -135,33 +136,50 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		}
 		
 		public void run() {
-			BufferedReader br ;
-			String line ;
-			
+			ObjectInputStream in;
+			ObjectOutputStream out;
+		
 			Log.v("Debugging", "Connecting socket ..");
 			Log.v("Debugging", "Starting BroadcastListener ..");
 			
 			try {
-		
-				char[] buf	= new char[1024];
-
 				Log.v("Debugging", "Before creating reader ...");
-				br = new BufferedReader(new InputStreamReader(kimtSocket.getInputStream()));
-				Log.v("Debugging", "Before reading ..");
+				
+				in = new ObjectInputStream(kimtSocket.getInputStream());
+				out = new ObjectOutputStream(kimtSocket.getOutputStream());
+				
 				Log.v("Debugging", "Created reader on " + kimtSocket.getInetAddress().toString() + ":" + Integer.toString(kimtSocket.getPort()));
-				
-				int bytesRead = br.read(buf);
-				
-				while (bytesRead != -1) {
-					line = new String(buf);
-
-					Log.v("Debugging", "KIMTSync heard: " + line);	
-					handler.post(updater);
+			
+				while (true) {
 					
-					bytesRead = br.read(buf);
+					Object obj = null;
+				
+					try {
+						while ((obj = in.readObject()) != null) {
+							Log.v("Debugging", "Object Type: " + obj.getClass());
+							
+							if (obj instanceof String) {
+								String msg = (String) obj;
+								
+								Log.v("Debugging", "BroadcastListener heard: " + msg);
+								
+								out.writeObject("KIMT 1.0");
+								out.writeObject("THANKS");
+								out.flush();
+							}
+							
+							handler.post(updater);
+						}
+					} catch (ClassNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
-					
-			} catch (IOException e) {
+				
+			} catch (EOFException e) {
+				Log.v("Debugging", "End of file ..");
+			}
+			catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -212,21 +230,16 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		protected Integer doInBackground(String... params) {
 			try {
 				OutputStream os	= kimtSocket.getOutputStream();
-				InputStream is	= kimtSocket.getInputStream();
-				Object read = null;
+				InputStream		is = kimtSocket.getInputStream();
+				Object			read = null;
 				
-				ObjectOutputStream out	= new ObjectOutputStream(os);
-				ObjectInputStream in = new ObjectInputStream(is);
+				ObjectOutputStream	out	= new ObjectOutputStream(os);
+				ObjectInputStream	in = new ObjectInputStream(is);
 				
 				writeHeaders(out, "LOGIN");
 				
 				out.writeObject(params[0]);
-				out.flush();
-//				
-//				while ((read = in.readObject()) != null) {
-//					
-//				}
-				
+				out.flush();				
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
