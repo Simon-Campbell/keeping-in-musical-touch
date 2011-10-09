@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -202,9 +203,13 @@ public class SyncServer
 				while(isRunning())
 				{
 					Socket soc = ss.accept();
+					System.out.println("Accepted socket connection from " + soc.toString());
+					
 					Client newCli = new Client(soc);
+					
+					System.out.println("New client has been created ..");
 					addClient(newCli);
-					System.out.println("Added client: " + newCli);
+					System.out.println("Added client " + newCli);
 					
 					new SingleClientThread(newCli).start();
 					
@@ -242,11 +247,11 @@ public class SyncServer
 		public void run()
 		{
 			System.out.println("Client logic thread started");
-			
-			
+	
 			try
 			{
-				ObjectOutputStream out = client.getObjectOutput();
+				ObjectOutputStream out = new ObjectOutputStream(client.socket.getOutputStream());
+				ObjectInputStream in = new ObjectInputStream(client.socket.getInputStream());	
 				
 				out.writeObject("KIMT 1.0");
 				out.writeObject("WELCOME");
@@ -254,48 +259,38 @@ public class SyncServer
 				
 				while(isRunning())
 				{
-					int objectCount = 0;
-					
 					//Read any received data
 					Object read = null;
 					
-					//Decode received data if available
-					System.out.println("Trying to read an object ..");
-					
-					while ((read = client.getObjectInput().readObject()) != null)
+					// Decode received data if available
+					while ((read = in.readObject()) != null)
 					{
-						System.out.println("Object has been read ..");
-						
-						if (read instanceof String) 
+						if (read instanceof String)
 						{
 							String data = (String) read;
-							System.out.println("READ: " + read + "OC: " + objectCount);
 							
 							// Reading the protocol, should probably put into a new
 							// method when possible.
-							if (objectCount == 0) 
+							if (data.compareTo(VERSION) != 0) 
 							{
-								if (data.compareTo(VERSION) != 0) 
-								{
-									System.out.println("This is not supported KIMT protocol-- read stopping.");
-									System.out.println("Protocol: " + data);
-									
-									break;
-								}
-							} 
-							else if (objectCount == 1) 
-							{
+								System.out.println("This is not supported KIMT protocol-- read stopping.");
+								System.out.println("Protocol: " + data);
+							} else {
+								System.out.println("Accepted " + VERSION + " connection data frame.");
+								System.out.println("Getting the musical command ..");
+								
 								MusicalCommand
-									mc = MusicalCommandFactory.getMusicalCommand(client.getObjectInput());
+									mc = MusicalCommandFactory.getMusicalCommand(in);
 								
-								mc.process(client.getObjectInput(), SyncServer.this, client);
+								if (mc != null) {
+									mc.process(in, SyncServer.this, client);
 								
-								System.out.println("Called " + mc.toString() + ".process()");
-								
-								// The object has been processed 
-								objectCount = 0;
+									System.out.println("Called " + mc.toString() + ".process()");
+								} else {
+									System.err.println("The command '" + MusicalCommandFactory.getLastCommand() + "' is not recognized.");
+								}
 							}
-
+							
 						}
 					}
 					
