@@ -3,6 +3,7 @@
 	<name>kimt-android</name>
 	<comment>@key 32303037303533312D3130206B696D742D616E64726F69642F53696D6F6E </comment>
 	<projects>
+		<project>kimt-server</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
