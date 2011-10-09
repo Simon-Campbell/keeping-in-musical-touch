@@ -20,6 +20,7 @@ public class SyncServer
 {
 	public static final String SETTINGS_FOLDER = "settings";
 	public static final String SETTINGS_FILENAME = "kimt-server.settings";
+	public static final String VERSION = "KIMT 1.0";
 	
 	ServerSocket ss;
 	int port;
@@ -46,7 +47,7 @@ public class SyncServer
 			System.out.print("... done!\n");
 			
 			new ClientListenerThread().start();
-			new ClientThread().start();
+			//new ClientThread().start();
 			
 			System.out.print("Ready for client connections\n");
 		}
@@ -168,15 +169,9 @@ public class SyncServer
 	 * Threaded child listening and registering any new received connections.
 	 * Connected clients are stored in an ArrayList<Client> for easy access.
 	 * @author greg
-	 *
 	 */
 	class ClientListenerThread extends Thread
 	{
-		public ClientListenerThread()
-		{
-			
-		}
-		
 		public void run()
 		{
 			System.out.println("Server client listener thread started");
@@ -189,6 +184,8 @@ public class SyncServer
 					Client newCli = new Client(soc);
 					addClient(newCli);
 					System.out.println("Added client: " + newCli);
+					
+					new SingleClientThread(newCli).start();
 					
 					Thread.sleep(10);
 				}
@@ -210,6 +207,114 @@ public class SyncServer
 	public void shutdown()
 	{
 		setRunning(false);
+	}
+	
+	class SingleClientThread extends Thread
+	{
+		public SingleClientThread(Client c)
+		{
+			this.client = c;
+		}
+		
+		Client client;
+		
+		public void run()
+		{
+			System.out.println("Client logic thread started");
+			
+			try
+			{
+				while(isRunning())
+				{
+					int objectCount = 0;
+					CommandType commandType = CommandType.UNKNOWN;
+					
+					//Read any received data
+					Object read = null;
+					
+					//Decode received data if available
+					while ((read = client.getObjectInput().readObject()) != null)
+					{
+						if (read instanceof String) 
+						{
+							String data = (String) read;
+							System.out.println("READ: " + read + "OC: " + objectCount);
+							
+							// Reading the protocol, should probably put into a new
+							// method when possible.
+							if (objectCount == 0) 
+							{
+								if (data.compareTo("KIMT 1.0") != 0) 
+								{
+									System.out.println("This is not supported KIMT protocol-- read stopping.");
+									System.out.println("Protocol: " + data);
+									
+									break;
+								}
+							} 
+							else if (objectCount == 1) 
+							{
+								// Reading the command ..
+								if (data.compareTo("LOGIN") == 0)
+									commandType = CommandType.LOGIN;
+								
+								if (data.compareTo("PUT_SYNC") == 0)
+									commandType = CommandType.PUT_SYNC;
+								
+								if (data.compareTo("GET_SYNC") == 0)
+									commandType = CommandType.GET_SYNC;
+								
+								if (commandType == CommandType.PUT_SYNC)
+								{
+									System.out.println("Put sync");
+									objectCount = 0;
+								}
+								if (commandType == CommandType.GET_SYNC)
+								{
+									System.out.println("Get sync");
+									objectCount = 0;
+								}
+								if (commandType == CommandType.UNKNOWN)
+								{
+									System.out.println("Unknown command type");
+									objectCount = 0;
+								}
+							}
+							else 
+							{
+								if (commandType == CommandType.LOGIN) 
+								{
+									// Next in line should be the name of the person
+									// connecting.
+									client.name = data;
+									System.out.println(client.name + " has connected");
+									
+									// TODO:
+									//	Possibly improve this if we get time. For now, index 0
+									//	in the array seems fair to be the owner.
+									client.getObjectOutput().writeObject(clients.get(0) == client);
+									client.getObjectOutput().flush();
+									
+									objectCount = 0;
+								}
+							}
+							
+							objectCount++;
+						}
+					}
+					
+					Thread.sleep(10);
+				}
+			}
+			catch (SocketException ex)
+			{
+				
+			}
+			catch (Exception ex)
+			{
+				
+			}
+		}
 	}
 	
 	/**
@@ -237,62 +342,27 @@ public class SyncServer
 			{
 				while(isRunning())	//while server is running
 				{					
+					//System.out.println("fdsfafdasfdasfas");
+					
 					for(Client c : getClients())
-					{
-						int objectCount = 0;
-						CommandType commandType = CommandType.UNKNOWN;
+					{				
+						currentClient = c;
 						
-						currentClient = c;	//save current client for exception handler
+						String read = (String)currentClient.getObjectInput().readObject();
+
+						System.out.println("READ: " + read);
 						
-						//Read any received data
-						Object read = null;
+						//System.out.println("______");
+						//System.out.println("fdsfafdasfdasfas");
 						
-						//Decode received data if available
-						while ((read = c.getObjectInput().readObject()) != null)
-						{
-							if (read instanceof NetMessage)
-							{
-								NetMessage m = (NetMessage)read;
-								//System.out.println(c + " sent: " + m.message);
-							} else if (read instanceof String) {
-								String data = (String) read;
-								
-								// Reading the protocol, should probably put into a new
-								// method when possible.
-								if (objectCount == 0) {
-									if (data.compareTo("KIMT 1.0") != 0) {
-										System.out.println("This is not supported KIMT protocol-- read stopping.");
-										System.out.println("Protocol: " + data);
-										
-										break;
-									}
-								} else if (objectCount == 1) {
-									// Reading the command ..
-									if (data.compareTo("LOGIN") == 0)
-										commandType = CommandType.LOGIN;
-									
-								} else {
-									if (commandType == CommandType.LOGIN) {
-										// Next in line should be the name of the person
-										// connecting.
-										System.out.println(data + " has connected");
-										
-										// TODO:
-										//	Possibly improve this if we get time. For now, index 0
-										//	in the array seems fair to be the owner.
-										c.getObjectOutput().writeObject(clients.get(0) == c);
-										c.getObjectOutput().flush();
-									}
-								}
-								
-								objectCount++;
-							}
-						}
+						/*
+						
+						*/
 					}
 				}
-				
-				//Thread.sleep(10);
-			} catch (EOFException ex) {
+			} 
+			catch (EOFException ex) 
+			{
 				System.out.println("End of file reached");
 			}
 			catch (SocketException ex)

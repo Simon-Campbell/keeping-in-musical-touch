@@ -12,19 +12,19 @@ public class Client
 {
 	String name;	public String getName() { return name; }
 	Socket socket;
-	ArrayList<Object> received;
+	ArrayList<String> received;
 	ObjectInputStream input;
 	ObjectOutputStream output;
 	BufferedReader reader;
 	BufferedWriter writer;
-	
-	public int i = 0;
 	
 	public Client(Socket socket) throws IOException
 	{
 		this.socket = socket;
 		input = new ObjectInputStream(this.socket.getInputStream());
 		output = new ObjectOutputStream(this.socket.getOutputStream());
+		
+		received = new ArrayList<String>();
 	}
 	
 	/**
@@ -81,10 +81,10 @@ public class Client
 	 * Pushes a new message object onto the stack
 	 * @param o New message object to push onto the stack
 	 */
-	public void push(Object o)
+	public void push(String o)
 	{
 		if (received == null)
-			received = new ArrayList<Object>();
+			received = new ArrayList<String>();
 		received.add(o);
 	}
 	
