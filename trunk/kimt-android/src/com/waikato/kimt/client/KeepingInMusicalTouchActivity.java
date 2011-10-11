@@ -35,9 +35,9 @@ public class KeepingInMusicalTouchActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.main);
 
-		final ArrayAdapter<String> adapter = new ArrayAdapter<String> (this, R.layout.listview, R.id.myListTextView);
+		final ArrayAdapter<MusicSheet> adapter = new ArrayAdapter<MusicSheet> (this, R.layout.listview, R.id.myListTextView);
 		final ListView listview = (ListView)findViewById(R.id.myListView);
-		
+			
 		listview.setAdapter(adapter);
 
 		gml = new GreenstoneMusicLibrary(getString(R.string.defaultLibraryLocation) + "dev;jsessionid=08C1CB94BDBF8322F72548075D809910?a=d&ed=1&book=off&c=musical-touch&d=");
@@ -49,12 +49,18 @@ public class KeepingInMusicalTouchActivity extends Activity {
 				adapter.clear();
 
 				for (MusicSheet m : gml.getCache()) {
-					String s = m.getTitle() + " by " + m.getAuthor() + " [" + m.getSheetID() + "]";
-					adapter.add(s);
+		//			String s = m.getTitle() + " by " + m.getAuthor() + " [" + m.getSheetID() + "]";
+					adapter.add(m);
 				}
 				listview.invalidate();
 			}
 		});
+
+
+		MusicSheet test = new MusicSheet(gml, "000000");
+		test.setAuthor("Simon");
+		test.setTitle("Song Title");
+		adapter.add(test);
 
 		String musicalTouchAddress	= getString(R.string.kimt_ip);
 		int musicalTouchPort		= KIMTServer.defaultServerPort;
@@ -88,11 +94,11 @@ public class KeepingInMusicalTouchActivity extends Activity {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				
-				LinearLayout
-					listLayout = (LinearLayout) view;
+				//LinearLayout
+				//	listLayout = (LinearLayout) view;
 				
-				String fullAddress = ((TextView) listLayout.findViewById(R.id.myListTextView)).getText().toString();
-				
+				//	String fullAddress = ((TextView) listLayout.findViewById(R.id.myListTextView)).getText().toString();
+				String fullAddress = ((MusicSheet) parent.getItemAtPosition(position)).getFullAddress();
 				//String fullAddress = ((TextView) view).getText().toString();
 				
 				//package the data to that it can be sent to next activity

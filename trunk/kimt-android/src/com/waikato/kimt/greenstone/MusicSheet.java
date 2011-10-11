@@ -57,7 +57,7 @@ public class MusicSheet implements Serializable {
 	}
 	
 	public String toString() {
-		return "MusicSheet" + this.title + " " + this.author + " " + this.currentPage + "/" + this.pages;
+		return (this.title + " by " + this.author + "(" + this.pages + ")");
 	}
 	
 	public String getFullAddress() {
