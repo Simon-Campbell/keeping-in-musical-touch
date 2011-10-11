@@ -139,8 +139,9 @@ public class GreenstoneMusicLibrary implements MusicLibrary, Serializable {
 	    try {
 	        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder db = dbf.newDocumentBuilder();
+	    
 	        InputSource is	= new InputSource((new URL(uri)).openStream());
-	        Document doc	= db.parse(is);
+	       	Document doc	= db.parse(is);
 	        NodeList nodes	= doc.getElementsByTagName("page");
   
 	        nodes = ((Element) nodes.item(0)).getElementsByTagName("pageResponse");
