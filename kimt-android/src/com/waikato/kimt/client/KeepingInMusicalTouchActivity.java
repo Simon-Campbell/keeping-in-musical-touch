@@ -1,6 +1,7 @@
 package com.waikato.kimt.client;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
@@ -98,13 +99,13 @@ public class KeepingInMusicalTouchActivity extends Activity {
 				//	listLayout = (LinearLayout) view;
 				
 				//	String fullAddress = ((TextView) listLayout.findViewById(R.id.myListTextView)).getText().toString();
-				String fullAddress = ((MusicSheet) parent.getItemAtPosition(position)).getFullAddress();
+	//			String fullAddress = ((MusicSheet) parent.getItemAtPosition(position)).getFullAddress();
 				//String fullAddress = ((TextView) view).getText().toString();
 				
 				//package the data to that it can be sent to next activity
 				Bundle bundle = new Bundle();
-				bundle.putString("url", fullAddress);
-
+				bundle.putSerializable("selected_sheet", (Serializable) parent.getItemAtPosition(position));
+				
 				//call the next activity (the other view) and send the data to it
 				Intent myIntent = new Intent(getApplicationContext(), KeepingInMusicalTouchDisplayDataActivity.class);
 				myIntent.putExtras(bundle);
