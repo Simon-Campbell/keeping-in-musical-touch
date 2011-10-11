@@ -57,12 +57,6 @@ public class KeepingInMusicalTouchActivity extends Activity {
 			}
 		});
 
-
-		MusicSheet test = new MusicSheet(gml, "000000");
-		test.setAuthor("Simon");
-		test.setTitle("Song Title");
-		adapter.add(test);
-
 		String musicalTouchAddress	= getString(R.string.kimt_ip);
 		int musicalTouchPort		= KIMTServer.defaultServerPort;
 		
@@ -94,13 +88,6 @@ public class KeepingInMusicalTouchActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				
-				//LinearLayout
-				//	listLayout = (LinearLayout) view;
-				
-				//	String fullAddress = ((TextView) listLayout.findViewById(R.id.myListTextView)).getText().toString();
-	//			String fullAddress = ((MusicSheet) parent.getItemAtPosition(position)).getFullAddress();
-				//String fullAddress = ((TextView) view).getText().toString();
 				
 				//package the data to that it can be sent to next activity
 				Bundle bundle = new Bundle();

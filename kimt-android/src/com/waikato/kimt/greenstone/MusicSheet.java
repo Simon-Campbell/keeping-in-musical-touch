@@ -1,6 +1,8 @@
 package com.waikato.kimt.greenstone;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +28,24 @@ public class MusicSheet implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String	sheetID;
 	private String 	fullAddress;
-
+	
+	/**
+	 * Internal Greenstone variable:
+	 * 	Name of the folder where associated
+	 * 	files are kept.
+	 */
+	private String	documentFolder;
+	
+	/**
+	 * Internal Greenstone variable:
+	 * 	Title of the document to help find
+	 * 	associated files.
+	 */
+	private String	documentTitle;
 	private String title;
 	private String author;
 	
 	private int	pages;
-	private int currentPage;
 	
 	private Bitmap bitmap;
 	private boolean isFetchingData = false;
@@ -44,7 +58,6 @@ public class MusicSheet implements Serializable {
 		this.sheetID		= sheetID;
 		this.fullAddress	= owner.getUri() + sheetID + "&o=xml";
 		
-		this.currentPage= 0;
 		this.pages		= 1337;
 		
 		if (download) {
@@ -57,13 +70,23 @@ public class MusicSheet implements Serializable {
 	}
 	
 	public String toString() {
-		return (this.title + " by " + this.author + "(" + this.pages + ")");
+		return (this.title + " by " + this.author + " (" + this.pages + ")");
 	}
 	
 	public String getFullAddress() {
 		return this.fullAddress;
 	}
 	
+	public String getImageLocation(int page) {
+		return
+			"http://www.nzdl.org/greenstone3-nema/cgi-bin/image-server.pl?a=fit-screen&c=musical-touch&site=localsite&pageWidth=426&pageHeight=603&assocDir=" + 
+			this.documentFolder+ 
+			"&assocFile="	+
+			this.documentTitle	+
+			"-"				+
+			Integer.toString(page) + 
+			".png";
+	}
 	public String getTitle() {
 		return this.title;
 	}
@@ -84,7 +107,7 @@ public class MusicSheet implements Serializable {
 		return this.sheetID;
 	}
 	
-	public Bitmap getBitmap() {
+	public Bitmap getBitmap(boolean download) {
 		if (bitmap == null) {
 			// If not fetching data then try fetching the bitmap in
 			// a task
@@ -94,7 +117,14 @@ public class MusicSheet implements Serializable {
 			
 			return null;
 		} else {
-			return bitmap;
+			
+			if (download) {
+				new AsyncGreenstoneXMLDownload().execute(this.fullAddress);
+				
+				return null;
+			} else {
+				return bitmap;
+			}
 		}
 	}
 	
@@ -135,7 +165,7 @@ public class MusicSheet implements Serializable {
     	           } else if (name.compareTo("Title") == 0) {
     	        	   // Set this document title to use so that the image can be
     	        	   // retrieved
-    	        	   documentTitle = XMLUtilities.getCharacterDataFromElement(metaInfo);
+    	        	   this.documentTitle = XMLUtilities.getCharacterDataFromElement(metaInfo);
     	        	   
     	        	   // If the document title hasn't already been set then we'll 
     	        	   // set it to this one, however "mp.title" is preferred.
@@ -172,7 +202,7 @@ public class MusicSheet implements Serializable {
 	        	
 	        	// Check if the metadata name is equal to "assocfilepath"
 	        	if (name.compareTo("assocfilepath") == 0) {
-	        		documentAssocDir = XMLUtilities.getCharacterDataFromElement(element);
+	        		this.documentFolder = XMLUtilities.getCharacterDataFromElement(element);
 	        	}
 	        }
 	        
@@ -181,20 +211,24 @@ public class MusicSheet implements Serializable {
 		    int sheetPage = 0;
 		    
 	        this.bitmap = BitmapFactory.decodeStream(
-	        	new URL(
-	        			"http://www.nzdl.org/greenstone3-nema/cgi-bin/image-server.pl?a=fit-screen&c=musical-touch&site=localsite&pageWidth=426&pageHeight=603&assocDir=" + 
-	        					documentAssocDir+ 
-	        					"&assocFile="	+
-	        					documentTitle	+
-	        					"-"				+
-	        					Integer.toString(sheetPage) + 
-	        					".png"
-	        		).openStream()
+	        		new URL(this.getImageLocation(0)).openStream()
 	        	);
 
 	    }
 	    catch (Exception e) {
 	        e.printStackTrace();
+	    } finally {
+	    	if (bitmap == null) {
+	    		try {
+					this.bitmap = BitmapFactory.decodeStream(new URL("http://en.wikipedia.org/wiki/File:NES_Super_Mario.png").openStream());
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	    	}
 	    }
 
 	}
