@@ -252,6 +252,12 @@ public class MusicSheet implements Serializable {
 			mddl.onMetaDataDownloaded(this);
 	}
 	
+//	protected void notifyImageDownloaded() {
+//		for (ImageDataDownloadListener iddl : registeredImageListeners) {
+//			
+//		}
+//	}
+	
 	//using class Async to do the work
 	private class AsyncGreenstoneXMLDownload extends AsyncTask<String, Void, Void> {
 		//get the data in the background. This means that the thread with UI will not be blocked 
@@ -268,6 +274,29 @@ public class MusicSheet implements Serializable {
 			// Notify anybody who is subscribed to the MusicSheet that
 			// the meta-data has been downloaded.
 			notifyMetaDataDownloaded();
+		}
+	}
+	
+	private class AsyncImageDownload extends AsyncTask<String, Void, Bitmap> {
+		protected Bitmap doInBackground(String... imageAddress) {
+			Bitmap returnImage = null;
+			
+			try {
+				returnImage = BitmapFactory.decodeStream(new URL(imageAddress[0]).openStream());
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return
+				returnImage;
+		}
+		
+		protected void onPostExecute(Bitmap result) {
+//			notifyImageDownloaded();
 		}
 	}
 }
