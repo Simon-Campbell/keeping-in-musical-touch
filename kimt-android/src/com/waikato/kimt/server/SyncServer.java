@@ -252,11 +252,7 @@ public class SyncServer
 			{
 				ObjectOutputStream out = new ObjectOutputStream(client.socket.getOutputStream());
 				ObjectInputStream in = new ObjectInputStream(client.socket.getInputStream());	
-				
-				out.writeObject("KIMT 1.0");
-				out.writeObject("WELCOME");
-				out.flush();
-				
+
 				while(isRunning())
 				{
 					//Read any received data
@@ -271,8 +267,7 @@ public class SyncServer
 							
 							// Reading the protocol, should probably put into a new
 							// method when possible.
-							if (data.compareTo(VERSION) != 0) 
-							{
+							if (data.compareTo(VERSION) != 0) {
 								System.out.println("This is not supported KIMT protocol-- read stopping.");
 								System.out.println("Protocol: " + data);
 							} else {
@@ -301,11 +296,11 @@ public class SyncServer
 			}
 			catch (SocketException ex)
 			{
-				
+				ex.printStackTrace();
 			}
 			catch (Exception ex)
 			{
-				
+				ex.printStackTrace();
 			}
 		}
 	}
