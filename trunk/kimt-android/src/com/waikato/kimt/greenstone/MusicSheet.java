@@ -20,6 +20,7 @@ import com.waikato.kimt.util.XMLUtilities;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.Log;
 
 public class MusicSheet implements Serializable {
 	/**
@@ -42,14 +43,15 @@ public class MusicSheet implements Serializable {
 	 * 	associated files.
 	 */
 	private String	documentTitle;
+	
 	private String title;
 	private String author;
 	
 	private int	pages;
 	
 	private Bitmap bitmap;
-	private boolean isFetchingData = false;
-	
+	private ArrayList<Bitmap> bitmapList;
+
 	public MusicSheet(GreenstoneMusicLibrary owner, String sheetID) {
 		this(owner, sheetID, false);
 	}
@@ -57,13 +59,9 @@ public class MusicSheet implements Serializable {
 	public MusicSheet(GreenstoneMusicLibrary owner, String sheetID, Boolean download) {
 		this.sheetID		= sheetID;
 		this.fullAddress	= owner.getUri() + sheetID + "&o=xml";
-		
-		this.pages		= 1337;
+		this.pages			= 1337;
 		
 		if (download) {
-			// We're fetching the data so we'll set this to true.
-			this.isFetchingData = true;
-			
 			// Start actually fetching the data
 			new AsyncGreenstoneXMLDownload().execute(this.fullAddress);
 		}
@@ -80,13 +78,9 @@ public class MusicSheet implements Serializable {
 	public String getImageLocation(int page) {
 		return
 			"http://www.nzdl.org/greenstone3-nema/cgi-bin/image-server.pl?a=fit-screen&c=musical-touch&site=localsite&pageWidth=426&pageHeight=603&assocDir=" + 
-			this.documentFolder+ 
-			"&assocFile="	+
-			this.documentTitle	+
-			"-"				+
-			Integer.toString(page) + 
-			".png";
+			this.documentFolder + "&assocFile=" + this.documentTitle + "-" + Integer.toString(page) + ".png";
 	}
+	
 	public String getTitle() {
 		return this.title;
 	}
@@ -107,25 +101,16 @@ public class MusicSheet implements Serializable {
 		return this.sheetID;
 	}
 	
-	public Bitmap getBitmap(boolean download) {
-		if (bitmap == null) {
-			// If not fetching data then try fetching the bitmap in
-			// a task
-			if (!this.isFetchingData) {
-				new AsyncGreenstoneXMLDownload().execute(this.fullAddress);
-			}
-			
-			return null;
+	public void setBitmapFromInternet(int page) {
+		if (this.documentFolder == null || this.documentTitle == null) {
+			new AsyncGreenstoneXMLDownload().execute(fullAddress);
 		} else {
-			
-			if (download) {
-				new AsyncGreenstoneXMLDownload().execute(this.fullAddress);
-				
-				return null;
-			} else {
-				return bitmap;
-			}
+			new AsyncImageDownload().execute(getImageLocation(page));
 		}
+	}
+	
+	public Bitmap getBitmap() {
+		return this.bitmap;
 	}
 	
 	private void setDataFromGreenstoneXML(String uri) {
@@ -136,50 +121,45 @@ public class MusicSheet implements Serializable {
 	        InputSource is				= new InputSource((new URL(uri)).openStream());
 	        Document doc				= db.parse(is);
 	        
-	        NodeList nodes				= doc.getElementsByTagName("page");
+	        NodeList nodes				= doc.getElementsByTagName("metadata");
 	        NodeList documentElems		= null;
 	        
-	        String documentTitle		= null;
-	        String documentAssocDir		= null;
-	        
-	        nodes = ((Element) nodes.item(0)).getElementsByTagName("pageResponse");
+//	        nodes = ((Element) nodes.item(0)).getElementsByTagName("pageResponse");
 	        
 	        // We wish to save the nodelist that contains <documentNode /> and <metadataList />
-	        documentElems = nodes = ((Element) nodes.item(0)).getElementsByTagName("document");
+//	        nodes = ((Element) nodes.item(0)).getElementsByTagName("document");
+//	        nodes = ((Element) nodes.item(0)).getElementsByTagName("metadataList");
 
-	        // Drill down and get the meta data for this music sheet ..
-	        nodes = ((Element) nodes.item(0)).getElementsByTagName("documentNode");
-	        nodes = ((Element) nodes.item(0)).getElementsByTagName("metadataList");
-
-	        // Iterate the elements to find the metadata of the music sheet
 	        for (int i = 0; i < nodes.getLength(); i++) {
-	           Element	element = (Element) nodes.item(i);
-	           NodeList	metaInfos = element.getElementsByTagName("metadata");
-	           
-	           for (int j = 0; j < metaInfos.getLength(); j++) {
-	        	   Element metaInfo	= (Element) metaInfos.item(j);
-    	           String name		= metaInfo.getAttribute("name");
-	        	 
-    	           if (name.compareTo("mp.title") == 0) {
-    	        	   this.title = XMLUtilities.getCharacterDataFromElement(metaInfo);   
-    	           } else if (name.compareTo("Title") == 0) {
-    	        	   // Set this document title to use so that the image can be
-    	        	   // retrieved
-    	        	   this.documentTitle = XMLUtilities.getCharacterDataFromElement(metaInfo);
-    	        	   
-    	        	   // If the document title hasn't already been set then we'll 
-    	        	   // set it to this one, however "mp.title" is preferred.
-    	        	   if (this.title == null) {
-    	        		   this.title = documentTitle;
-    	        	   }
-    	        	   
-    	           } else if (name.compareTo("mp.composer") == 0 || (title == null && name.compareTo("Composer") == 0)) {
-    	        	   this.author= XMLUtilities.getCharacterDataFromElement(metaInfo);
-    	           }
-	           }
+	        	Element	metadataElement = (Element) nodes.item(i);
+	        	String	metadataName = metadataElement.getAttribute("name");
+	        
+	        	if (metadataName.compareTo("mp.title") == 0) {
+ 	        	   this.title = XMLUtilities.getCharacterDataFromElement(metadataElement);   
+ 	           	}
+	        	
+	        	if (metadataName.compareTo("Title") == 0) {
+ 	        	   // Set this document title to use so that the image can be
+ 	        	   // retrieved
+ 	        	   this.documentTitle = XMLUtilities.getCharacterDataFromElement(metadataElement);
+ 	        	   
+ 	        	   // If the document title hasn't already been set then we'll 
+ 	        	   // set it to this one, however "mp.title" is preferred.
+ 	        	   if (this.title == null) {
+ 	        		   this.title = documentTitle;
+ 	        	   }
+ 	        	   
+ 	           	}
+	        	
+	        	if (metadataName.compareTo("mp.composer") == 0 || (title == null && metadataName.compareTo("Composer") == 0)) {
+ 	        	   this.author= XMLUtilities.getCharacterDataFromElement(metadataElement);
+ 	           	}
+	        	
+	        	if (metadataName.compareTo("assocfilepath") == 0) {
+	        		this.documentFolder = XMLUtilities.getCharacterDataFromElement(metadataElement);
+	        	}
 	        }
-
-
+	      
 	        // If the author or title has not been set then
 	        // we'll set them to a default value.
 	        if (this.author == null) {
@@ -188,63 +168,57 @@ public class MusicSheet implements Serializable {
 	        if (this.title == null) {
 	        	this.title	= "N/A";
 	        }
-	        
-	        // Iterate the document meta data to help find the associated PNG files
-	        // then download it e.g.
-	        //<metadataList>
-	        //	<metadata name="assocfilepath">HASH4f41.dir</metadata>
-	        //</metadataList>
-	        documentElems = ((Element) documentElems.item(1)).getElementsByTagName("metadataList");
-	        
-	        for (int i = 0; i < documentElems.getLength(); i++) {
-	        	Element	element	= (Element) documentElems.item(i);
-	        	String	name	= element.getAttribute("name");
-	        	
-	        	// Check if the metadata name is equal to "assocfilepath"
-	        	if (name.compareTo("assocfilepath") == 0) {
-	        		this.documentFolder = XMLUtilities.getCharacterDataFromElement(element);
-	        	}
-	        }
-	        
-	        // The required data has been found. Now the image can be downloaded
-	        // and the bitmap downloaded.
-		    int sheetPage = 0;
-		    
-	        this.bitmap = BitmapFactory.decodeStream(
-	        		new URL(this.getImageLocation(0)).openStream()
-	        	);
 
+	        this.bitmap = BitmapFactory.decodeStream(new URL(getImageLocation(0)).openStream());
 	    }
+	    
 	    catch (Exception e) {
 	        e.printStackTrace();
 	    } finally {
-	    	if (bitmap == null) {
-	    		try {
-					this.bitmap = BitmapFactory.decodeStream(new URL("http://en.wikipedia.org/wiki/File:NES_Super_Mario.png").openStream());
-				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-	    	}
 	    }
 
 	}
 	
 	/**
-	 * This region of code takes care of the
+	 * This region of code takes care of the different listeners in
+	 * the MusicSheet.
 	 */
 	private List<MetaDataDownloadListener>
 		registeredMetaDataListeners = new ArrayList<MetaDataDownloadListener>();
+	private List<ImageDataDownloadListener>
+		registeredImageDataDownloadListeners = new ArrayList<ImageDataDownloadListener>();
 	
+	/**
+	 * An interface for classes that listen to when meta-data
+	 * has been downloaded.
+	 * @author Simon
+	 *
+	 */
 	public interface MetaDataDownloadListener {
 		public void onMetaDataDownloaded(MusicSheet ms);
 	}
 	
+	/**
+	 * An interface for classes who listen to when an image
+	 * has been downloaded.
+	 * @author Simon
+	 *
+	 */
+	public interface ImageDataDownloadListener {
+		public void onImageDownloaded(MusicSheet ms);
+	}
+	
+	/**
+	 * Set an object to listen to when meta-data has been updated.
+	 * @param mddl
+	 * 	A listening object which listens to the
+	 */
 	public void setOnSheetMetaDataUpdateListener(MetaDataDownloadListener mddl) {
 		registeredMetaDataListeners.add(mddl);
+	}
+	
+	public void setOnImageDownloadedListener(ImageDataDownloadListener imageDataDownloadListener) {
+		registeredImageDataDownloadListeners.add(imageDataDownloadListener);
 	}
 	
 	protected void notifyMetaDataDownloaded() {
@@ -252,11 +226,10 @@ public class MusicSheet implements Serializable {
 			mddl.onMetaDataDownloaded(this);
 	}
 	
-//	protected void notifyImageDownloaded() {
-//		for (ImageDataDownloadListener iddl : registeredImageListeners) {
-//			
-//		}
-//	}
+	protected void notifyImageDownloaded() {
+		for (ImageDataDownloadListener iddl : registeredImageDataDownloadListeners)
+			iddl.onImageDownloaded(this);
+	}
 	
 	//using class Async to do the work
 	private class AsyncGreenstoneXMLDownload extends AsyncTask<String, Void, Void> {
@@ -268,12 +241,10 @@ public class MusicSheet implements Serializable {
 		//the result of the above method will call this method and pass in the result. 
 		//I belive it is ok for this method to update the UI (only the main UI thread (...DisplayDataActivity thread) should be updating UI elements)
 		protected void onPostExecute(Void result) {
-			// The data is no-longer being fetched
-			isFetchingData = false;
-			
 			// Notify anybody who is subscribed to the MusicSheet that
 			// the meta-data has been downloaded.
 			notifyMetaDataDownloaded();
+			notifyImageDownloaded();
 		}
 	}
 	
@@ -282,6 +253,7 @@ public class MusicSheet implements Serializable {
 			Bitmap returnImage = null;
 			
 			try {
+				Log.v("Debugging", imageAddress[0]);
 				returnImage = BitmapFactory.decodeStream(new URL(imageAddress[0]).openStream());
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
@@ -296,7 +268,13 @@ public class MusicSheet implements Serializable {
 		}
 		
 		protected void onPostExecute(Bitmap result) {
-//			notifyImageDownloaded();
+			// Set the result of the current MusicSheet
+			// instance.
+			MusicSheet.this.bitmap = result ;
+			
+			// Notify the listeners that the image is
+			// ready to be shown
+			notifyImageDownloaded();
 		}
 	}
 }
