@@ -21,7 +21,7 @@ public class MusicalLoginCommand implements MusicalCommand {
 			// If the client is the first in the array then we'll tell the client
 			// that it is the leader
 			out = new ObjectOutputStream(client.socket.getOutputStream());
-			out.writeObject(server.clients.get(0) == client);
+			out.writeObject(server.getLoggedInClients().get(0) == client);
 			out.flush();
 		}
 	}

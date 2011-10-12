@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
@@ -54,6 +55,7 @@ public class SyncServer
 			System.out.print("... done!\n");
 			
 			new ClientListenerThread().start();
+			new ServerConsoleUI().start();
 			//new ClientThread().start();
 			
 			System.out.print("Ready for client connections\n");
@@ -148,8 +150,6 @@ public class SyncServer
 	private synchronized void addClient(Client c)
 	{
 		clients.add(c);
-		
-		//clients.add(c);
 	}
 	
 	/**
@@ -159,6 +159,18 @@ public class SyncServer
 	private synchronized ArrayList<Client> getClients()
 	{
 		return clients;
+	}
+	
+	public synchronized ArrayList<Client> getLoggedInClients()
+	{
+		ArrayList<Client> loggedIn = new ArrayList<Client>();
+		for(Client c : getClients())
+		{
+			if (c.name != null)
+				loggedIn.add(c);
+		}
+		
+		return loggedIn;
 	}
 	
 	/**
@@ -233,6 +245,11 @@ public class SyncServer
 	public void shutdown()
 	{
 		setRunning(false);
+		
+		for(Client c : getClients())
+		{
+			c.socket = null;
+		}
 	}
 	
 	class SingleClientThread extends Thread
@@ -293,6 +310,8 @@ public class SyncServer
 					
 					Thread.sleep(10);
 				}
+				
+				removeClient(client);
 			}
 			catch (SocketException ex)
 			{
@@ -306,74 +325,75 @@ public class SyncServer
 	}
 	
 	/**
-	 * Threaded Server logic. One thread handles many clients. 
-	 * Clients are spread evenly across threads
+	 * Thread dedicated to monitoring console input - used to control server
 	 * @author greg
-	 *
 	 */
-	class ClientThread extends Thread
-	{
-		public ClientThread()
-		{
-		
-		}
-		
-		/**
-		 * Threaded logic for clients. A single thread handles multiple clients
-		 */
+	class ServerConsoleUI extends Thread
+	{	
 		public void run()
 		{
-			System.out.println("Client logic thread started");
-			Client currentClient = null;
+			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 			
-			try
+			while(isRunning())
 			{
-				while(isRunning())	//while server is running
-				{					
-					//System.out.println("fdsfafdasfdasfas");
-					
-					for(Client c : getClients())
-					{				
-						currentClient = c;
+				try
+				{
+					String line;
+					while((line = reader.readLine()) != null)
+					{
+						String[] data = line.split(" ");
 						
-						String read = (String)currentClient.getObjectInput().readObject();
+						if (data[0].equals("list"))
+						{
+							if (data[1].equals("all"))
+							{
+								for(int i = 0; i < getClients().size(); i++)
+								{
+									Client c = getClients().get(i);
+									
+									if (i == 0)
+										System.out.println("LEADER: Name: " + c.getName());
+									else
+										System.out.println("MEMBER: Name: " + c.getName());
+								}
+							}
+							else if (data[1].equals("log"))
+							{
+								for(Client c : getLoggedInClients())
+								{
+									System.out.println(c.getName());
+								}
+							}
 
-						System.out.println("READ: " + read);
-						
-						//System.out.println("______");
-						//System.out.println("fdsfafdasfdasfas");
-						
-						/*
-						
-						*/
+							System.out.println("__________");
+						}
+						if (data[0].equals("kick"))
+						{
+							String name = data[1];
+							
+							for(Client c : getClients())
+							{
+								if (c.getName().equals(name))
+								{
+									removeClient(c);
+									System.out.println("Removed: " + c.getName() + " from connected clients");
+									return;
+								}
+							}
+							System.err.println("Failed to removed: " + name + " from connected clients");
+							System.out.println("__________");
+						}
+						if (data[0].equals("quit"))
+						{
+							System.out.println("Shutting down server");
+							shutdown();
+						}
 					}
 				}
-			} 
-			catch (EOFException ex) 
-			{
-				System.out.println("End of file reached");
-			}
-			catch (SocketException ex)
-			{
-				System.out.println("Remote connection problem: assuming client has closed");
-				
-				if (currentClient != null)
-				{	
-					try 
-					{
-						currentClient.close();
-					} 
-					catch (IOException e) 
-					{
-						System.out.println("Problems closing: " + currentClient);
-					}
-					
-					removeClient(currentClient);
+				catch (Exception ex)
+				{
+					ex.printStackTrace();
 				}
-			}
-			catch (Exception ex)
-			{
-				ex.printStackTrace();
 			}
 		}
 	}
