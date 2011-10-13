@@ -1,103 +1,63 @@
 package com.waikato.kimt.server;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 
-public class Client 
+import com.waikato.kimt.server.commands.MusicalCommand;
+import com.waikato.kimt.server.commands.MusicalCommandFactory;
+import com.waikato.kimt.server.interfaces.IClient;
+import com.waikato.kimt.server.interfaces.IConnection;
+
+public class Client implements IClient
 {
-	String name;	public String getName() { return name; }
-	Socket socket;
-	ArrayList<String> received;
-	ObjectInputStream input;
-	ObjectOutputStream output;
-	BufferedReader reader;
-	BufferedWriter writer;
+	IConnection connection;
+	String name;
+	ClientThread clientThread;
 	
-	public Client(Socket socket) throws IOException
+	public Client(IConnection connection, String name)
 	{
-		this.socket = socket;
-		
-	//	input	= new ObjectInputStream(this.socket.getInputStream());
-	//	output	= new ObjectOutputStream(this.socket.getOutputStream());
-		
-		received = new ArrayList<String>();
+		this.connection = connection;
+		this.name = name;
+		new ClientThread().start();
 	}
 	
-	/**
-	 * Gets the current ObjectInputStream for this client
-	 * @return ObjectInputStream
-	 */
-	public ObjectInputStream getObjectInput()
+	class ClientThread extends Thread
 	{
-		return input;
+		public void run()
+		{
+			while(true)
+			{
+				try
+				{
+					Object read = null;
+					
+					while((read = getConnection().getInputStream().readObject()) != null)
+					{
+						if (read instanceof String)
+						{
+							String data = (String)read;
+							
+							MusicalCommand mc = MusicalCommandFactory.getMusicalCommand(data);
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					ex.printStackTrace();
+				}
+			}
+		}
 	}
-	
-	/***
-	 * Gets the current ObjectOutputStream for this client
-	 * @return ObjectOutputStream
-	 */
-	public ObjectOutputStream getObjectOutput()
-	{
-		return output;
-	}
-	
-	/**
-	 * Gets this clients socket
-	 * @return Copy of socket
-	 */
-	public Socket getSocket()
-	{
-		return socket;
-	}
-	
-	/**
-	 * Compares this client to another specified client
-	 * @param other Client to compare to.
-	 * @return True if the two objects have the same data
-	 */
-	public boolean equals(Client other)
-	{
-		if (other.name.equals(name))
-			return true;
-		return false;
-	}
-	
-	/**
-	 * Pops the oldest message object off the stack
-	 * @return Null if empty or the oldest object
-	 */
-	public Object pop()
-	{
-		if (received.size() > 0)
-			return received.remove(0);
-		return null;
-	}
-	
-	/**
-	 * Pushes a new message object onto the stack
-	 * @param o New message object to push onto the stack
-	 */
-	public void push(String o)
-	{
-		if (received == null)
-			received = new ArrayList<String>();
-		received.add(o);
-	}
-	
-	/**
-	 * Closes this Client. Readying it for disposal
-	 * @throws IOException Error closing client
-	 */
-	public void close() throws IOException
-	{
-		input.close();
-		output.flush();
-		output.close();
-	}
-}
 
+	@Override
+	public String getName() 
+	{
+		return name;
+	}
+
+	@Override
+	public IConnection getConnection() 
+	{
+		return connection;
+	}
+
+}
