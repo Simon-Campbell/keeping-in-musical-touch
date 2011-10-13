@@ -14,14 +14,19 @@ public class KIMTServer {
 		System.out.println("[KIMTServer] Loading ..");
 		
 		try {
-			ss = new SyncServer(defaultServerPort);
-			ss.start();
+			ss = new SyncServer();
+			ss.start(defaultServerPort);
 		
 			System.out.println("[KIMTServer] KIMTSyncServer loaded");
 			
+		} catch (Exception ex)	{
+			ex.printStackTrace();
+			
 		} finally {
-		
+			
 		}
+		
+
 	}
 
 }

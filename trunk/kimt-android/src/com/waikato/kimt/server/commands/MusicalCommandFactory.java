@@ -1,4 +1,4 @@
-package com.waikato.kimt.server;
+package com.waikato.kimt.server.commands;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
