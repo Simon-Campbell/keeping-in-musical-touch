@@ -8,7 +8,11 @@ public class TestClient extends Thread
 {
 	Socket s;
 	String[] names = {"All", "right", "stop", "collaborate", "and", "listen",
-			"Ice", "is", "back", "with", "my", "brand", "new", "invention" };
+			"Ice", "is", "back", "with", "my", "brand", "new", "invention", 
+			"Oden!", "Guide", "our", "ships",
+			"Our", "axes,", "spears", "and", "swords",
+			"Guide", "us", "through", "storms", "that", "whip",
+			"And", "in", "brutal", "war"};
 	Random rand;
 	String name;
 	
