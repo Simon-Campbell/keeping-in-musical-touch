@@ -38,7 +38,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 		});
 		
 		// Set the bitmap from the internet
-		selectedSheet.setBitmapFromInternet(0);
+		selectedSheet.setBitmapFromInternet(0, imageSheet.getHeight(), imageSheet.getWidth());
 	}
 
 	@Override

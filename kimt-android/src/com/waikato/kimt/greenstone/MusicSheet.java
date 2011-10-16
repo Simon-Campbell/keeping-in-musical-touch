@@ -78,9 +78,14 @@ public class MusicSheet implements Serializable {
 		return this.fullAddress;
 	}
 	
-	public String getImageLocation(int page) {
+	public String getImageLocation(int page, int x, int y) {
+		if (x < 0) 
+			x = 426 * 2;
+		if (y < 0)
+			y = 603 * 2;
+		
 		return
-			this.libraryAddress + "/cgi-bin/image-server.pl?a=fit-screen&c=musical-touch&site=localsite&pageWidth=426&pageHeight=603&assocDir=" + 
+			this.libraryAddress + "/cgi-bin/image-server.pl?a=fit-screen&c=musical-touch&site=localsite&pageWidth=" + Integer.toString(x) + "&pageHeight=" + Integer.toString(y) +"&assocDir=" + 
 			this.documentFolder + "&assocFile=" + this.documentTitle + "-" + Integer.toString(page) + ".png";
 	}
 	
@@ -104,11 +109,11 @@ public class MusicSheet implements Serializable {
 		return this.sheetID;
 	}
 	
-	public void setBitmapFromInternet(int page) {
+	public void setBitmapFromInternet(int page, int x, int y) {
 		if (this.documentFolder == null || this.documentTitle == null) {
 			new AsyncGreenstoneXMLDownload().execute(fullAddress);
 		} else {
-			new AsyncImageDownload().execute(getImageLocation(page));
+			new AsyncImageDownload().execute(getImageLocation(page, x, y));
 		}
 	}
 	
@@ -172,7 +177,7 @@ public class MusicSheet implements Serializable {
 	        	this.title	= "N/A";
 	        }
 
-	        this.bitmap = BitmapFactory.decodeStream(new URL(getImageLocation(0)).openStream());
+	        this.bitmap = BitmapFactory.decodeStream(new URL(getImageLocation(0, 0, 0)).openStream());
 	    }
 	    
 	    catch (Exception e) {
