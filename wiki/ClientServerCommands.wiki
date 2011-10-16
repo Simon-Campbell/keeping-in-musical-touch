@@ -9,4 +9,5 @@ This is a list of the client/server commands and what they do.
 ||GET SYNC||Will request and download the current sync object from the sync server.||
 ||GET LIBRARY||Will request and download the most up-to-date library object from the sync server.||
 ||PUT SYNC <sync-obj>||Will upload the clients sync object if the server allows it. The sync server will respond with either a "FORBIDDEN" or "SUCCESS" code. If sucessful, an update notification will then be broadcast to all clients giving them the opportunity to use *GET SYNC*||
-||LOGIN <client-obj>||Will upload an object representing the client. This will then be added to the servers internal list of clients, grouping can be done at this stage.||
+||LOGIN <name>||Will upload an object representing the client. This will then be added to the servers internal list of clients, grouping can be done at this stage.||
+||WELCOME <boolean>||Will send a command to the client which welcomes them to the sync-server, it also tells the client if they're the leader or not.||
