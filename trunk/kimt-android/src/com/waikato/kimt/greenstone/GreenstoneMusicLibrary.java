@@ -15,8 +15,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import android.os.AsyncTask;
-
-import com.waikato.kimt.sync.MusicalLibrarySync;
 import com.waikato.kimt.util.XMLUtilities;
 
 public class GreenstoneMusicLibrary implements MusicLibrary, Serializable {
@@ -24,9 +22,10 @@ public class GreenstoneMusicLibrary implements MusicLibrary, Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private MusicSheet				current;
-	private LinkedList<MusicSheet>	cache;
-	private String trackUri;
+	private MusicSheet current;
+	private LinkedList<MusicSheet> cache;
+	private String libraryUri;
+	private	int libraryPort;
 	
 	/**
 	 * Will connect to the specified Greenstone music library
@@ -35,21 +34,17 @@ public class GreenstoneMusicLibrary implements MusicLibrary, Serializable {
 	 * 	The URI to connect to. It's expected to be a Greenstone3 server.
 	 */
 	public GreenstoneMusicLibrary(String uri) {
-		this.trackUri	= uri;
+		this.libraryUri	= uri;
 		this.cache		= new LinkedList<MusicSheet>();
 	}
 	
 	@Override
 	public void connect() {
-		new DownloadSheetListTask().execute(this);
+		new DownloadSheetListTask().execute();
 	}
 
 	public String getUri() {
-		return trackUri;
-	}
-	
-	public MusicalLibrarySync getSyncer() {
-		return null;
+		return libraryUri;
 	}
 	
 	@Override
@@ -139,7 +134,7 @@ public class GreenstoneMusicLibrary implements MusicLibrary, Serializable {
 	    try {
 	        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder db = dbf.newDocumentBuilder();
-	    
+	        
 	        InputSource is	= new InputSource((new URL(uri)).openStream());
 	       	Document doc	= db.parse(is);
 	        NodeList nodes	= doc.getElementsByTagName("page");
@@ -192,19 +187,24 @@ public class GreenstoneMusicLibrary implements MusicLibrary, Serializable {
 
 	}
 	
-	private class DownloadSheetListTask extends AsyncTask<GreenstoneMusicLibrary, Long, Boolean> {
+	private class DownloadSheetListTask extends AsyncTask<Void, Integer, Void> {
 
 		@Override
-		protected Boolean doInBackground(GreenstoneMusicLibrary... params) {
+		protected Void doInBackground(Void... params) {
 			for (char search = 'a'; search <= 'z'; search++) {
-				setCacheFromGreenstoneXML("http://www.nzdl.org/greenstone3-nema/dev?a=q&sa=&rt=rd&s=TextQuery&c=musical-touch&startPage=1&s1.query=" + Character.toString(search) + "&s1.index=MT&o=xml");
+				setCacheFromGreenstoneXML(GreenstoneMusicLibrary.this.getUri() + "/dev?a=q&sa=&rt=rd&s=TextQuery&c=musical-touch&startPage=1&s1.query=" + Character.toString(search) + "&s1.index=MT&o=xml");
+				publishProgress((int) search - 'a');
 			}
 			
-			return true;
+			return null;
+		}
+		
+		protected void onProgressUpdate(Integer... progress) {
+			notifyLibraryDownloaded();
 		}
 		
 		@Override
-		protected void onPostExecute(Boolean isSuccessful) {
+		protected void onPostExecute(Void v) {
 			notifyLibraryDownloaded();	
 		}
 	}

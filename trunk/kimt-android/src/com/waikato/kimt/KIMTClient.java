@@ -9,6 +9,10 @@ public class KIMTClient extends Application {
 	GreenstoneMusicLibrary gml;
 	MusicalSyncClient ks;
 	
+	public MusicalSyncClient getSyncClient() {
+		return ks;
+	}
+	
 	public void setLibrary(GreenstoneMusicLibrary gml) {
 		this.gml = gml;
 	}

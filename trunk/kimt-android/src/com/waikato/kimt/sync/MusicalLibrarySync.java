@@ -7,13 +7,6 @@ import com.waikato.kimt.greenstone.MusicView;
  */
 public interface MusicalLibrarySync {
 	/**
-	 * Log the username onto the server.
-	 * @param c
-	 *	The username to log into the server.
-	 */
-	void login(String userName);
-	
-	/**
 	 * Set the view of the current sync object and
 	 * update other clients if this client is the leader
 	 * @param mv

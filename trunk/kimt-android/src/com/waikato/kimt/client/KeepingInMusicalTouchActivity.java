@@ -9,7 +9,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -20,9 +19,12 @@ import android.widget.Toast;
 import com.waikato.kimt.KIMTServer;
 import com.waikato.kimt.R;
 import com.waikato.kimt.greenstone.GreenstoneMusicLibrary;
+import com.waikato.kimt.greenstone.MusicView;
 import com.waikato.kimt.greenstone.GreenstoneMusicLibrary.SyncedLibraryBrowserUpdateListener;
 import com.waikato.kimt.greenstone.MusicSheet;
+import com.waikato.kimt.sync.MusicalDataFrame;
 import com.waikato.kimt.sync.MusicalSyncClient;
+import com.waikato.kimt.sync.SyncedLibraryUpdateListener;
 
 
 public class KeepingInMusicalTouchActivity extends Activity {
@@ -35,11 +37,12 @@ public class KeepingInMusicalTouchActivity extends Activity {
 		this.setContentView(R.layout.main);
 
 		final ArrayAdapter<MusicSheet> adapter = new ArrayAdapter<MusicSheet> (this, R.layout.listview, R.id.myListTextView);
-		final ListView listview = (ListView)findViewById(R.id.myListView);
+		final ListView listview = (ListView) findViewById(R.id.myListView);
 			
 		listview.setAdapter(adapter);
+//		listview.setEnabled(false);
 
-		gml = new GreenstoneMusicLibrary(getString(R.string.defaultLibraryLocation) + "dev;jsessionid=08C1CB94BDBF8322F72548075D809910?a=d&ed=1&book=off&c=musical-touch&d=");
+		gml = new GreenstoneMusicLibrary(getString(R.string.defaultLibraryLocation));
 		gml.connect();
 		gml.setLibraryBrowserUpdateListener(new SyncedLibraryBrowserUpdateListener() {
 
@@ -48,9 +51,9 @@ public class KeepingInMusicalTouchActivity extends Activity {
 				adapter.clear();
 
 				for (MusicSheet m : gml.getCache()) {
-		//			String s = m.getTitle() + " by " + m.getAuthor() + " [" + m.getSheetID() + "]";
 					adapter.add(m);
 				}
+				
 				listview.invalidate();
 			}
 		});
@@ -59,18 +62,51 @@ public class KeepingInMusicalTouchActivity extends Activity {
 		int musicalTouchPort		= KIMTServer.defaultServerPort;
 		
 		try {
-			Log.v("Debugging", musicalTouchAddress + ":" + Integer.toString(musicalTouchPort));
-			
 			InetSocketAddress
 				inetSocketAddress = new InetSocketAddress(musicalTouchAddress, musicalTouchPort);
 			
-			MusicalSyncClient
-				musicalSyncClient = new MusicalSyncClient("TestUser", inetSocketAddress);
-			
-			musicalSyncClient.startListening(new Handler(), new Runnable() {
+			MusicalSyncClient musicalSyncClient = new MusicalSyncClient("TestUser", inetSocketAddress);
+			musicalSyncClient.startListening(new Handler());
+			musicalSyncClient.setOnSyncUpdateListener(new SyncedLibraryUpdateListener() {
+				
 				@Override
-				public void run() {
-					Toast.makeText(getApplicationContext(), "UPDATE RECEIVED", Toast.LENGTH_SHORT).show();
+				public void onSyncViewUpdate(MusicView mv) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void onSyncUploaded(Boolean uploaded) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void onSyncUpdateNotification() {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void onSyncDownloaded(MusicalDataFrame k) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void onLoggedIn(boolean isLeader) {
+					if (isLeader) {
+						listview.setEnabled(true);
+					} else {
+						Bundle bundle = new Bundle();
+						bundle.putBoolean("is_leader", false);
+						
+						// Call the next activity (the other view) and send the data to it
+						Intent myIntent = new Intent(getApplicationContext(), KeepingInMusicalTouchDisplayDataActivity.class);
+						myIntent.putExtras(bundle);
+						
+						startActivityForResult(myIntent, 0);    
+					}
 				}
 			});
 
@@ -84,16 +120,17 @@ public class KeepingInMusicalTouchActivity extends Activity {
 		listview.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				
-				//package the data to that it can be sent to next activity
+				// Package the data to that it can be sent to next activity
 				Bundle bundle = new Bundle();
+				bundle.putBoolean("is_leader", true);
 				bundle.putSerializable("selected_sheet", (Serializable) parent.getItemAtPosition(position));
 				
-				//call the next activity (the other view) and send the data to it
+				// Call the next activity (the other view) and send the data to it
 				Intent myIntent = new Intent(getApplicationContext(), KeepingInMusicalTouchDisplayDataActivity.class);
 				myIntent.putExtras(bundle);
+				
 				startActivityForResult(myIntent, 0);    
 
 

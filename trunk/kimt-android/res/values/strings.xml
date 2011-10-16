@@ -12,7 +12,7 @@
     <string name="btnBack">Back</string>
     <string name="btnForward">Forward</string>
     <string name="btnLoad">Load</string>
-    <string name="defaultLibraryLocation">http://www.nzdl.org/greenstone3-nema/</string>
+    <string name="defaultLibraryLocation">http://willsam100.info:8383/greenstone3</string>
     <string name="btnSetLibrary">Set Library</string>
     <string name="txtLogin">Login</string>
     <string name="txtIntroduction">Please enter the location of your \'Keeping In Musical Touch\' server:</string>
