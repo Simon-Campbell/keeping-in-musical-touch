@@ -36,8 +36,6 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		this.dataframe	= new MusicalDataFrame();
 		this.inSync		= false;
 		this.kimtAddress= location;
-		
-		this.login(userName);
 	}
 	
 	public boolean isLeader() {
@@ -46,11 +44,6 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 	
 	public String getUserName() {
 		return userName;
-	}
-
-	@Override
-	public void login(String userName) {
-		new LoginUserTask().execute(userName);
 	}
 
 	@Override
@@ -87,8 +80,8 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 	 * 	The class to run in order to update the UI.
 	 * @throws IOException
 	 */
-	public void startListening(Handler handler, Runnable updater) throws IOException {
-		new BroadcastListener(handler, updater).start();
+	public void startListening(Handler handler) throws IOException {
+		new BroadcastListener(handler).start();
 	}
 	
 	/**
@@ -113,12 +106,6 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		private Handler		 handler;
 		
 		/**
-		 * The runnable that the handler will call. Use this to run any
-		 * code that needs to be run.
-		 */
-		private Runnable	 updater;
-		
-		/**
 		 * Create a BroadcastListener with the handler that will push the
 		 * data back to the UI thread. The runnable will be run when the handler
 		 * is ready.
@@ -129,53 +116,60 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		 * 	to run code
 		 * @throws IOException
 		 */
-		public BroadcastListener(Handler handler, Runnable updater) throws IOException {
-			this.handler		= handler;
-			this.updater		= updater;
+		public BroadcastListener(Handler handler) throws IOException {
+			this.handler = handler;
 		}
 		
 		public void run() {
 			Socket broadcastSocket;
+			
 			ObjectInputStream in;
 			ObjectOutputStream out;
-		
-			Log.v("Debugging", "Connecting socket ..");
-			Log.v("Debugging", "Starting BroadcastListener ..");
 			
 			try {
-				Log.v("Debugging", "Before creating reader ...");
-				
 				broadcastSocket = new Socket(kimtAddress.getAddress(), kimtAddress.getPort());
 				
 				in	= new ObjectInputStream(broadcastSocket.getInputStream());
 				out = new ObjectOutputStream(broadcastSocket.getOutputStream());
-				
-				Log.v("Debugging", "Created reader on " + broadcastSocket.getInetAddress().toString() + ":" + Integer.toString(broadcastSocket.getPort()));
 			
+				writeHeaders(out, "LOGIN");
+				out.writeObject(MusicalSyncClient.this.userName);
+				out.flush();
+				
 				while (true) {
-					
 					Object obj = null;
 				
 					try {
 						while ((obj = in.readObject()) != null) {
 							Log.v("Debugging", "Object Type: " + obj.getClass());
 							
+							// Lets pretend this is the WELCOME packet
+							// TODO:
+							//	Actually make this the WELCOME packet.
 							if (obj instanceof String) {
 								String msg = (String) obj;
 								
-								Log.v("Debugging", "BroadcastListener heard: " + msg);
+								isLeader = true;
+								handler.post(new Runnable() {
+									
+									@Override
+									public void run() {
+										notifyLoggedIn(isLeader());
+									}
+								});
+								
+
+								Log.v("Debugging", "Data: " + msg);
 							}
 							
-							handler.post(updater);
 						}
 					} catch (ClassNotFoundException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
 				
 			} catch (EOFException e) {
-				Log.v("Debugging", "End of file has been reached.");
+				e.printStackTrace();
 			}
 			catch (IOException e) {
 				e.printStackTrace();
@@ -220,46 +214,7 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 			return true;
 		}
 	}
-	
-	/**
-	 * An AsyncTask to log the user into the Keeping In Musical Touch
-	 * server.
-	 * @author Simon
-	 *
-	 */
-	private class LoginUserTask extends AsyncTask<String, Void, Integer> {
-		
-		@Override
-		protected Integer doInBackground(String... params) {
-			Socket s = null;
-			
-			try {
-				s = new Socket(kimtAddress.getAddress(), kimtAddress.getPort());
-				
-				OutputStream os		= s.getOutputStream();
-				InputStream	 is		= s.getInputStream();
-				Object		 read	= null;
-				
-				ObjectOutputStream	out= new ObjectOutputStream(os);
-				ObjectInputStream	in = new ObjectInputStream(is);
-				
-				writeHeaders(out, "LOGIN");
-				
-				out.writeObject(params[0]);
-				out.flush();				
-				out.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 
-			return 1;
-		}
-	
-		// TODO:
-		//	Add notification so that UI knows when user has been logged
-		//	into the KIMT server.
-	}
-	
 	private class UploadLibraryTask extends AsyncTask<Socket, Integer, Boolean> {
 
 		@Override

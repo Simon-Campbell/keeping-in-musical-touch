@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 
 import com.waikato.kimt.server.Client;
+import com.waikato.kimt.server.SyncServer;
 import com.waikato.kimt.server.interfaces.IClient;
 import com.waikato.kimt.server.interfaces.IConnection;
 
@@ -35,9 +36,10 @@ public class MusicalLoginCommand implements MusicalCommand {
 			// If the client is the first in the array then we'll tell the client
 			// that it is the leader
 			out = new ObjectOutputStream(client.getConnection().getOutputStream());
-			//out.writeObject(server.getLoggedInClients().get(0) == client);
+			out.writeObject(SyncServer.VERSION);
+			out.writeObject("WELCOME");
+			out.writeObject(true); // setting by default to leader
 			out.flush();
-		
 	}
 	}
 

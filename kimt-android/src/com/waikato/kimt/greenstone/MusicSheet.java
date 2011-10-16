@@ -28,7 +28,9 @@ public class MusicSheet implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private String	sheetID;
+	
 	private String 	fullAddress;
+	private String	libraryAddress;
 	
 	/**
 	 * Internal Greenstone variable:
@@ -58,9 +60,10 @@ public class MusicSheet implements Serializable {
 	
 	public MusicSheet(GreenstoneMusicLibrary owner, String sheetID, Boolean download) {
 		this.sheetID		= sheetID;
-		this.fullAddress	= owner.getUri() + sheetID + "&o=xml";
+		this.libraryAddress = owner.getUri();
+		this.fullAddress	= owner.getUri() + "/dev?a=d&ed=1&book=off&c=musical-touch&d=" +sheetID + "&o=xml";
+
 		this.pages			= 1337;
-		
 		if (download) {
 			// Start actually fetching the data
 			new AsyncGreenstoneXMLDownload().execute(this.fullAddress);
@@ -77,7 +80,7 @@ public class MusicSheet implements Serializable {
 	
 	public String getImageLocation(int page) {
 		return
-			"http://www.nzdl.org/greenstone3-nema/cgi-bin/image-server.pl?a=fit-screen&c=musical-touch&site=localsite&pageWidth=426&pageHeight=603&assocDir=" + 
+			this.libraryAddress + "/cgi-bin/image-server.pl?a=fit-screen&c=musical-touch&site=localsite&pageWidth=426&pageHeight=603&assocDir=" + 
 			this.documentFolder + "&assocFile=" + this.documentTitle + "-" + Integer.toString(page) + ".png";
 	}
 	
