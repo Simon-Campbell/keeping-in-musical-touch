@@ -18,6 +18,9 @@ import android.util.Log;
 
 import com.waikato.kimt.greenstone.MusicLibrary;
 import com.waikato.kimt.greenstone.MusicView;
+import com.waikato.kimt.server.commands.MusicalCommand;
+import com.waikato.kimt.server.commands.MusicalCommandFactory;
+import com.waikato.kimt.server.commands.MusicalLoginCommand;
 
 public class MusicalSyncClient implements MusicalLibrarySync {
 	private String	 userName;
@@ -111,7 +114,6 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		 */
 		private Handler handler;
 
-		private volatile boolean isListening;
 		private volatile Socket broadcastSocket;	
 		
 		/**
@@ -152,26 +154,51 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 					Object obj = null;
 				
 					try {
+						
 						while ((obj = in.readObject()) != null) {
-							Log.v("Debugging", "Object Type: " + obj.getClass());
-							
 							// Lets pretend this is the WELCOME packet
 							// TODO:
 							//	Actually make this the WELCOME packet.
 							if (obj instanceof String) {
 								String msg = (String) obj;
 								
-								isLeader = true;
-								handler.post(new Runnable() {
+								if (msg.compareTo("KIMT 1.0") == 0) {
+									CommandType commandType = MusicalCommandFactory.getCommandType(in);
 									
-									@Override
-									public void run() {
-										notifyLoggedIn(isLeader());
+									switch (commandType) {
+										case LOGIN: {
+											Object extra = in.readObject();
+											
+											if (extra instanceof Boolean) {
+												MusicalSyncClient.this.isLeader = (Boolean) extra;
+												
+												handler.post(new Runnable() {
+													@Override
+													public void run() {
+														notifyLoggedIn(MusicalSyncClient.this.isLeader());
+													}
+												});
+											}
+											
+											continue;
+										}
+										
+										case PUT_SYNC: {
+											Object extra = in.readObject();
+											
+											if (extra instanceof MusicalDataFrame) {
+												final MusicalDataFrame musicalDataFrame = (MusicalDataFrame) extra;
+												
+												handler.post(new Runnable() {													
+													@Override
+													public void run() {
+														notifyMusicalDataFrameUpdated(musicalDataFrame);
+													}
+												});
+											}
+										}
 									}
-								});
-								
-
-								Log.v("Debugging", "Data: " + msg);
+								}
 							}
 							
 						}
@@ -300,7 +327,7 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		
 		@Override
 		protected void onPostExecute(MusicalDataFrame result) {
-			notifySyncLibraryDownloaded(result);
+			notifyMusicalDataFrameUpdated(result);
 		}
 	}
 
@@ -317,9 +344,9 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 	 * @param k
 	 * 	The sync object that was downloaded from the sync server.
 	 */
-	private void notifySyncLibraryDownloaded(MusicalDataFrame k) {
+	private void notifyMusicalDataFrameUpdated(MusicalDataFrame musicalDataFrame) {
 		for (SyncedLibraryUpdateListener s : registeredLibraryUpdateListeners) {
-			s.onSyncDownloaded(k);
+			s.onMusicalDataFrameUpdated(musicalDataFrame);
 		}
 	}
 	

@@ -7,6 +7,7 @@ import java.io.OptionalDataException;
 import com.waikato.kimt.server.SyncServer;
 import com.waikato.kimt.server.interfaces.IConnection;
 import com.waikato.kimt.sync.MusicalDataFrame;
+import com.waikato.kimt.sync.MusicalSyncClient;
 
 public class MusicalPutSyncCommand implements MusicalCommand {
 
@@ -18,7 +19,7 @@ public class MusicalPutSyncCommand implements MusicalCommand {
 	}
 	
 	@Override
-	public void process(ObjectInputStream in, IConnection conn)
+	public void processAsServer(ObjectInputStream in, IConnection conn)
 			throws OptionalDataException, ClassNotFoundException, IOException {
 		// TODO Auto-generated method stub
 		Object obj = in.readObject();
@@ -28,5 +29,4 @@ public class MusicalPutSyncCommand implements MusicalCommand {
 			this.mdf = (MusicalDataFrame)obj;
 		}
 	}
-
 }
