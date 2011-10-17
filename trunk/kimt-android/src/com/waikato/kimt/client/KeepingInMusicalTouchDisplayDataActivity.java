@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.waikato.kimt.R;
 import com.waikato.kimt.greenstone.MusicSheet;
+import com.waikato.kimt.sync.MusicalSyncClient;
 
 public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 	
@@ -30,22 +31,26 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 		// Get the extra data bundled with this activities
 		// intent
 		Bundle bundle = this.getIntent().getExtras();
-		
-		// Unserialize the MusicSheet that was sent in the bundle,
-		// this MusicSheet was the sheet that was selected earlier.
-		final MusicSheet selectedSheet = (MusicSheet) bundle.getSerializable("selected_sheet");
+
 		boolean isLeader = bundle.getBoolean("is_leader");
-		
-		formattedText.setText(selectedSheet.toString());
-		selectedSheet.setOnImageDownloadedListener(new MusicSheet.ImageDataDownloadListener() {
-			@Override
-			public void onImageDownloaded(MusicSheet ms) {
-				imageSheet.setImageBitmap(ms.getBitmap());
-			}
-		});
-		
-		// Set the bitmap from the internet
-		selectedSheet.setBitmapFromInternet(0, imageSheet.getHeight(), imageSheet.getWidth());
+
+		if (isLeader) { 
+			// Unserialize the MusicSheet that was sent in the bundle,
+			// this MusicSheet was the sheet that was selected earlier.
+			final MusicSheet selectedSheet = (MusicSheet) bundle.getSerializable("selected_sheet");
+			
+			formattedText.setText(selectedSheet.toString());
+			selectedSheet.setOnImageDownloadedListener(new MusicSheet.ImageDataDownloadListener() {
+				@Override
+				public void onImageDownloaded(MusicSheet ms) {
+					imageSheet.setImageBitmap(ms.getBitmap());
+				}
+			});
+			
+			// Set the bitmap from the internet ..
+			selectedSheet.setBitmapFromInternet(0, imageSheet.getHeight(), imageSheet.getWidth());
+		} else {
+		}
 	}
 
 	@Override

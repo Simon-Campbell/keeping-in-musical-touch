@@ -1,5 +1,6 @@
 package com.waikato.kimt.server;
 
+import java.io.EOFException;
 import java.net.Socket;
 
 import com.waikato.kimt.server.commands.MusicalCommand;
@@ -35,10 +36,13 @@ public class Client implements IClient
 						if (read instanceof String)
 						{
 							String data = (String)read;
-							
+
 							MusicalCommand mc = MusicalCommandFactory.getMusicalCommand(data);
 						}
 					}
+				}
+				catch (EOFException ex) {
+					
 				}
 				catch (Exception ex)
 				{

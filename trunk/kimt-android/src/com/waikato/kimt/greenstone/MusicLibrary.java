@@ -33,5 +33,5 @@ public interface MusicLibrary {
 	 */
 	public List<MusicSheet> find(String searchTerm, SearchMode sm);
 
-	void connect();
+	void requestTrackList();
 }
