@@ -50,6 +50,7 @@ public class KeepingInMusicalTouchActivity extends Activity {
 		listview.setEnabled(false);
 		
 		if (greenstoneMusicLibrary == null) {
+			Toast.makeText(getApplicationContext(), "Greenstone was null", Toast.LENGTH_SHORT).show();
 			greenstoneMusicLibrary = new GreenstoneMusicLibrary(getString(R.string.defaultLibraryLocation));
 			
 			greenstoneMusicLibrary.requestTrackList();
@@ -68,9 +69,13 @@ public class KeepingInMusicalTouchActivity extends Activity {
 			});
 			
 			kimtClient.setLibrary(greenstoneMusicLibrary);
+			listview.setEnabled(true);
+		} else {
+			Toast.makeText(getApplicationContext(), "Greenstone has been created, listview is disabled", Toast.LENGTH_SHORT).show();
 		}
 		
 		if (musicalSyncClient == null) {
+			Toast.makeText(getApplicationContext(), "musicalsync was null", Toast.LENGTH_SHORT).show();
 			// Get the musical touch address, port and then
 			// create a socket address from it.
 			InetSocketAddress inetSocketAddress = new InetSocketAddress(getString(R.string.kimt_ip), KIMTServer.defaultServerPort);
@@ -127,7 +132,7 @@ public class KeepingInMusicalTouchActivity extends Activity {
 						if (isLeader) {
 							listview.setEnabled(true);
 							
-							Toast.makeText(getApplicationContext(), "You have been logged in as the conductor.", Toast.LENGTH_SHORT);
+							Toast.makeText(getApplicationContext(), "You have been logged in as the conductor.", Toast.LENGTH_SHORT).show();
 						} else {
 							Bundle bundle = new Bundle();
 							bundle.putBoolean("is_leader", false);
@@ -137,17 +142,19 @@ public class KeepingInMusicalTouchActivity extends Activity {
 							myIntent.putExtras(bundle);
 							
 							startActivityForResult(myIntent, 0);    
-							Toast.makeText(getApplicationContext(), "You have been logged in as a band member.", Toast.LENGTH_SHORT);
+							Toast.makeText(getApplicationContext(), "You have been logged in as a band member.", Toast.LENGTH_SHORT).show();
 						}
 					}
 				});
 
 				
 			} catch (UnknownHostException e) {
-				Toast.makeText(getApplicationContext(), "UNABLE TO CONNECT TO SYNC SERVER", Toast.LENGTH_SHORT);
+				Toast.makeText(getApplicationContext(), "UNABLE TO CONNECT TO SYNC SERVER", Toast.LENGTH_SHORT).show();
 			} catch (IOException e) {
-				Toast.makeText(getApplicationContext(), "UNABLE TO CONNECT TO SYNC SERVER", Toast.LENGTH_SHORT);
+				Toast.makeText(getApplicationContext(), "UNABLE TO CONNECT TO SYNC SERVER", Toast.LENGTH_SHORT).show();
 			}
+		} else {
+			Toast.makeText(getApplicationContext(), "musical sync had already been set", Toast.LENGTH_SHORT).show();
 		}
 
 			
