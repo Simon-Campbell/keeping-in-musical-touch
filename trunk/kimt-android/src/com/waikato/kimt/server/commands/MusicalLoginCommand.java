@@ -9,9 +9,9 @@ import com.waikato.kimt.server.Client;
 import com.waikato.kimt.server.SyncServer;
 import com.waikato.kimt.server.interfaces.IClient;
 import com.waikato.kimt.server.interfaces.IConnection;
+import com.waikato.kimt.sync.MusicalSyncClient;
 
 public class MusicalLoginCommand implements MusicalCommand {
-
 	IClient client;
 	
 	public IClient getClient()
@@ -20,27 +20,29 @@ public class MusicalLoginCommand implements MusicalCommand {
 	}
 	
 	@Override
-	public void process(ObjectInputStream in, IConnection conn)
+	public void processAsServer(ObjectInputStream in, IConnection conn)
 			throws OptionalDataException, ClassNotFoundException, IOException {
-		// TODO Auto-generated method stub
 		Object obj = in.readObject();
 		
 		if (obj instanceof String) {
 			IClient client = new Client(conn, (String) obj);
+			
 			this.client = client;
 			
-			System.out.println("User " + client.getName()+ " has logged in.");
+			System.out.println("User " + client.getName() + " has logged in.");
 
 			ObjectOutputStream out = null ;
 			
 			// If the client is the first in the array then we'll tell the client
 			// that it is the leader
-			out = new ObjectOutputStream(client.getConnection().getOutputStream());
+			out = client.getConnection().getOutputStream();
+			
 			out.writeObject(SyncServer.VERSION);
-			out.writeObject("WELCOME");
-			out.writeObject(true); // setting by default to leader
+			out.writeObject("LOGIN");
+			out.writeObject(new Boolean(true)); // setting by default to leader
+			
 			out.flush();
-	}
+		}
 	}
 
 }

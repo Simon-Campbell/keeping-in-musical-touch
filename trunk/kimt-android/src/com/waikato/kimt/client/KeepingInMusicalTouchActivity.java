@@ -115,7 +115,7 @@ public class KeepingInMusicalTouchActivity extends Activity {
 					}
 					
 					@Override
-					public void onSyncDownloaded(MusicalDataFrame k) {
+					public void onMusicalDataFrameUpdated(MusicalDataFrame k) {
 						// TODO Auto-generated method stub
 						
 					}

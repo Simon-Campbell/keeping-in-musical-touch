@@ -24,7 +24,7 @@ public interface SyncedLibraryUpdateListener {
 	 * @param k
 	 * 	The new sync object that was downloaded from the sync server.
 	 */
-	public void onSyncDownloaded(MusicalDataFrame k);
+	public void onMusicalDataFrameUpdated(MusicalDataFrame k);
 	
 	/**
 	 * An event that is called when a new sync object has been uploaded

@@ -18,6 +18,7 @@ public class Client implements IClient
 	{
 		this.connection = connection;
 		this.name = name;
+	
 		new ClientThread().start();
 	}
 	

@@ -118,8 +118,9 @@ public class SyncServer
 								if (mc instanceof MusicalLoginCommand)
 								{
 									MusicalLoginCommand mlc = (MusicalLoginCommand)mc;
-									mlc.process(c.getInputStream(), c);
+									mlc.processAsServer(c.getInputStream(), c);
 									insertClient(mlc.getClient());
+								
 									running = false;
 								}
 							}
