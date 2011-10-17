@@ -25,7 +25,7 @@ public class GreenstoneMusicLibrary implements MusicLibrary, Serializable {
 	private MusicSheet current;
 	private LinkedList<MusicSheet> cache;
 	private String libraryUri;
-	private	int libraryPort;
+//	private	int libraryPort;
 	
 	/**
 	 * Will connect to the specified Greenstone music library
@@ -39,7 +39,7 @@ public class GreenstoneMusicLibrary implements MusicLibrary, Serializable {
 	}
 	
 	@Override
-	public void connect() {
+	public void requestTrackList() {
 		new DownloadSheetListTask().execute();
 	}
 

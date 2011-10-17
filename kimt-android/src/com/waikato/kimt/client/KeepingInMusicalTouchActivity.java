@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.waikato.kimt.KIMTClient;
 import com.waikato.kimt.KIMTServer;
 import com.waikato.kimt.R;
 import com.waikato.kimt.greenstone.GreenstoneMusicLibrary;
@@ -36,86 +37,119 @@ public class KeepingInMusicalTouchActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.main);
 
+		final KIMTClient kimtClient = (KIMTClient) getApplication();
 		final ArrayAdapter<MusicSheet> adapter = new ArrayAdapter<MusicSheet> (this, R.layout.listview, R.id.myListTextView);
 		final ListView listview = (ListView) findViewById(R.id.myListView);
-			
+				
+		// Get the musical sync client and greenstone library that have been
+		// created for this application.
+		MusicalSyncClient musicalSyncClient = kimtClient.getSyncClient();
+		GreenstoneMusicLibrary greenstoneMusicLibrary = kimtClient.getLibrary();
+
 		listview.setAdapter(adapter);
-//		listview.setEnabled(false);
-
-		gml = new GreenstoneMusicLibrary(getString(R.string.defaultLibraryLocation));
-		gml.connect();
-		gml.setLibraryBrowserUpdateListener(new SyncedLibraryBrowserUpdateListener() {
-
-			@Override
-			public void onLibraryDownloaded(GreenstoneMusicLibrary gml) {
-				adapter.clear();
-
-				for (MusicSheet m : gml.getCache()) {
-					adapter.add(m);
-				}
-				
-				listview.invalidate();
-			}
-		});
-
-		String musicalTouchAddress	= getString(R.string.kimt_ip);
-		int musicalTouchPort		= KIMTServer.defaultServerPort;
+		listview.setEnabled(false);
 		
-		try {
-			InetSocketAddress
-				inetSocketAddress = new InetSocketAddress(musicalTouchAddress, musicalTouchPort);
+		if (greenstoneMusicLibrary == null) {
+			greenstoneMusicLibrary = new GreenstoneMusicLibrary(getString(R.string.defaultLibraryLocation));
 			
-			MusicalSyncClient musicalSyncClient = new MusicalSyncClient("TestUser", inetSocketAddress);
-			musicalSyncClient.startListening(new Handler());
-			musicalSyncClient.setOnSyncUpdateListener(new SyncedLibraryUpdateListener() {
-				
+			greenstoneMusicLibrary.requestTrackList();
+			greenstoneMusicLibrary.setLibraryBrowserUpdateListener(new SyncedLibraryBrowserUpdateListener() {
+
 				@Override
-				public void onSyncViewUpdate(MusicView mv) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public void onSyncUploaded(Boolean uploaded) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public void onSyncUpdateNotification() {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public void onSyncDownloaded(MusicalDataFrame k) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public void onLoggedIn(boolean isLeader) {
-					if (isLeader) {
-						listview.setEnabled(true);
-					} else {
-						Bundle bundle = new Bundle();
-						bundle.putBoolean("is_leader", false);
-						
-						// Call the next activity (the other view) and send the data to it
-						Intent myIntent = new Intent(getApplicationContext(), KeepingInMusicalTouchDisplayDataActivity.class);
-						myIntent.putExtras(bundle);
-						
-						startActivityForResult(myIntent, 0);    
+				public void onLibraryDownloaded(GreenstoneMusicLibrary gml) {
+					adapter.clear();
+
+					for (MusicSheet m : gml.getCache()) {
+						adapter.add(m);
 					}
+					
+					listview.invalidate();
 				}
 			});
-
 			
-		} catch (UnknownHostException e) {
-			Toast.makeText(getApplicationContext(), "UNABLE TO CONNECT TO SYNC SERVER", Toast.LENGTH_SHORT);
-		} catch (IOException e) {
-			Toast.makeText(getApplicationContext(), "UNABLE TO CONNECT TO SYNC SERVER", Toast.LENGTH_SHORT);
+			kimtClient.setLibrary(greenstoneMusicLibrary);
 		}
+		
+		if (musicalSyncClient == null) {
+			// Get the musical touch address, port and then
+			// create a socket address from it.
+			InetSocketAddress inetSocketAddress = new InetSocketAddress(getString(R.string.kimt_ip), KIMTServer.defaultServerPort);
+			
+			try {
+				// Get a random serial number and append it to the username,
+				// this is lazy but it SHOULD work most of the time.
+				int randomSerialNumber =  (int)(Math.random() * 1000000);
+				String userName = "TestUser" + Integer.toString(randomSerialNumber);
+				
+				// Set the application title to reflect the fact we now
+				// have a username.
+				this.setTitle("Keeping In Musical Touch: " + userName);
+				
+				// Instantiate the musical sync client with the now generated username
+				// and socket address.
+				musicalSyncClient = new MusicalSyncClient(userName, inetSocketAddress);
+				
+				// Set the sync client to start listening using the handler provided
+				// from the UI thread
+				musicalSyncClient.startListening(new Handler());
+				
+				// Set the on sync update listeners of this musical sync client.
+				musicalSyncClient.setOnSyncUpdateListener(new SyncedLibraryUpdateListener() {
+					
+					@Override
+					public void onSyncViewUpdate(MusicView mv) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void onSyncUploaded(Boolean uploaded) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void onSyncUpdateNotification() {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void onSyncDownloaded(MusicalDataFrame k) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void onLoggedIn(boolean isLeader) {
+						// If the user is the leader then the listview will be enabled
+						// for them to use
+						if (isLeader) {
+							listview.setEnabled(true);
+							
+							Toast.makeText(getApplicationContext(), "You have been logged in as the conductor.", Toast.LENGTH_SHORT);
+						} else {
+							Bundle bundle = new Bundle();
+							bundle.putBoolean("is_leader", false);
+							
+							// Call the next activity (the other view) and send the data to it
+							Intent myIntent = new Intent(getApplicationContext(), KeepingInMusicalTouchDisplayDataActivity.class);
+							myIntent.putExtras(bundle);
+							
+							startActivityForResult(myIntent, 0);    
+							Toast.makeText(getApplicationContext(), "You have been logged in as a band member.", Toast.LENGTH_SHORT);
+						}
+					}
+				});
+
+				
+			} catch (UnknownHostException e) {
+				Toast.makeText(getApplicationContext(), "UNABLE TO CONNECT TO SYNC SERVER", Toast.LENGTH_SHORT);
+			} catch (IOException e) {
+				Toast.makeText(getApplicationContext(), "UNABLE TO CONNECT TO SYNC SERVER", Toast.LENGTH_SHORT);
+			}
+		}
+
 			
 		listview.setOnItemClickListener(new OnItemClickListener() {
 

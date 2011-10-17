@@ -28,6 +28,7 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 	private boolean isLeader;
 	private boolean	inSync;
 	
+	private BroadcastListener broadcastListener;
 	private MusicLibrary currentLibrary;
 	
 	public MusicalSyncClient(String userName, InetSocketAddress location) throws UnknownHostException, IOException {
@@ -80,8 +81,13 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 	 * 	The class to run in order to update the UI.
 	 * @throws IOException
 	 */
-	public void startListening(Handler handler) throws IOException {
-		new BroadcastListener(handler).start();
+	public void startListening(Handler handler) throws IOException, IllegalThreadStateException {
+		if (broadcastListener == null) {
+			broadcastListener = new BroadcastListener(handler);
+			broadcastListener.start();
+		} else {
+			throw new IllegalThreadStateException("This client is already listening to the MusicalSyncServer.");
+		}
 	}
 	
 	/**
@@ -103,7 +109,10 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		 * The handler created in the UI thread that will push the data
 		 * from this thread back to the UI thread.
 		 */
-		private Handler		 handler;
+		private Handler handler;
+
+		private volatile boolean isListening;
+		private volatile Socket broadcastSocket;	
 		
 		/**
 		 * Create a BroadcastListener with the handler that will push the
@@ -120,9 +129,12 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 			this.handler = handler;
 		}
 		
+		public synchronized void close() throws IOException {
+			this.broadcastSocket.close();
+			this.broadcastSocket = null;
+		}
+		
 		public void run() {
-			Socket broadcastSocket;
-			
 			ObjectInputStream in;
 			ObjectOutputStream out;
 			
@@ -136,7 +148,7 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 				out.writeObject(MusicalSyncClient.this.userName);
 				out.flush();
 				
-				while (true) {
+				while (broadcastSocket != null) {
 					Object obj = null;
 				
 					try {
@@ -350,6 +362,10 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 	@Override
 	public void setOnSyncUpdateListener(SyncedLibraryUpdateListener slul) {
 		registeredLibraryUpdateListeners.add(slul);
+	}
+
+	public void close() throws IOException {
+		broadcastListener.close();
 	}
 
 
