@@ -5,6 +5,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Random;
 
+import com.waikato.kimt.sync.MusicalDataFrame;
+
 public class TestClient extends Thread
 {
 	Socket s;
@@ -33,13 +35,16 @@ public class TestClient extends Thread
 		this.start();
 	}
 	
+	ObjectOutputStream oos;
+	ObjectInputStream ois;
+	
 	public void run()
 	{
 		try
 		{
 			ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
 			oos.flush();
-			ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
+			new ListenThread().start();
 
 			System.out.println("Logging in as: " + name);
 			Thread.sleep(rand.nextInt(100));	//Simulate lag
@@ -61,15 +66,40 @@ public class TestClient extends Thread
 			
 			while(true)
 			{
-				Object o = ois.readObject();
-				System.out.println((String)o);
+				oos.writeObject("PUTSYNC");
+				oos.writeObject((new MusicalDataFrame()));
+				oos.flush();
 				
-				Thread.sleep(1000);
+				Thread.sleep(5000);
+				
+				oos.writeObject("GETSYNC");
+				oos.flush();
 			}
 		}
 		catch (Exception ex)
 		{
 			ex.printStackTrace();
+		}
+	}
+	
+	class ListenThread extends Thread
+	{
+		public void run()
+		{
+			try
+			{
+				ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
+				
+				while(true)
+				{
+					Object o = ois.readObject();
+					System.out.println((String)o);
+				}
+			}
+			catch (Exception ex)
+			{
+				//Do nothing
+			}
 		}
 	}
 }
