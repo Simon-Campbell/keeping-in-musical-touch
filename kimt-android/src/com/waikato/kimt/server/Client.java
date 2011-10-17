@@ -1,7 +1,9 @@
 package com.waikato.kimt.server;
 
 import java.io.EOFException;
+import java.io.StreamCorruptedException;
 import java.net.Socket;
+import java.net.SocketException;
 
 import com.waikato.kimt.server.commands.MusicalCommand;
 import com.waikato.kimt.server.commands.MusicalCommandFactory;
@@ -14,7 +16,7 @@ public class Client implements IClient
 	String name;
 	ClientThread clientThread;
 	
-	public Client(IConnection connection, String name)
+	public Client(IConnection connection, String name, ClientManager clientManager)
 	{
 		this.connection = connection;
 		this.name = name;
@@ -42,8 +44,18 @@ public class Client implements IClient
 						}
 					}
 				}
-				catch (EOFException ex) {
-					
+				catch (EOFException ex) 
+				{
+					//EOF Exception
+				}
+				catch (SocketException ex)
+				{
+					System.err.println("Client disconnected:");
+					ClientManager.getSingleton().remove(Client.this);
+				}
+				catch (StreamCorruptedException ex)
+				{
+					System.err.println("datastream corruption detected");
 				}
 				catch (Exception ex)
 				{
