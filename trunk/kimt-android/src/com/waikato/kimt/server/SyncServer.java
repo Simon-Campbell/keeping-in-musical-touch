@@ -3,18 +3,10 @@ package com.waikato.kimt.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
-
-import com.waikato.kimt.server.commands.MusicalCommand;
-import com.waikato.kimt.server.commands.MusicalCommandFactory;
-import com.waikato.kimt.server.commands.MusicalLoginCommand;
 import com.waikato.kimt.server.interfaces.IClient;
 import com.waikato.kimt.sync.MusicalDataFrame;
 
@@ -53,7 +45,7 @@ public class SyncServer
                 // TODO:
                 //      Test this ability to broadcast sync to all
                 //      clients.
-                Iterator it = clientManager.getClients().iterator();
+                Iterator<IClient> it = clientManager.getClients().iterator();
 				while(it.hasNext())
 				{
 					IClient c = (IClient)it.next();

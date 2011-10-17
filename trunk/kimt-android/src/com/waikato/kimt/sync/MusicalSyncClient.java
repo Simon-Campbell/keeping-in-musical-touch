@@ -14,13 +14,9 @@ import java.util.List;
 
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.util.Log;
-
 import com.waikato.kimt.greenstone.MusicLibrary;
 import com.waikato.kimt.greenstone.MusicView;
-import com.waikato.kimt.server.commands.MusicalCommand;
 import com.waikato.kimt.server.commands.MusicalCommandFactory;
-import com.waikato.kimt.server.commands.MusicalLoginCommand;
 
 public class MusicalSyncClient implements MusicalLibrarySync {
 	private String	 userName;

@@ -1,7 +1,6 @@
 package com.waikato.kimt.server.commands;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 
@@ -10,7 +9,6 @@ import com.waikato.kimt.server.ClientManager;
 import com.waikato.kimt.server.SyncServer;
 import com.waikato.kimt.server.interfaces.IClient;
 import com.waikato.kimt.server.interfaces.IConnection;
-import com.waikato.kimt.sync.MusicalSyncClient;
 
 public class MusicalLoginCommand implements MusicalCommand {
 	IClient client;

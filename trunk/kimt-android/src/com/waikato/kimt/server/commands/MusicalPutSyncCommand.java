@@ -1,23 +1,14 @@
 package com.waikato.kimt.server.commands;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.OptionalDataException;
 
-import com.waikato.kimt.server.SyncServer;
+import com.waikato.kimt.server.StateManager;
 import com.waikato.kimt.server.interfaces.IConnection;
 import com.waikato.kimt.sync.MusicalDataFrame;
-import com.waikato.kimt.sync.MusicalSyncClient;
 
 public class MusicalPutSyncCommand implements MusicalCommand {
 
-	MusicalDataFrame mdf;
-	
-	public MusicalDataFrame getMusicalDataFrame()
-	{
-		return mdf;
-	}
-	
 	@Override
 	public void processAsServer(IConnection conn)
 			throws OptionalDataException, ClassNotFoundException, IOException {
@@ -26,7 +17,8 @@ public class MusicalPutSyncCommand implements MusicalCommand {
 		
 		if (obj instanceof MusicalDataFrame) 
 		{
-			this.mdf = (MusicalDataFrame)obj;
+			System.out.println("PUT CURRENT SYNC");
+			StateManager.getSingleton().getHashTable().put("MusicalDataFrame", obj);
 		}
 	}
 }

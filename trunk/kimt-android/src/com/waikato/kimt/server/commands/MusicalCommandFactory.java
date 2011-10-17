@@ -25,7 +25,8 @@ public class MusicalCommandFactory {
 		
 		switch (getCommandType(cmd)) {
 		case LOGIN:
-			return new MusicalLoginCommand();
+			System.out.println("[MusicalCommandFactory]: LOGIN command marked obsolete.");
+			//return new MusicalLoginCommand();
 		case PUT_SYNC:
 			return new MusicalPutSyncCommand();
 		case GET_SYNC:
