@@ -36,7 +36,8 @@ public class KeepingInMusicalTouchActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.main);
-
+		
+		
 		final KIMTClient kimtClient = (KIMTClient) getApplication();
 		final ArrayAdapter<MusicSheet> adapter = new ArrayAdapter<MusicSheet> (this, R.layout.listview, R.id.myListTextView);
 		final ListView listview = (ListView) findViewById(R.id.myListView);
@@ -44,7 +45,7 @@ public class KeepingInMusicalTouchActivity extends Activity {
 		// Get the musical sync client and greenstone library that have been
 		// created for this application.
 		MusicalSyncClient musicalSyncClient = kimtClient.getSyncClient();
-		GreenstoneMusicLibrary greenstoneMusicLibrary = kimtClient.getLibrary();
+		GreenstoneMusicLibrary greenstoneMusicLibrary = null; //kimtClient.getLibrary();
 
 		listview.setAdapter(adapter);
 		listview.setEnabled(false);
