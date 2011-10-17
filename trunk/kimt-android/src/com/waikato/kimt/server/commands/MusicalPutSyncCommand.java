@@ -19,10 +19,10 @@ public class MusicalPutSyncCommand implements MusicalCommand {
 	}
 	
 	@Override
-	public void processAsServer(ObjectInputStream in, IConnection conn)
+	public void processAsServer(IConnection conn)
 			throws OptionalDataException, ClassNotFoundException, IOException {
 		// TODO Auto-generated method stub
-		Object obj = in.readObject();
+		Object obj = conn.getInputStream().readObject();
 		
 		if (obj instanceof MusicalDataFrame) 
 		{

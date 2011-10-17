@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.OptionalDataException;
 
+import com.waikato.kimt.server.ClientManager;
 import com.waikato.kimt.server.interfaces.IClient;
 import com.waikato.kimt.server.interfaces.IConnection;
 import com.waikato.kimt.sync.MusicalSyncClient;
@@ -22,5 +23,5 @@ public interface MusicalCommand {
 	 * @throws ClassNotFoundException 
 	 * @throws OptionalDataException 
 	 */
-	public void processAsServer(ObjectInputStream in, IConnection conn) throws OptionalDataException, ClassNotFoundException, IOException;
+	public void processAsServer(IConnection conn) throws OptionalDataException, ClassNotFoundException, IOException;
 }

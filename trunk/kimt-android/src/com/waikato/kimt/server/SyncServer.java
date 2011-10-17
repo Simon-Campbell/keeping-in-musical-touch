@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -28,27 +29,21 @@ public class SyncServer
 	}
 	
 	ServerSocket server;
-	Map<String, IClient> clients;
+	ClientManager clientManager;
 	volatile MusicalDataFrame current;
 	
 	public void start(int port) throws IOException
 	{
 		server = new ServerSocket(port);
-		clients = new HashMap<String, IClient>();
 		System.out.println("[KIMT]: Started server on port: " + server.getLocalPort());
 		
 		new ConnectionThread().start();
 		new ConsoleListener().start();
 	}
 	
-	public synchronized void insertClient(IClient c)
+	public synchronized ClientManager getClientManager()
 	{
-		clients.put(c.getName(), c);
-	}
-	
-	public synchronized Map<String, IClient> getClients()
-	{
-		return clients;
+		return clientManager;
 	}
 	
 	public void setSync(MusicalDataFrame sync) throws IOException {
@@ -58,20 +53,17 @@ public class SyncServer
                 // TODO:
                 //      Test this ability to broadcast sync to all
                 //      clients.
-                Iterator it = getClients().entrySet().iterator();
+                Iterator it = clientManager.getClients().iterator();
 				while(it.hasNext())
 				{
-					Map.Entry pairs = (Map.Entry)it.next();
-					IClient c = (IClient)pairs.getValue();
-
+					IClient c = (IClient)it.next();
 					c.getConnection().getOutputStream().writeObject(VERSION);
 					c.getConnection().getOutputStream().writeObject("PUT SYNC");
 					c.getConnection().getOutputStream().writeObject(this.current);
 				}
 
         	}
-}
-
+	}
 	
 	class ConnectionThread extends Thread
 	{
@@ -90,14 +82,115 @@ public class SyncServer
 				System.out.println("[KIMT]: Connection found - Address: " + 
 						s.getInetAddress().getCanonicalHostName() + " port: " + s.getPort());
 				
-				int i = 0;
-				
 				while(running)
 				{
 					try
 					{
 						Object read = null;
+						read = c.getInputStream().readObject();
+						String data;
 						
+						if (read instanceof String)
+						{
+							data = (String)read;
+							
+							//Version check
+							if (data.compareTo(VERSION) != 0)
+							{
+								System.out.println("This is not supported KIMT protocol-- read stopping.");
+								System.out.println("Protocol: " + read);
+							}
+							else
+							{
+								System.out.println("Accepted " + VERSION + " connection data frame.");
+								System.out.println("Getting the musical command ..");
+								
+								read = c.getInputStream().readObject();
+								data = (String)read;
+								
+								//Login check
+								if (data.equals("LOGIN"))
+								{
+									read = c.getInputStream().readObject();
+									data = (String)read;
+									
+									IClient cli = new Client(c, data, ClientManager.getSingleton());
+									ClientManager.getSingleton().insert(cli);
+									
+									c.output.writeObject("LOGIN");
+									c.output.flush();
+									c.output.writeObject(Boolean.toString(
+											ClientManager.getSingleton().clients.get(0).equals(cli))
+											);
+									c.output.flush();
+									
+									running = false;	
+								}
+								
+								
+								/*
+								data = readString(c.getInputStream());
+								if (data.equals("LOGIN"))
+								{
+									data = readString(c.getInputStream());
+									IClient client = new Client(c, data, ClientManager.getSingleton());
+									ClientManager.getSingleton().insert(client);
+									
+								}
+								*/
+							}
+						}
+						
+						
+						
+						
+						/*
+						Object read = null;
+						String data;
+						data = readString(c.input);
+						if (!data.equals("null"))
+						{
+							data = (String)read;
+							
+							if (data.compareTo(VERSION) != 0) 
+							{
+								System.out.println("This is not supported KIMT protocol-- read stopping.");
+								System.out.println("Protocol: " + read);
+								
+
+								
+							} 
+							else
+							{
+								System.out.println("Accepted " + VERSION + " connection data frame.");
+								System.out.println("Getting the musical command ..");
+								
+
+								
+								
+								
+								MusicalLoginCommand mc = new MusicalLoginCommand();
+								mc.processAsServer(c);
+								clientManager.insert(mc.getClient());
+							
+								running = false;
+							}
+						}
+							
+						*/
+						/*
+						read = (String)c.getInputStream().readObject();
+						
+						if (read.compareTo(VERSION) != 0) {
+							System.out.println("This is not supported KIMT protocol-- read stopping.");
+							System.out.println("Protocol: " + read);
+						} else {
+							System.out.println("Accepted " + VERSION + " connection data frame.");
+							System.out.println("Getting the musical command ..");
+							*/
+
+						/*
+					
 						while(running && (read = c.getInputStream().readObject()) != null)
 						{
 							System.out.println(read);
@@ -119,12 +212,14 @@ public class SyncServer
 								{
 									MusicalLoginCommand mlc = (MusicalLoginCommand)mc;
 									mlc.processAsServer(c.getInputStream(), c);
-									insertClient(mlc.getClient());
+									clientManager.insert(mlc.getClient());
 								
 									running = false;
 								}
 							}
 						}
+						*/
+						
 					}
 					catch (Exception ex)
 					{
@@ -146,6 +241,9 @@ public class SyncServer
 	{
 		public void run()
 		{
+			
+			System.out.println("Server commands:" + 
+			"\nlist: Lists all logged in clients ");
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 			
 			while(true)
@@ -156,17 +254,21 @@ public class SyncServer
 					while((s = reader.readLine()) != null)
 					{
 						String[] data = s.split(" ");
+						ArrayList<IClient> clients = ClientManager.getSingleton().getClients();
 						
 						if (data[0].equals("list"))
 						{
-							Iterator it = clients.entrySet().iterator();
-							
-							while(it.hasNext())
+							for(int i = 0; i < clients.size(); i++)
 							{
-								Map.Entry pairs = (Map.Entry)it.next();
-								System.out.println("Client: " + ((IClient)pairs.getValue()).getName());
+								System.out.println(i + ": " + clients.get(i).getName());
 							}
-							System.out.println("---");
+						}
+						if (data.length >= 2 && data[0].equals("kick"))
+						{
+							if (clientManager.remove(data[1]))
+								System.out.println("Kicked: " + data[1]);
+								else
+									System.err.println("Failed to kick: " + data[1]);
 						}
 					}
 				}

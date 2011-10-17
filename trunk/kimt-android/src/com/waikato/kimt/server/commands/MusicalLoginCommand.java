@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 
 import com.waikato.kimt.server.Client;
+import com.waikato.kimt.server.ClientManager;
 import com.waikato.kimt.server.SyncServer;
 import com.waikato.kimt.server.interfaces.IClient;
 import com.waikato.kimt.server.interfaces.IConnection;
@@ -20,12 +21,12 @@ public class MusicalLoginCommand implements MusicalCommand {
 	}
 	
 	@Override
-	public void processAsServer(ObjectInputStream in, IConnection conn)
+	public void processAsServer(IConnection conn)
 			throws OptionalDataException, ClassNotFoundException, IOException {
-		Object obj = in.readObject();
+		Object obj = conn.getInputStream().readObject();
 		
 		if (obj instanceof String) {
-			IClient client = new Client(conn, (String) obj);
+			IClient client = new Client(conn, (String) obj, ClientManager.getSingleton());
 			
 			this.client = client;
 			
