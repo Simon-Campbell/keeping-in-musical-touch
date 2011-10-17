@@ -4,7 +4,11 @@ import android.app.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract.CommonDataKinds.Event;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.waikato.kimt.R;
@@ -21,6 +25,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 
 		final ImageView imageSheet = (ImageView) findViewById(R.id.imageSheet);
 		final TextView formattedText = (TextView) findViewById(R.id.textViewFormatted);
+		final ScrollView scrollView = (ScrollView) findViewById(R.id.imageScrollView);
 		
 		// Get the extra data bundled with this activities
 		// intent
@@ -28,7 +33,8 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 		
 		// Unserialize the MusicSheet that was sent in the bundle,
 		// this MusicSheet was the sheet that was selected earlier.
-		MusicSheet selectedSheet = (MusicSheet) bundle.getSerializable("selected_sheet");
+		final MusicSheet selectedSheet = (MusicSheet) bundle.getSerializable("selected_sheet");
+		boolean isLeader = bundle.getBoolean("is_leader");
 		
 		formattedText.setText(selectedSheet.toString());
 		selectedSheet.setOnImageDownloadedListener(new MusicSheet.ImageDataDownloadListener() {
