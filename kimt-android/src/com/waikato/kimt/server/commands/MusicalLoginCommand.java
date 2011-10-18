@@ -34,13 +34,13 @@ public class MusicalLoginCommand implements MusicalCommand {
 			
 			// If the client is the first in the array then we'll tell the client
 			// that it is the leader
-			out = client.getConnection().getOutputStream();
-			
-			out.writeObject(SyncServer.VERSION);
-			out.writeObject("LOGIN");
-			out.writeObject(new Boolean(true)); // setting by default to leader
-			
-			out.flush();
+//			out = client.getConnection().getOutputStream();
+//			
+//			out.writeObject(SyncServer.VERSION);
+//			out.writeObject("LOGIN");
+//			out.writeObject(new Boolean(true)); // setting by default to leader
+//			
+//			out.flush();
 		}
 	}
 

@@ -8,8 +8,8 @@ import com.waikato.kimt.greenstone.GreenstoneMusicLibrary;
 import com.waikato.kimt.sync.MusicalSyncClient;
 
 public class KIMTClient extends Application {
-	GreenstoneMusicLibrary gml;
-	MusicalSyncClient musicalSyncClient;
+	private GreenstoneMusicLibrary greenstoneProxy;
+	private MusicalSyncClient musicalSyncClient;
 
 	public void setSyncClient(MusicalSyncClient musicalSyncClient) {
 		this.musicalSyncClient = musicalSyncClient;
@@ -28,7 +28,7 @@ public class KIMTClient extends Application {
 	 * @param gml
 	 */
 	public void setLibrary(GreenstoneMusicLibrary gml) {
-		this.gml = gml;
+		this.greenstoneProxy = gml;
 	}
 	
 	/**
@@ -36,7 +36,7 @@ public class KIMTClient extends Application {
 	 * @return
 	 */
 	public GreenstoneMusicLibrary getLibrary() {
-		return this.gml;
+		return this.greenstoneProxy;
 	}
 	
 	public void close() throws IOException {
