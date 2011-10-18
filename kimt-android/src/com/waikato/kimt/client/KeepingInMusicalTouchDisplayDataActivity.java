@@ -66,9 +66,10 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 
 			// Set the bitmap from the internet ..
 			selectedSheet.setBitmapFromInternet(0, 800, 1280);
-
 		} else {
-			Toast.makeText(getApplicationContext(), "Waiting for the Conductor...", Toast.LENGTH_SHORT).show();
+			formattedText.setText("Status:\n\tWaiting for the conductor to select a sheet ..");
+
+			Toast.makeText(getApplicationContext(), "Waiting for the conductor...", Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -76,8 +77,10 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 	@Override
 	public void onBackPressed() {
 		Intent intent = new Intent();
+		
 		setResult(RESULT_OK, intent);
 		finish();
+		
 		return;
 	}
 }
