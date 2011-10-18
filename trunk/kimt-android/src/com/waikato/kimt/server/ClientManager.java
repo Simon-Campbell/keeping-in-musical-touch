@@ -27,7 +27,18 @@ public class ClientManager
 	
 	public synchronized boolean remove(IClient c)
 	{
-		return clients.remove(c);
+		for(int i = 0; i < clients.size(); i++)
+		{
+			IClient d = clients.get(i);
+			if (c.equals(d))
+			{
+				clients.remove(i);
+				return true;
+			}
+		}
+		
+		return false;
+		//return clients.remove(c);
 	}
 	
 	public synchronized boolean remove(String s)

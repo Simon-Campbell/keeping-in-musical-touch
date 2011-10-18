@@ -22,7 +22,6 @@ public class SyncServer
 	
 	ServerSocket server;
 	ClientManager clientManager;
-	volatile MusicalDataFrame current;
 	
 	public void start(int port) throws IOException
 	{
@@ -37,25 +36,7 @@ public class SyncServer
 	{
 		return clientManager;
 	}
-	
-	public void setSync(MusicalDataFrame sync) throws IOException {
-        synchronized (current) {
-                this.current = sync;
-                
-                // TODO:
-                //      Test this ability to broadcast sync to all
-                //      clients.
-                Iterator<IClient> it = clientManager.getClients().iterator();
-				while(it.hasNext())
-				{
-					IClient c = (IClient)it.next();
-					c.getConnection().getOutputStream().writeObject(VERSION);
-					c.getConnection().getOutputStream().writeObject("PUT SYNC");
-					c.getConnection().getOutputStream().writeObject(this.current);
-				}
 
-        	}
-	}
 	
 	class ConnectionThread extends Thread
 	{
@@ -95,7 +76,6 @@ public class SyncServer
 							else
 							{
 								System.out.println("Accepted " + VERSION + " connection data frame.");
-								System.out.println("Getting the musical command ..");
 								
 								read = c.getInputStream().readObject();
 								data = (String)read;
@@ -122,100 +102,8 @@ public class SyncServer
 									
 									running = false;	
 								}
-								
-								
-								/*
-								data = readString(c.getInputStream());
-								if (data.equals("LOGIN"))
-								{
-									data = readString(c.getInputStream());
-									IClient client = new Client(c, data, ClientManager.getSingleton());
-									ClientManager.getSingleton().insert(client);
-									
-								}
-								*/
 							}
 						}
-						
-						
-						
-						
-						/*
-						Object read = null;
-						String data;
-						data = readString(c.input);
-						if (!data.equals("null"))
-						{
-							data = (String)read;
-							
-							if (data.compareTo(VERSION) != 0) 
-							{
-								System.out.println("This is not supported KIMT protocol-- read stopping.");
-								System.out.println("Protocol: " + read);
-								
-
-								
-							} 
-							else
-							{
-								System.out.println("Accepted " + VERSION + " connection data frame.");
-								System.out.println("Getting the musical command ..");
-								
-
-								
-								
-								
-								MusicalLoginCommand mc = new MusicalLoginCommand();
-								mc.processAsServer(c);
-								clientManager.insert(mc.getClient());
-							
-								running = false;
-							}
-						}
-							
-						*/
-						/*
-						read = (String)c.getInputStream().readObject();
-						
-						if (read.compareTo(VERSION) != 0) {
-							System.out.println("This is not supported KIMT protocol-- read stopping.");
-							System.out.println("Protocol: " + read);
-						} else {
-							System.out.println("Accepted " + VERSION + " connection data frame.");
-							System.out.println("Getting the musical command ..");
-							*/
-
-						/*
-					
-						while(running && (read = c.getInputStream().readObject()) != null)
-						{
-							System.out.println(read);
-							String data = (String)read;
-
-							// Reading the protocol, should probably put into a new
-							// method when possible.
-							if (data.compareTo(VERSION) != 0) {
-								System.out.println("This is not supported KIMT protocol-- read stopping.");
-								System.out.println("Protocol: " + data);
-							} else {
-								System.out.println("Accepted " + VERSION + " connection data frame.");
-								System.out.println("Getting the musical command ..");
-
-								MusicalCommand
-									mc = MusicalCommandFactory.getMusicalCommand(c.getInputStream());
-								
-								if (mc instanceof MusicalLoginCommand)
-								{
-									MusicalLoginCommand mlc = (MusicalLoginCommand)mc;
-									mlc.processAsServer(c.getInputStream(), c);
-									clientManager.insert(mlc.getClient());
-								
-									running = false;
-								}
-							}
-						}
-						*/
-						
 					}
 					catch (Exception ex)
 					{
@@ -229,19 +117,21 @@ public class SyncServer
 			{
 				ex.printStackTrace();
 			}
-			}
-		
+		}
 	}
 	
 	class ConsoleListener extends Thread
 	{
 		public void run()
 		{
-			
-			System.out.println("Server commands:" + 
-			"\nlist: Lists all logged in clients ");
+			System.out.println("-----" +
+					"Server commands:" + 
+					"\nlist: Lists all logged in clients" +
+					"\nupdate: Updates all clients" +
+					"\nviewstate: View the current MusicalDataFrame object" +
+					"\n-----");
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-			
+		
 			while(true)
 			{
 				try
@@ -259,12 +149,22 @@ public class SyncServer
 								System.out.println(i + ": " + clients.get(i).getName());
 							}
 						}
-						if (data.length >= 2 && data[0].equals("kick"))
+						else if (data.length >= 2 && data[0].equals("kick"))
 						{
+							System.out.println("Removing " + data[1] + " size: " + ClientManager.getSingleton().clients.size());
 							if (clientManager.remove(data[1]))
 								System.out.println("Kicked: " + data[1]);
 								else
 									System.err.println("Failed to kick: " + data[1]);
+						}
+						else if (data[0].equals("update"))
+						{
+							System.out.println("[kimt] forcing update to all clients");
+							StateManager.getSingleton().setSync((MusicalDataFrame)StateManager.getSingleton().states.get("MusicalDataFrame"));
+						}
+						else if (data[0].equals("viewstate"))
+						{
+							System.out.println(StateManager.getSingleton().states.get("MusicalDataFrame"));
 						}
 					}
 				}
