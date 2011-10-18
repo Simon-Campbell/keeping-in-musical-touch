@@ -79,10 +79,10 @@ public class MusicSheet implements Serializable {
 	}
 	
 	public String getImageLocation(int page, int x, int y) {
-		if (x < 0) 
-			x = 426 * 2;
-		if (y < 0)
-			y = 603 * 2;
+		//if (x < 0) 
+			x = 800;
+		//if (y < 0)
+			y = 1280;
 		
 		return
 			this.libraryAddress + "/cgi-bin/image-server.pl?a=fit-screen&c=musical-touch&site=localsite&pageWidth=" + Integer.toString(x) + "&pageHeight=" + Integer.toString(y) +"&assocDir=" + 
@@ -112,6 +112,7 @@ public class MusicSheet implements Serializable {
 	public void setBitmapFromInternet(int page, int x, int y) {
 		if (this.documentFolder == null || this.documentTitle == null) {
 			new AsyncGreenstoneXMLDownload().execute(fullAddress);
+			
 		} else {
 			new AsyncImageDownload().execute(getImageLocation(page, x, y));
 		}

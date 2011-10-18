@@ -36,8 +36,7 @@ public class KeepingInMusicalTouchActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.main);
-		
-		
+
 		final KIMTClient kimtClient = (KIMTClient) getApplication();
 		final ArrayAdapter<MusicSheet> adapter = new ArrayAdapter<MusicSheet> (this, R.layout.listview, R.id.myListTextView);
 		final ListView listview = (ListView) findViewById(R.id.myListView);
@@ -45,7 +44,7 @@ public class KeepingInMusicalTouchActivity extends Activity {
 		// Get the musical sync client and greenstone library that have been
 		// created for this application.
 		MusicalSyncClient musicalSyncClient = kimtClient.getSyncClient();
-		GreenstoneMusicLibrary greenstoneMusicLibrary = null; //kimtClient.getLibrary();
+		GreenstoneMusicLibrary greenstoneMusicLibrary = kimtClient.getLibrary();
 
 		listview.setAdapter(adapter);
 		listview.setEnabled(false);
@@ -70,10 +69,11 @@ public class KeepingInMusicalTouchActivity extends Activity {
 			});
 			
 			kimtClient.setLibrary(greenstoneMusicLibrary);
-			listview.setEnabled(true);
-		} else {
-			Toast.makeText(getApplicationContext(), "Greenstone has been created, listview is disabled", Toast.LENGTH_SHORT).show();
+			listview.setEnabled(true); 
 		}
+//		 else {
+//			Toast.makeText(getApplicationContext(), "Greenstone has been created, listview is disabled", Toast.LENGTH_SHORT).show();
+//		}
 		
 		if (musicalSyncClient == null) {
 			Toast.makeText(getApplicationContext(), "musicalsync was null", Toast.LENGTH_SHORT).show();
