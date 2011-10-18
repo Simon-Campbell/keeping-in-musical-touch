@@ -46,5 +46,10 @@ public class MusicalDataFrame implements Serializable {
 	public MusicView getMusicView() {
 		return this.currentView;
 	}
+	
+	public String toString() {
+		return "MusicDataFrame: " + "LibraryLocation: " + getLibraryLocation() + " TrackLocation: " + getTrackLocation();
+	}
+	
 
 }
