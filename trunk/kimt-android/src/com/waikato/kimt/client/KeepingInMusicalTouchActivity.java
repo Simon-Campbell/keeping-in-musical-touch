@@ -52,7 +52,6 @@ public class KeepingInMusicalTouchActivity extends Activity {
 		if (greenstoneMusicLibrary == null) {
 			Toast.makeText(getApplicationContext(), "Greenstone was null", Toast.LENGTH_SHORT).show();
 			greenstoneMusicLibrary = new GreenstoneMusicLibrary(getString(R.string.defaultLibraryLocation));
-			
 			greenstoneMusicLibrary.requestTrackList();
 			greenstoneMusicLibrary.setLibraryBrowserUpdateListener(new SyncedLibraryBrowserUpdateListener() {
 
@@ -76,7 +75,7 @@ public class KeepingInMusicalTouchActivity extends Activity {
 //		}
 		
 		if (musicalSyncClient == null) {
-			Toast.makeText(getApplicationContext(), "musicalsync was null", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), "MusicalSync was null", Toast.LENGTH_SHORT).show();
 			// Get the musical touch address, port and then
 			// create a socket address from it.
 			InetSocketAddress inetSocketAddress = new InetSocketAddress(getString(R.string.kimt_ip), KIMTServer.defaultServerPort);

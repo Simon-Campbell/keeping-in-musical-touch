@@ -14,6 +14,8 @@ import java.util.List;
 
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.util.Log;
+
 import com.waikato.kimt.greenstone.MusicLibrary;
 import com.waikato.kimt.greenstone.MusicView;
 import com.waikato.kimt.server.commands.MusicalCommandFactory;
@@ -152,22 +154,22 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 					try {
 						
 						while ((obj = in.readObject()) != null) {
-							// Lets pretend this is the WELCOME packet
-							// TODO:
-							//	Actually make this the WELCOME packet.
 							if (obj instanceof String) {
 								String msg = (String) obj;
 								
 								if (msg.compareTo("KIMT 1.0") == 0) {
+									Log.v("KeepingInMusicalTouch", "I have a KIMT 1.0 header");
 									CommandType commandType = MusicalCommandFactory.getCommandType(in);
-									
+									Log.v("KeepingInMusicalTouch", "I have a command type of:" + commandType.toString());
 									switch (commandType) {
 										case LOGIN: {
 											Object extra = in.readObject();
-											
+
 											if (extra instanceof Boolean) {
 												MusicalSyncClient.this.isLeader = (Boolean) extra;
 												
+												Log.v("KeepingInMusicalTouch", "I am the leader? " + MusicalSyncClient.this.isLeader);
+
 												handler.post(new Runnable() {
 													@Override
 													public void run() {

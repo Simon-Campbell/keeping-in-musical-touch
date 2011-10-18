@@ -109,11 +109,15 @@ public class SyncServer
 									IClient cli = new Client(c, data, ClientManager.getSingleton());
 									ClientManager.getSingleton().insert(cli);
 									
+									boolean isLeader = ClientManager.getSingleton().clients.get(0).equals(cli);
+
+									System.out.println("Notified client they were leader? " + isLeader);
+									
+									c.output.writeObject(VERSION);
+									c.output.flush();
 									c.output.writeObject("LOGIN");
 									c.output.flush();
-									c.output.writeObject(Boolean.toString(
-											ClientManager.getSingleton().clients.get(0).equals(cli))
-											);
+									c.output.writeObject(new Boolean(isLeader));
 									c.output.flush();
 									
 									running = false;	
