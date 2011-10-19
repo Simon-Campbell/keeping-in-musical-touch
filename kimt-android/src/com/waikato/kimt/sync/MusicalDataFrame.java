@@ -1,10 +1,6 @@
 package com.waikato.kimt.sync;
 
-import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 public class MusicalDataFrame implements Serializable {
 //	private MusicView	currentView;
