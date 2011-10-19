@@ -10,6 +10,7 @@ public class MusicalDataFrame implements Serializable {
 	private String	trackIdentifier;
 //	private byte[]	bitmapBytes;
 	
+	private int page;
 	/**
 	 * The serial version of this object. Update when the object changes.
 	 */
@@ -29,6 +30,14 @@ public class MusicalDataFrame implements Serializable {
 	
 	public String getLibraryLocation() {
 		return libraryLocation;
+	}
+	
+	public int getPage() {
+		return page;
+	}
+	
+	public void setPage(int page) {
+		this.page = page;
 	}
 	
 	public void setTrackLocation(String location) {

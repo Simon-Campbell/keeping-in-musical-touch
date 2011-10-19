@@ -47,6 +47,10 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 	public String getUserName() {
 		return userName;
 	}
+	
+	public MusicalDataFrame getDataFrame() {
+		return dataframe;
+	}
 
 	private synchronized ObjectOutputStream getObjectOutputStream() throws IOException {
 		if (objectOutput == null) {

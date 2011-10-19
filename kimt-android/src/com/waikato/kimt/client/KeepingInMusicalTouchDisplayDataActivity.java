@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -34,6 +37,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 
 		final ImageView imageSheet = (ImageView) findViewById(R.id.imageSheet);
 		final TextView formattedText = (TextView) findViewById(R.id.textViewFormatted);
+		final ScrollView scrollView = (ScrollView) findViewById(R.id.imageScrollView);
 
 		KIMTClient kimtClient = (KIMTClient) getApplication();
 
@@ -65,6 +69,33 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 					imageSheet.setImageBitmap(ms.getBitmap());
 				}
 			});
+			
+			imageSheet.setOnTouchListener(new OnTouchListener() {
+				int currentPage = 0;
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					// TODO Auto-generated method stub
+					Log.v("onTouch", "Test message");
+					MusicalDataFrame newMusicalDataFrame = musicalSyncClient.getDataFrame();
+					
+					if (event.getRawX() > 400) {
+						selectedSheet.setBitmapFromInternet(++currentPage, 800, 1280);
+						newMusicalDataFrame.setPage(currentPage);
+						musicalSyncClient.setMusicalDataFrame(newMusicalDataFrame);
+						return true;
+					} else {
+						if (currentPage > 0) {
+							selectedSheet.setBitmapFromInternet(--currentPage, 800, 1280);
+							newMusicalDataFrame.setPage(currentPage);
+							musicalSyncClient.setMusicalDataFrame(newMusicalDataFrame);
+							return true;
+						}
+						
+					}
+					return false;
+				}
+			});
+
 
 			// Set the bitmap from the internet ..
 			selectedSheet.setBitmapFromInternet(0, 800, 1280);
@@ -103,9 +134,10 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 							imageSheet.setImageBitmap(ms.getBitmap());
 						}
 					});
+					
 
 					// Set the bitmap from the internet ..
-					currentSheet.setBitmapFromInternet(0, 800, 1280);
+					currentSheet.setBitmapFromInternet(mdf.getPage(), 800, 1280);
 				}
 			});
 
