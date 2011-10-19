@@ -16,6 +16,7 @@ public class Connection implements IConnection
 	public Connection(Socket socket) throws IOException
 	{
 		this.socket = socket;
+		
 		output = new ObjectOutputStream(socket.getOutputStream());
 		output.flush();
 		input = new ObjectInputStream(socket.getInputStream());

@@ -155,14 +155,10 @@ public class Client implements IClient
 						}
 					}
 				}
-				catch (EOFException ex) {
-					ClientManager.getSingleton().clients.remove(Client.this); 
-					running = false;
-					connection.kill();
-				}
 				catch (Exception ex)
 				{
 					//ex.printStackTrace();
+					ClientManager.getSingleton().clients.remove(Client.this); 
 					running = false;
 					connection.kill();
 				}
