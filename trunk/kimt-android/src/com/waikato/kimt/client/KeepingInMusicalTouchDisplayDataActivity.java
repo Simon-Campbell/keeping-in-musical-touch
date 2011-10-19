@@ -49,7 +49,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 		KIMTClient kimtClient = (KIMTClient) getApplication();
 		
 		final MusicalSyncClient musicalSyncClient = kimtClient.getSyncClient();
-		final GreenstoneMusicLibrary greenstoneMusicLibrary = kimtClient.getLibrary();
+		final GreenstoneMusicLibrary greenstoneMusicLibrary = null; // kimtClient.getLibrary();
 		
 		if (musicalSyncClient == null || greenstoneMusicLibrary == null) {
 			onBackPressed();  Log.v("Hello!", "Sup"); return;
