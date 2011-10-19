@@ -217,7 +217,7 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 												handler.post(new Runnable() {													
 													@Override
 													public void run() {
-														notifyMusicalDataFrameUpdated(musicalDataFrame);
+														setMusicalDataFrame(musicalDataFrame);
 													}
 												});
 											}

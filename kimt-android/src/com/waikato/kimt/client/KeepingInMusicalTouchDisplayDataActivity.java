@@ -82,14 +82,14 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 						selectedSheet.setBitmapFromInternet(++currentPage, 800, 1280);
 						newMusicalDataFrame.setPage(currentPage);
 						musicalSyncClient.setMusicalDataFrame(newMusicalDataFrame);
-						Toast.makeText(getApplicationContext(), "Page " + Integer.toString(currentPage), Toast.LENGTH_SHORT);
+						Toast.makeText(getApplicationContext(), "Page " + Integer.toString(currentPage), Toast.LENGTH_SHORT).show();
 						return true;
 					} else {
 						if (currentPage > 0) {
 							selectedSheet.setBitmapFromInternet(--currentPage, 800, 1280);
 							newMusicalDataFrame.setPage(currentPage);
 							musicalSyncClient.setMusicalDataFrame(newMusicalDataFrame);
-							Toast.makeText(getApplicationContext(), "Page " + Integer.toString(currentPage), Toast.LENGTH_SHORT);
+							Toast.makeText(getApplicationContext(), "Page " + Integer.toString(currentPage), Toast.LENGTH_SHORT).show();
 							return true;
 						}
 						
@@ -140,7 +140,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 
 					// Set the bitmap from the internet ..
 					currentSheet.setBitmapFromInternet(mdf.getPage(), 800, 1280);
-					Toast.makeText(getApplicationContext(), "Page " + Integer.toString(mdf.getPage()), Toast.LENGTH_SHORT);
+					Toast.makeText(getApplicationContext(), "Page " + Integer.toString(mdf.getPage()), Toast.LENGTH_SHORT).show();
 				}
 			});
 
