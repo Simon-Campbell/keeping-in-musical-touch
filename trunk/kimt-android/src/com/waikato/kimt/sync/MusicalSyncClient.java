@@ -2,10 +2,8 @@ package com.waikato.kimt.sync;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -26,8 +24,8 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 	private MusicalDataFrame dataframe;
 	private InetSocketAddress kimtAddress;
 
-	private volatile ObjectOutputStream mainOutput;
-	private volatile Socket broadcastSocket;	
+	private volatile ObjectOutputStream objectOutput;
+	private volatile Socket mainSyncSocket;	
 	
 	private boolean isLeader;
 	private boolean	inSync;
@@ -37,7 +35,6 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 	
 	public MusicalSyncClient(String userName, InetSocketAddress location) throws UnknownHostException, IOException {
 		this.userName	= userName;
-		
 		this.dataframe	= new MusicalDataFrame();
 		this.inSync		= false;
 		this.kimtAddress= location;
@@ -51,6 +48,22 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		return userName;
 	}
 
+	private synchronized ObjectOutputStream getObjectOutputStream() throws IOException {
+		if (objectOutput == null) {
+			objectOutput = new ObjectOutputStream(mainSyncSocket.getOutputStream());
+		}
+		
+		return objectOutput;
+	}
+	
+	private synchronized Socket getMainSocket() throws IOException {
+		if (mainSyncSocket == null) {
+			mainSyncSocket = new Socket(kimtAddress.getAddress(), kimtAddress.getPort());
+		}
+		
+		return mainSyncSocket;
+	}
+	
 	@Override
 	public MusicView getMusicView() {
 		return null;
@@ -64,6 +77,8 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 	}
 	
 	public void setMusicalDataFrame(MusicalDataFrame mdf) {
+		this.dataframe = mdf;
+		
 		if (isLeader) {
 			new UploadSyncTask().execute(dataframe);
 		} else {
@@ -137,8 +152,8 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		}
 		
 		public synchronized void close() throws IOException {
-			broadcastSocket.close();
-			broadcastSocket = null;
+			mainSyncSocket.close();
+			mainSyncSocket = null;
 		}
 		
 		public void run() {
@@ -146,17 +161,16 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 			ObjectOutputStream out;
 			
 			try {
-				broadcastSocket = new Socket(kimtAddress.getAddress(), kimtAddress.getPort());
+				mainSyncSocket = new Socket(kimtAddress.getAddress(), kimtAddress.getPort());
 				
-				in	= new ObjectInputStream(broadcastSocket.getInputStream());
-				out = new ObjectOutputStream(broadcastSocket.getOutputStream());
-				mainOutput = out;
+				in	= new ObjectInputStream(mainSyncSocket.getInputStream());
+				out = getObjectOutputStream();
 			
 				writeHeaders(out, "LOGIN");
 				out.writeObject(MusicalSyncClient.this.userName);
 				out.flush();
 				
-				while (broadcastSocket != null) {
+				while (mainSyncSocket != null) {
 					Object obj = null;
 				
 					try {
@@ -230,24 +244,18 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 	private class UploadSyncTask extends AsyncTask<MusicalDataFrame, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(MusicalDataFrame... params) {
-			Socket s = broadcastSocket;
-			
-			OutputStream os;		
-			ObjectOutputStream out;
+			Socket s = null;	
+			ObjectOutputStream out = null;
 
 			try {
-				if (s == null) {
-					s = new Socket(kimtAddress.getAddress(), kimtAddress.getPort());
-					broadcastSocket = s;
-				}
-				
-				if (mainOutput == null) {
-					mainOutput = new ObjectOutputStream(s.getOutputStream());
-				}
+				s = getMainSocket();
+				out = getObjectOutputStream();
 
-				writeHeaders(mainOutput, "PUT SYNC");
-				mainOutput.writeObject(dataframe);
-				mainOutput.flush();
+				writeHeaders(out, "PUT SYNC");
+				out.writeObject(dataframe);
+				out.flush();
+				
+				Log.v("KeepingInMusicalTouch", "Uploaded dataframe " + dataframe.toString());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -318,7 +326,8 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 	}
 
 	public void close() throws IOException {
-		broadcastListener.close();
+		if (broadcastListener != null)
+			broadcastListener.close();
 	}
 
 
