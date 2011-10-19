@@ -38,6 +38,8 @@ public class SyncServer
 	{
 		public void run()
 		{
+			this.setName("ConnectionListener");
+			
 			System.out.println("[KIMT]: Now listening for connections");
 			try
 			{
@@ -103,7 +105,8 @@ public class SyncServer
 					}
 					catch (Exception ex)
 					{
-						ex.printStackTrace();
+						Logger.insert(this, ex.getMessage());
+						//ex.printStackTrace();
 					}
 				}
 				
@@ -111,7 +114,8 @@ public class SyncServer
 			}
 			catch (IOException ex)
 			{
-				ex.printStackTrace();
+				Logger.insert(this, ex.getMessage());
+				//ex.printStackTrace();
 			}
 		}
 	}
@@ -120,6 +124,8 @@ public class SyncServer
 	{
 		public void run()
 		{
+			this.setName("ConsoleListener");
+			
 			System.out.println("-----" +
 					"Server commands:" + 
 					"\nlist: Lists all logged in clients" +
@@ -164,17 +170,29 @@ public class SyncServer
 						{
 							System.out.println(StateManager.getSingleton().states.get("MusicalDataFrame"));
 						}
-						else if (data[0].equals("restart"))
+						else if (data[0].equals("restart") || data[0].equals("rs"))
 						{
 							System.out.println("[kimt] restarting server");
 							ClientManager.clear();
 							StateManager.clear();
+							
+						}
+						else if (data[0].equals("viewlog"))
+						{
+							System.out.println("[kimt] printing log");
+							Logger.printLog();
+						}
+						else if (data[0].equals("rmlog"))
+						{
+							System.out.println("[kimt] cleared log");
+							Logger.clearLog();
 						}
 					}
 				}
 				catch (Exception ex)
 				{
-					ex.printStackTrace();
+					Logger.insert(this, ex.getMessage());
+					//ex.printStackTrace();
 				}
 			}
 		}
