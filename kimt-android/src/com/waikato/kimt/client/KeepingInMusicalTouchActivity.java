@@ -47,7 +47,7 @@ public class KeepingInMusicalTouchActivity extends Activity {
 		GreenstoneMusicLibrary greenstoneMusicLibrary = kimtClient.getLibrary();
 
 		listview.setAdapter(adapter);
-		listview.setEnabled(false);
+//		listview.setEnabled(false);
 		
 		if (greenstoneMusicLibrary == null) {
 			Toast.makeText(getApplicationContext(), "Greenstone was null", Toast.LENGTH_SHORT).show();
