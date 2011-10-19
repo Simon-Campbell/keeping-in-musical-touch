@@ -39,5 +39,20 @@ public class Connection implements IConnection
 		return output;
 	}
 	
+	public void kill()
+	{
+		try
+		{
+			input.close();
+			output.flush();
+			output.close();
+			socket.close();
+		}
+		catch (Exception ex)
+		{
+			System.err.println(ex.getMessage());
+		}
+	}
+	
 	
 }
