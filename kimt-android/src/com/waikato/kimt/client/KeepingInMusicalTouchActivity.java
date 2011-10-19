@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -129,7 +130,7 @@ public class KeepingInMusicalTouchActivity extends Activity {
 				Toast.makeText(getApplicationContext(), "UNABLE TO CONNECT TO SYNC SERVER", Toast.LENGTH_SHORT).show();
 			}
 		} else {
-			Toast.makeText(getApplicationContext(), "musical sync had already been set", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), "Musical Sync had already been set", Toast.LENGTH_SHORT).show();
 		}
 
 		final GreenstoneMusicLibrary gml = greenstoneMusicLibrary;
@@ -149,7 +150,10 @@ public class KeepingInMusicalTouchActivity extends Activity {
 				
 				mdf.setLibraryLocation(gml.getUri());
 				mdf.setSheetID(musicSheet.getSheetID());
-				mdf.setTrackLocation(gml.getCurrentSheet().getFullAddress());
+				mdf.setTrackLocation(musicSheet.getFullAddress());
+				
+				Log.v("KeepingInMusicalTouch", "SheetID: " + musicSheet.getSheetID());
+				Log.v("KeepingInMusicalTouch", "DataFrame:" + mdf);
 				
 				msc.setMusicalDataFrame(mdf);
 				
@@ -163,5 +167,23 @@ public class KeepingInMusicalTouchActivity extends Activity {
 
 		kimtClient.setLibrary(greenstoneMusicLibrary);
 		kimtClient.setSyncClient(musicalSyncClient);
+	}
+	
+	@Override
+	public void onDestroy() {
+		KIMTClient kimtClient = (KIMTClient) getApplication();
+		MusicalSyncClient musicalSyncClient = kimtClient.getSyncClient();
+		
+		
+		try {
+			if (musicalSyncClient != null) musicalSyncClient.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		// Set the library and musical sync client to null
+		// so that they're instantiated next time ..
+		kimtClient.setLibrary(null);
+		kimtClient.setSyncClient(null);
 	}
 }

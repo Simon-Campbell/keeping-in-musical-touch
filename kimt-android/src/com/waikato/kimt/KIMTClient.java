@@ -8,8 +8,8 @@ import com.waikato.kimt.greenstone.GreenstoneMusicLibrary;
 import com.waikato.kimt.sync.MusicalSyncClient;
 
 public class KIMTClient extends Application {
-	private GreenstoneMusicLibrary greenstoneProxy;
-	private MusicalSyncClient musicalSyncClient;
+	private GreenstoneMusicLibrary greenstoneProxy = null;
+	private MusicalSyncClient musicalSyncClient = null;
 
 	public void setSyncClient(MusicalSyncClient musicalSyncClient) {
 		this.musicalSyncClient = musicalSyncClient;

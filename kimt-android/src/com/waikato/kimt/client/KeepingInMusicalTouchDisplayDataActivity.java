@@ -28,6 +28,7 @@ import com.waikato.kimt.KIMTClient;
 import com.waikato.kimt.R;
 import com.waikato.kimt.greenstone.GreenstoneMusicLibrary;
 import com.waikato.kimt.greenstone.MusicSheet;
+import com.waikato.kimt.greenstone.MusicSheet.MetaDataDownloadListener;
 import com.waikato.kimt.greenstone.MusicView;
 import com.waikato.kimt.sync.MusicalDataFrame;
 import com.waikato.kimt.sync.MusicalSyncClient;
@@ -98,8 +99,15 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 					gml.setCurrentSheet(mdf.getSheetID());
 					
 					final MusicSheet currentSheet = gml.getCurrentSheet();
-			
-					formattedText.setText(currentSheet.toString());
+					formattedText.setText("<track> by <name> .. fetching data");
+					
+					currentSheet.setOnSheetMetaDataUpdateListener(new MetaDataDownloadListener() {
+						@Override
+						public void onMetaDataDownloaded(MusicSheet ms) {
+							formattedText.setText(ms.toString());
+						}
+					});
+					
 					currentSheet.setOnImageDownloadedListener(new MusicSheet.ImageDataDownloadListener() {
 						@Override
 						public void onImageDownloaded(MusicSheet ms) {
