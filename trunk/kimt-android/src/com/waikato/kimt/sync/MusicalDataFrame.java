@@ -12,7 +12,7 @@ public class MusicalDataFrame implements Serializable {
 	private String	libraryLocation;
 	private String	trackLocation;
 	private String	trackIdentifier;
-	private byte[]	bitmapBytes;
+//	private byte[]	bitmapBytes;
 	
 	/**
 	 * The serial version of this object. Update when the object changes.
@@ -53,15 +53,5 @@ public class MusicalDataFrame implements Serializable {
 	
 	public void setSheetID(String sheetID) {
 		trackIdentifier = sheetID;
-	}
-	
-	public void setBitmap(Bitmap bmp) {
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-		bitmapBytes = stream.toByteArray();
-	}
-
-	public Bitmap getBitmap() {
-		return BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
 	}
 }
