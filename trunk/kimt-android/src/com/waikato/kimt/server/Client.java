@@ -22,6 +22,7 @@ public class Client implements IClient
 	IConnection connection;
 	String name;
 	ClientThread clientThread;
+	//boolean running = true;
 	
 	public Client(IConnection connection, String name, ClientManager clientManager)
 	{
@@ -30,6 +31,18 @@ public class Client implements IClient
 	
 		new ClientThread().start();
 	}
+	
+	/*
+	public synchronized void serverState(boolean val)
+	{
+		running = val;
+	}
+	
+	public synchronized boolean getServerState()
+	{
+		return running;
+	}
+	*/
 	
 	/**
 	 * Returns the name of the client
@@ -143,11 +156,15 @@ public class Client implements IClient
 					}
 				}
 				catch (EOFException ex) {
-					ClientManager.getSingleton().clients.remove(Client.this); running = false;
+					ClientManager.getSingleton().clients.remove(Client.this); 
+					running = false;
+					connection.kill();
 				}
 				catch (Exception ex)
 				{
-					ex.printStackTrace();
+					//ex.printStackTrace();
+					running = false;
+					connection.kill();
 				}
 			}
 			

@@ -21,7 +21,6 @@ public class SyncServer
 	}
 	
 	ServerSocket server;
-	ClientManager clientManager;
 	
 	public void start(int port) throws IOException
 	{
@@ -31,12 +30,6 @@ public class SyncServer
 		new ConnectionThread().start();
 		new ConsoleListener().start();
 	}
-	
-	public synchronized ClientManager getClientManager()
-	{
-		return clientManager;
-	}
-
 	
 	class ConnectionThread extends Thread
 	{
@@ -129,6 +122,7 @@ public class SyncServer
 					"\nlist: Lists all logged in clients" +
 					"\nupdate: Updates all clients" +
 					"\nviewstate: View the current MusicalDataFrame object" +
+					"\nkick [name]: Kicks the first client with that name" +
 					"\n-----");
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		
@@ -152,7 +146,7 @@ public class SyncServer
 						else if (data.length >= 2 && data[0].equals("kick"))
 						{
 							System.out.println("Removing " + data[1] + " size: " + ClientManager.getSingleton().clients.size());
-							if (clientManager.remove(data[1]))
+							if (ClientManager.getSingleton().remove(data[1]))
 								System.out.println("Kicked: " + data[1]);
 								else
 									System.err.println("Failed to kick: " + data[1]);

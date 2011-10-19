@@ -1,5 +1,6 @@
 package com.waikato.kimt.server.interfaces;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -11,4 +12,6 @@ public interface IConnection
 	public ObjectInputStream getInputStream();
 	
 	public ObjectOutputStream getOutputStream();
+	
+	public void kill();
 }

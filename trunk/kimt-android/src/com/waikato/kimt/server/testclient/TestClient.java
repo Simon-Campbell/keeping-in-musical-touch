@@ -70,8 +70,10 @@ public class TestClient extends Thread
 			{
 				oos.writeObject("KIMT 1.0");
 				oos.flush();
+				Thread.sleep(rand.nextInt(100));	//Simulate lag
 				oos.writeObject("PUT SYNC");
 				oos.flush();
+				Thread.sleep(rand.nextInt(100));	//Simulate lag
 				
 				MusicalDataFrame mdf = new MusicalDataFrame();
 				mdf.setTrackLocation("helloworld " + i);
@@ -104,7 +106,7 @@ public class TestClient extends Thread
 				while(true)
 				{
 					Object o = ois.readObject();
-					System.out.println("GOT: " + o);
+					//System.out.println("GOT: " + o);
 				}
 			}
 			catch (Exception ex)
