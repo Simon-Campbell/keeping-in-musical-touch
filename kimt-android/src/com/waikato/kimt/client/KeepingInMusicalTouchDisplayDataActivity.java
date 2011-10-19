@@ -49,9 +49,10 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 		KIMTClient kimtClient = (KIMTClient) getApplication();
 		
 		final MusicalSyncClient musicalSyncClient = kimtClient.getSyncClient();
-		final GreenstoneMusicLibrary greenstoneMusicLibrary = null; // kimtClient.getLibrary();
+		final GreenstoneMusicLibrary greenstoneMusicLibrary = kimtClient.getLibrary();
 		
 		if (musicalSyncClient == null || greenstoneMusicLibrary == null) {
+			
 			onBackPressed();  Log.v("Hello!", "Sup"); return;
 		}
 		
@@ -80,7 +81,6 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 			selectedSheet.setBitmapFromInternet(0, 800, 1280);
 		} else {
 			formattedText.setText("Status:\n\tWaiting for the conductor to select a sheet ..");
-		
 			musicalSyncClient.setOnSyncUpdateListener(new SyncedLibraryUpdateListener() {
 				
 				@Override
@@ -92,13 +92,12 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 				public void onSyncUploaded(Boolean uploaded) {
 					// TODO Auto-generated method stub
 				}
-				
 				@Override
 				public void onMusicalDataFrameUpdated(MusicalDataFrame mdf) {
 					final GreenstoneMusicLibrary gml = new GreenstoneMusicLibrary(mdf.getLibraryLocation());
 					gml.setCurrentSheet(mdf.getSheetID());
 					
-					final MusicSheet currentSheet = greenstoneMusicLibrary.getCurrentSheet();
+					final MusicSheet currentSheet = gml.getCurrentSheet();
 			
 					formattedText.setText(currentSheet.toString());
 					currentSheet.setOnImageDownloadedListener(new MusicSheet.ImageDataDownloadListener() {

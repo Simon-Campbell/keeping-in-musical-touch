@@ -45,7 +45,7 @@ public class KeepingInMusicalTouchActivity extends Activity {
 		// Get the musical sync client and greenstone library that have been
 		// created for this application.
 		MusicalSyncClient musicalSyncClient = kimtClient.getSyncClient();
-		GreenstoneMusicLibrary greenstoneMusicLibrary = kimtClient.getLibrary();
+		GreenstoneMusicLibrary greenstoneMusicLibrary = null;//kimtClient.getLibrary();
 
 		listview.setAdapter(adapter);
 //		listview.setEnabled(false);
@@ -123,8 +123,6 @@ public class KeepingInMusicalTouchActivity extends Activity {
 						}
 					}
 				});
-
-				
 			} catch (UnknownHostException e) {
 				Toast.makeText(getApplicationContext(), "UNABLE TO CONNECT TO SYNC SERVER", Toast.LENGTH_SHORT).show();
 			} catch (IOException e) {
@@ -159,11 +157,10 @@ public class KeepingInMusicalTouchActivity extends Activity {
 				myIntent.putExtras(bundle);
 				
 				startActivityForResult(myIntent, 0);    
-
-
 			}
 		});
 
-		  
+		kimtClient.setLibrary(greenstoneMusicLibrary);
+		kimtClient.setSyncClient(musicalSyncClient);
 	}
 }
