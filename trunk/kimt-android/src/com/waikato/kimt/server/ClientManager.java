@@ -20,6 +20,11 @@ public class ClientManager
 	static ClientManager manager;
 	ArrayList<IClient> clients = new ArrayList<IClient>();
 	
+	public static synchronized void clear()
+	{
+		manager = null;
+	}
+	
 	public synchronized void insert (IClient c)
 	{
 		clients.add(c);
