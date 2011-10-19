@@ -51,7 +51,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 		final GreenstoneMusicLibrary greenstoneMusicLibrary = kimtClient.getLibrary();
 		
 		if (musicalSyncClient == null || greenstoneMusicLibrary == null) {
-			onBackPressed();
+			onBackPressed();  return;
 		}
 		
 		//final ScrollView scrollView = (ScrollView) findViewById(R.id.imageScrollView);

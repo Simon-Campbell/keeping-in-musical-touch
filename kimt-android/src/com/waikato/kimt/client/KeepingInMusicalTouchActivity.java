@@ -141,7 +141,6 @@ public class KeepingInMusicalTouchActivity extends Activity {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				
 				// Package the data to that it can be sent to next activity
 				Bundle bundle = new Bundle();
 				bundle.putBoolean("is_leader", true);
