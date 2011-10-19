@@ -5,10 +5,11 @@ import java.io.Serializable;
 import com.waikato.kimt.greenstone.MusicView;
 
 public class MusicalDataFrame implements Serializable {
-	private MusicView	currentView;
+//	private MusicView	currentView;
 	
 	private String	libraryLocation;
 	private String	trackLocation;
+	private String	trackIdentifier;
 	
 	/**
 	 * The serial version of this object. Update when the object changes.
@@ -38,18 +39,17 @@ public class MusicalDataFrame implements Serializable {
 	public String getTrackLocation() {
 		return trackLocation;
 	}
-
-	public void setMusicView(MusicView mv) {
-		this.currentView = mv;
-	}
-	
-	public MusicView getMusicView() {
-		return this.currentView;
-	}
 	
 	public String toString() {
 		return "MusicDataFrame: " + "LibraryLocation: " + getLibraryLocation() + " TrackLocation: " + getTrackLocation();
 	}
 	
+	public String getSheetID() {
+		return this.trackIdentifier;
+	}
+	
+	public void setSheetID(String sheetID) {
+		trackIdentifier = sheetID;
+	}
 
 }
