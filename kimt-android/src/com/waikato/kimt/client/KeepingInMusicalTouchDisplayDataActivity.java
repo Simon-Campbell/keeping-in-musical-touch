@@ -75,19 +75,21 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 				@Override
 				public boolean onTouch(View v, MotionEvent event) {
 					// TODO Auto-generated method stub
-					Log.v("onTouch", "Test message");
+					Log.v("KeepingInMusicalTouch", "The image was touched ..");
 					MusicalDataFrame newMusicalDataFrame = musicalSyncClient.getDataFrame();
 					
 					if (event.getRawX() > 400) {
 						selectedSheet.setBitmapFromInternet(++currentPage, 800, 1280);
 						newMusicalDataFrame.setPage(currentPage);
 						musicalSyncClient.setMusicalDataFrame(newMusicalDataFrame);
+						Toast.makeText(getApplicationContext(), "Page " + Integer.toString(currentPage), Toast.LENGTH_SHORT);
 						return true;
 					} else {
 						if (currentPage > 0) {
 							selectedSheet.setBitmapFromInternet(--currentPage, 800, 1280);
 							newMusicalDataFrame.setPage(currentPage);
 							musicalSyncClient.setMusicalDataFrame(newMusicalDataFrame);
+							Toast.makeText(getApplicationContext(), "Page " + Integer.toString(currentPage), Toast.LENGTH_SHORT);
 							return true;
 						}
 						
@@ -138,6 +140,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 
 					// Set the bitmap from the internet ..
 					currentSheet.setBitmapFromInternet(mdf.getPage(), 800, 1280);
+					Toast.makeText(getApplicationContext(), "Page " + Integer.toString(mdf.getPage()), Toast.LENGTH_SHORT);
 				}
 			});
 
