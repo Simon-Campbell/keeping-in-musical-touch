@@ -10,14 +10,6 @@ import com.waikato.kimt.greenstone.MusicView;
  */
 public interface SyncedLibraryUpdateListener {
 	/**
-	 * An event that is called when a new sync object
-	 * is ready to be downloaded. It is automatically broadcasted 
-	 * to all clients-- here they can chose to accept or reject 
-	 * the update.
-	 */
-	public void onSyncUpdateNotification();
-	
-	/**
 	 * An event that is called when a new sync object is downloaded
 	 * from the sync server. This allows the receiver to decide whether
 	 * to overwrite their current sync object with the new one.
@@ -42,6 +34,4 @@ public interface SyncedLibraryUpdateListener {
 	 * 	The new music view that all clients share.
 	 */
 	public void onSyncViewUpdate(MusicView mv);
-	
-	public void onLoggedIn(boolean isLeader);
 }

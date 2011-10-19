@@ -25,6 +25,8 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 	
 	private MusicalDataFrame dataframe;
 	private InetSocketAddress kimtAddress;
+
+	private volatile Socket broadcastSocket;	
 	
 	private boolean isLeader;
 	private boolean	inSync;
@@ -50,15 +52,21 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 
 	@Override
 	public MusicView getMusicView() {
-		return dataframe.getMusicView();
+		return null;
+//		return dataframe.getMusicView();
 	}
 	
 	@Override
 	public void setMusicView(MusicView mv) {
-		this.dataframe.setMusicView(mv);
-		
+//		this.dataframe.setMusicView(mv);
+		setMusicalDataFrame(dataframe);
+	}
+	
+	public void setMusicalDataFrame(MusicalDataFrame mdf) {
 		if (isLeader) {
 			new UploadSyncTask().execute(dataframe);
+		} else {
+			notifyMusicalDataFrameUpdated(dataframe);
 		}
 	}
 	
@@ -112,8 +120,6 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		 */
 		private Handler handler;
 
-		private volatile Socket broadcastSocket;	
-		
 		/**
 		 * Create a BroadcastListener with the handler that will push the
 		 * data back to the UI thread. The runnable will be run when the handler
@@ -130,8 +136,8 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		}
 		
 		public synchronized void close() throws IOException {
-			this.broadcastSocket.close();
-			this.broadcastSocket = null;
+			broadcastSocket.close();
+			broadcastSocket = null;
 		}
 		
 		public void run() {
@@ -222,27 +228,23 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 	private class UploadSyncTask extends AsyncTask<MusicalDataFrame, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(MusicalDataFrame... params) {
-			Socket s;
+			Socket s = broadcastSocket;
 			
-			OutputStream os;
-			InputStream is;
-			
+			OutputStream os;		
 			ObjectOutputStream out;
-			ObjectInputStream in;
 			
 			try {
-				s = new Socket(kimtAddress.getAddress(), kimtAddress.getPort());
+				if (s == null) {
+					s = new Socket(kimtAddress.getAddress(), kimtAddress.getPort());
+					broadcastSocket = s;
+				}
 				
 				os	= s.getOutputStream();
-				is  = s.getInputStream();
-				
 				out = new ObjectOutputStream(os);
-				in = new ObjectInputStream(is);
 				
 				writeHeaders(out, "PUT SYNC");
 				out.writeObject(dataframe);
-				out.close();
-				
+				out.flush();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -251,89 +253,18 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 			return true;
 		}
 	}
-
-	private class UploadLibraryTask extends AsyncTask<Socket, Integer, Boolean> {
-
-		@Override
-		protected Boolean doInBackground(Socket... params) {
-			Socket
-				s = params[0];
-			
-			ObjectOutputStream
-				oos		= null;
-			
-			Boolean
-				uploaded= true;
-			
-			try {
-				oos = new ObjectOutputStream(s.getOutputStream());
-				
-				// The program name/version
-				oos.writeChars("KIMT 1.0");
-				// The text command that is sent over the network
-				oos.writeChars("LIBRARY UPLOAD");
-				
-				oos.writeObject(currentLibrary);
-				
-			} catch (IOException e) {
-				uploaded = false;
-				
-				e.printStackTrace();
-			} finally {
-
-			}
-			
-			return uploaded; 
-		}
-		
-		@Override
-		protected void onPostExecute(Boolean uploaded) {
-			notifySyncLibraryUploaded(uploaded);
-		}
-		
-	}
 	
-	private class DownloadLibraryTask extends AsyncTask<Socket, Integer, MusicalDataFrame> {
-
-		@Override
-		protected MusicalDataFrame doInBackground(Socket... params) {
-			Socket
-				s	= params[0];
-			
-			ObjectInputStream
-				ois = null;
-			
-			MusicalDataFrame
-				ks	= null;
-			
-			try {
-				ois	= new ObjectInputStream(s.getInputStream());
-				ks	= (MusicalDataFrame) ois.readObject();
-				
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally {
-			}
-			
-			return
-					ks;
-		}
-		
-		@Override
-		protected void onPostExecute(MusicalDataFrame result) {
-			notifyMusicalDataFrameUpdated(result);
-		}
-	}
-
 	private List<SyncedLibraryUpdateListener>
 		registeredLibraryUpdateListeners = new ArrayList<SyncedLibraryUpdateListener>();
+	private List<SyncedLoginListener>
+		registeredLoginListeners = new ArrayList<SyncedLoginListener>();
 	
 	public void setOnSheetMetaDataUpdateListener(SyncedLibraryUpdateListener slul) {
 		registeredLibraryUpdateListeners.add(slul);
+	}
+	
+	public void setOnLoginUpdateListener(SyncedLoginListener sll) {
+		registeredLoginListeners.add(sll);
 	}
 	
 	/**
@@ -372,14 +303,8 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		}
 	}
 	
-	private void notifySyncedNotification() {
-		for (SyncedLibraryUpdateListener s : registeredLibraryUpdateListeners) {
-			s.onSyncUpdateNotification();
-		}
-	}
-	
 	private void notifyLoggedIn(boolean isLeader) {
-		for (SyncedLibraryUpdateListener s : registeredLibraryUpdateListeners) {
+		for (SyncedLoginListener s : registeredLoginListeners) {
 			s.onLoggedIn(isLeader);
 		}
 	}

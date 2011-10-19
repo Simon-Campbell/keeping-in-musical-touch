@@ -26,6 +26,7 @@ import com.waikato.kimt.greenstone.MusicSheet;
 import com.waikato.kimt.sync.MusicalDataFrame;
 import com.waikato.kimt.sync.MusicalSyncClient;
 import com.waikato.kimt.sync.SyncedLibraryUpdateListener;
+import com.waikato.kimt.sync.SyncedLoginListener;
 
 
 public class KeepingInMusicalTouchActivity extends Activity {
@@ -99,32 +100,8 @@ public class KeepingInMusicalTouchActivity extends Activity {
 				musicalSyncClient.startListening(new Handler());
 				
 				// Set the on sync update listeners of this musical sync client.
-				musicalSyncClient.setOnSyncUpdateListener(new SyncedLibraryUpdateListener() {
-					
-					@Override
-					public void onSyncViewUpdate(MusicView mv) {
-						// TODO Auto-generated method stub
-						
-					}
-					
-					@Override
-					public void onSyncUploaded(Boolean uploaded) {
-						// TODO Auto-generated method stub
-						
-					}
-					
-					@Override
-					public void onSyncUpdateNotification() {
-						// TODO Auto-generated method stub
-						
-					}
-					
-					@Override
-					public void onMusicalDataFrameUpdated(MusicalDataFrame k) {
-						// TODO Auto-generated method stub
-						
-					}
-					
+				musicalSyncClient.setOnLoginUpdateListener(new SyncedLoginListener() {
+	
 					@Override
 					public void onLoggedIn(boolean isLeader) {
 						// If the user is the leader then the listview will be enabled
