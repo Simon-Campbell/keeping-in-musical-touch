@@ -14,6 +14,7 @@ public class SyncServer
 {
 	public static final String VERSION = "KIMT 1.0";
 	public static final int defaultServerPort = ('k' + 'i' + 'm' + 't') * 128;
+	int port;
 	
 	public SyncServer()
 	{
@@ -24,6 +25,8 @@ public class SyncServer
 	
 	public void start(int port) throws IOException
 	{
+		this.port = port;
+		
 		server = new ServerSocket(port);
 		System.out.println("[KIMT]: Started server on port: " + server.getLocalPort());
 		
@@ -123,6 +126,7 @@ public class SyncServer
 					"\nupdate: Updates all clients" +
 					"\nviewstate: View the current MusicalDataFrame object" +
 					"\nkick [name]: Kicks the first client with that name" +
+					"\nrestart: Restarts the server" +
 					"\n-----");
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		
@@ -159,6 +163,12 @@ public class SyncServer
 						else if (data[0].equals("viewstate"))
 						{
 							System.out.println(StateManager.getSingleton().states.get("MusicalDataFrame"));
+						}
+						else if (data[0].equals("restart"))
+						{
+							System.out.println("[kimt] restarting server");
+							ClientManager.clear();
+							StateManager.clear();
 						}
 					}
 				}

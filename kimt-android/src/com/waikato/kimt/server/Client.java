@@ -32,18 +32,6 @@ public class Client implements IClient
 		new ClientThread().start();
 	}
 	
-	/*
-	public synchronized void serverState(boolean val)
-	{
-		running = val;
-	}
-	
-	public synchronized boolean getServerState()
-	{
-		return running;
-	}
-	*/
-	
 	/**
 	 * Returns the name of the client
 	 */

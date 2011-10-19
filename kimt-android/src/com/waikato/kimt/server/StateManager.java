@@ -26,6 +26,11 @@ public class StateManager
 		return manager;
 	}
 	
+	public static synchronized void clear()
+	{
+		manager = null;
+	}
+	
 	/**
 	 * Returns a copy of the dictionary that contains all states (e.g. MusicalDataFrame)
 	 * @return
