@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -53,7 +54,6 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 		final GreenstoneMusicLibrary greenstoneMusicLibrary = kimtClient.getLibrary();
 		
 		if (musicalSyncClient == null || greenstoneMusicLibrary == null) {
-			
 			onBackPressed();  Log.v("Hello!", "Sup"); return;
 		}
 		
@@ -72,7 +72,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 			formattedText.setText(selectedSheet.toString());
 			selectedSheet.setOnImageDownloadedListener(new MusicSheet.ImageDataDownloadListener() {
 				@Override
-				public void onImageDownloaded(MusicSheet ms) {
+				public void onImageChanged(MusicSheet ms) {
 					imageSheet.setLayoutParams(new ScrollView.LayoutParams(800, 1280));
 					imageSheet.setImageBitmap(ms.getBitmap());
 				}
@@ -100,7 +100,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 					
 					final MusicSheet currentSheet = gml.getCurrentSheet();
 					formattedText.setText("<track> by <name> .. fetching data");
-					
+				
 					currentSheet.setOnSheetMetaDataUpdateListener(new MetaDataDownloadListener() {
 						@Override
 						public void onMetaDataDownloaded(MusicSheet ms) {
@@ -110,14 +110,14 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 					
 					currentSheet.setOnImageDownloadedListener(new MusicSheet.ImageDataDownloadListener() {
 						@Override
-						public void onImageDownloaded(MusicSheet ms) {
+						public void onImageChanged(MusicSheet ms) {
 							imageSheet.setLayoutParams(new ScrollView.LayoutParams(800, 1280));
 							imageSheet.setImageBitmap(ms.getBitmap());
 						}
 					});
 
 					// Set the bitmap from the internet ..
-					currentSheet.setBitmapFromInternet(0, 800, 1280);
+					currentSheet.setBitmap(mdf.getBitmap());
 				}
 			});
 			

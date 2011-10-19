@@ -152,7 +152,8 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		}
 		
 		public synchronized void close() throws IOException {
-			mainSyncSocket.close();
+			if (mainSyncSocket != null)
+				mainSyncSocket.close();
 			mainSyncSocket = null;
 		}
 		
@@ -326,6 +327,12 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 	}
 
 	public void close() throws IOException {
+		if (mainSyncSocket != null)
+			mainSyncSocket.close();
+		
+		if (objectOutput != null)
+			objectOutput.close();
+		
 		if (broadcastListener != null)
 			broadcastListener.close();
 	}

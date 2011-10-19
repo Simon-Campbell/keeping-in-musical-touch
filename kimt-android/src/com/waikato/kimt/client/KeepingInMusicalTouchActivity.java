@@ -171,6 +171,8 @@ public class KeepingInMusicalTouchActivity extends Activity {
 	
 	@Override
 	public void onDestroy() {
+		super.onDestroy();
+		
 		KIMTClient kimtClient = (KIMTClient) getApplication();
 		MusicalSyncClient musicalSyncClient = kimtClient.getSyncClient();
 		
