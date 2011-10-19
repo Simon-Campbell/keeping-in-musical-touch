@@ -139,6 +139,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 					
 
 					// Set the bitmap from the internet ..
+					Log.v("KeepingInMusicalTouch", "MusicalDataFrame has page: " + Integer.toString(mdf.getPage()));
 					currentSheet.setBitmapFromInternet(mdf.getPage(), 800, 1280);
 					Toast.makeText(getApplicationContext(), "Page " + Integer.toString(mdf.getPage()), Toast.LENGTH_SHORT).show();
 				}
