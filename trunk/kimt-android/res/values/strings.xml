@@ -17,6 +17,6 @@
     <string name="txtLogin">Login</string>
     <string name="txtIntroduction">Please enter the location of your \'Keeping In Musical Touch\' server:</string>
     <string name="librarySelect">Select Library Type</string>
-    <string name="kimt_ip">192.168.1.4</string> <!-- willsam100.info -->
+    <string name="kimt_ip">willsam100.info</string> <!-- willsam100.info -->
     <string name="kimt_port">55936</string>
 </resources>
