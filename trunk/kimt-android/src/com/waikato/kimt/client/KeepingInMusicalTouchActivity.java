@@ -134,7 +134,9 @@ public class KeepingInMusicalTouchActivity extends Activity {
 			Toast.makeText(getApplicationContext(), "musical sync had already been set", Toast.LENGTH_SHORT).show();
 		}
 
-			
+		final GreenstoneMusicLibrary gml = greenstoneMusicLibrary;
+		final MusicalSyncClient msc = musicalSyncClient;
+		
 		listview.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -144,6 +146,14 @@ public class KeepingInMusicalTouchActivity extends Activity {
 				Bundle bundle = new Bundle();
 				bundle.putBoolean("is_leader", true);
 				bundle.putSerializable("selected_sheet", (Serializable) parent.getItemAtPosition(position));
+				
+				MusicalDataFrame mdf = new MusicalDataFrame();
+				
+				mdf.setLibraryLocation(gml.getUri());
+				mdf.setSheetID(gml.getCurrentSheet().getSheetID());
+				mdf.setTrackLocation(gml.getCurrentSheet().getFullAddress());
+				
+				msc.setMusicalDataFrame(mdf);
 				
 				// Call the next activity (the other view) and send the data to it
 				Intent myIntent = new Intent(getApplicationContext(), KeepingInMusicalTouchDisplayDataActivity.class);
