@@ -101,6 +101,8 @@ public class Client implements IClient
 		 */
 		public void run()
 		{
+			this.setName("ClientThread: " + name);
+			
 			boolean running = true;
 			
 			while(running)
@@ -148,6 +150,7 @@ public class Client implements IClient
 					//ex.printStackTrace();
 					ClientManager.getSingleton().clients.remove(Client.this); 
 					running = false;
+					Logger.insert(Client.this, ex.getMessage());
 					connection.kill();
 				}
 			}
