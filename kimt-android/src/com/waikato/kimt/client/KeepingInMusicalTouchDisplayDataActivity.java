@@ -12,6 +12,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.provider.ContactsContract.CommonDataKinds.Event;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
@@ -51,7 +52,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 		final GreenstoneMusicLibrary greenstoneMusicLibrary = kimtClient.getLibrary();
 		
 		if (musicalSyncClient == null || greenstoneMusicLibrary == null) {
-			onBackPressed();  return;
+			onBackPressed();  Log.v("Hello!", "Sup"); return;
 		}
 		
 		//final ScrollView scrollView = (ScrollView) findViewById(R.id.imageScrollView);

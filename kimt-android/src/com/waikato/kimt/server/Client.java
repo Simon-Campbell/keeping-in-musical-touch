@@ -142,6 +142,9 @@ public class Client implements IClient
 						}
 					}
 				}
+				catch (EOFException ex) {
+					ClientManager.getSingleton().clients.remove(Client.this); running = false;
+				}
 				catch (Exception ex)
 				{
 					ex.printStackTrace();
