@@ -1,8 +1,10 @@
 package com.waikato.kimt.sync;
 
+import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 
-import com.waikato.kimt.greenstone.MusicView;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 public class MusicalDataFrame implements Serializable {
 //	private MusicView	currentView;
@@ -10,6 +12,7 @@ public class MusicalDataFrame implements Serializable {
 	private String	libraryLocation;
 	private String	trackLocation;
 	private String	trackIdentifier;
+	private byte[]	bitmapBytes;
 	
 	/**
 	 * The serial version of this object. Update when the object changes.
@@ -51,5 +54,14 @@ public class MusicalDataFrame implements Serializable {
 	public void setSheetID(String sheetID) {
 		trackIdentifier = sheetID;
 	}
+	
+	public void setBitmap(Bitmap bmp) {
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+		bitmapBytes = stream.toByteArray();
+	}
 
+	public Bitmap getBitmap() {
+		return BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
+	}
 }

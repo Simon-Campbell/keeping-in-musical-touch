@@ -214,7 +214,7 @@ public class MusicSheet implements Serializable {
 	 *
 	 */
 	public interface ImageDataDownloadListener {
-		public void onImageDownloaded(MusicSheet ms);
+		public void onImageChanged(MusicSheet ms);
 	}
 	
 	/**
@@ -235,9 +235,9 @@ public class MusicSheet implements Serializable {
 			mddl.onMetaDataDownloaded(this);
 	}
 	
-	protected void notifyImageDownloaded() {
+	protected void notifyImageChanged() {
 		for (ImageDataDownloadListener iddl : registeredImageDataDownloadListeners)
-			iddl.onImageDownloaded(this);
+			iddl.onImageChanged(this);
 	}
 	
 	//using class Async to do the work
@@ -253,7 +253,7 @@ public class MusicSheet implements Serializable {
 			// Notify anybody who is subscribed to the MusicSheet that
 			// the meta-data has been downloaded.
 			notifyMetaDataDownloaded();
-			notifyImageDownloaded();
+			notifyImageChanged();
 		}
 	}
 	
@@ -283,7 +283,13 @@ public class MusicSheet implements Serializable {
 			
 			// Notify the listeners that the image is
 			// ready to be shown
-			notifyImageDownloaded();
+			notifyImageChanged();
 		}
+	}
+
+	public void setBitmap(Bitmap bitmap) {
+		this.bitmap = bitmap;
+		
+		notifyImageChanged();
 	}
 }
