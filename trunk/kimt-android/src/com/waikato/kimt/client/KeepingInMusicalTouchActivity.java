@@ -140,14 +140,15 @@ public class KeepingInMusicalTouchActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				// Package the data to that it can be sent to next activity
+				MusicSheet musicSheet = (MusicSheet) parent.getItemAtPosition(position);
 				Bundle bundle = new Bundle();
 				bundle.putBoolean("is_leader", true);
-				bundle.putSerializable("selected_sheet", (Serializable) parent.getItemAtPosition(position));
+				bundle.putSerializable("selected_sheet", (Serializable) musicSheet);
 				
 				MusicalDataFrame mdf = new MusicalDataFrame();
 				
 				mdf.setLibraryLocation(gml.getUri());
-				mdf.setSheetID(gml.getCurrentSheet().getSheetID());
+				mdf.setSheetID(musicSheet.getSheetID());
 				mdf.setTrackLocation(gml.getCurrentSheet().getFullAddress());
 				
 				msc.setMusicalDataFrame(mdf);
