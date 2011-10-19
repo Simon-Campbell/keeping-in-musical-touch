@@ -1,5 +1,7 @@
 package com.waikato.kimt.client;
 
+import java.io.ByteArrayOutputStream;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -103,7 +105,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 					});
 
 					// Set the bitmap from the internet ..
-					currentSheet.setBitmap(mdf.getBitmap());
+					currentSheet.setBitmapFromInternet(0, 800, 1280);
 				}
 			});
 
@@ -126,3 +128,4 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 		return;
 	}
 }
+
