@@ -26,6 +26,7 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 	private MusicalDataFrame dataframe;
 	private InetSocketAddress kimtAddress;
 
+	private volatile ObjectOutputStream mainOutput;
 	private volatile Socket broadcastSocket;	
 	
 	private boolean isLeader;
@@ -149,6 +150,7 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 				
 				in	= new ObjectInputStream(broadcastSocket.getInputStream());
 				out = new ObjectOutputStream(broadcastSocket.getOutputStream());
+				mainOutput = out;
 			
 				writeHeaders(out, "LOGIN");
 				out.writeObject(MusicalSyncClient.this.userName);
@@ -232,19 +234,20 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 			
 			OutputStream os;		
 			ObjectOutputStream out;
-			
+
 			try {
 				if (s == null) {
 					s = new Socket(kimtAddress.getAddress(), kimtAddress.getPort());
 					broadcastSocket = s;
 				}
 				
-				os	= s.getOutputStream();
-				out = new ObjectOutputStream(os);
-				
-				writeHeaders(out, "PUT SYNC");
-				out.writeObject(dataframe);
-				out.flush();
+				if (mainOutput == null) {
+					mainOutput = new ObjectOutputStream(s.getOutputStream());
+				}
+
+				writeHeaders(mainOutput, "PUT SYNC");
+				mainOutput.writeObject(dataframe);
+				mainOutput.flush();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
