@@ -1,26 +1,11 @@
 package com.waikato.kimt.client;
 
 import android.app.Activity;
-
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.provider.ContactsContract.CommonDataKinds.Event;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.view.KeyEvent;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,16 +32,17 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 
 		final ImageView imageSheet = (ImageView) findViewById(R.id.imageSheet);
 		final TextView formattedText = (TextView) findViewById(R.id.textViewFormatted);
-		
+
 		KIMTClient kimtClient = (KIMTClient) getApplication();
-		
+
 		final MusicalSyncClient musicalSyncClient = kimtClient.getSyncClient();
 		final GreenstoneMusicLibrary greenstoneMusicLibrary = kimtClient.getLibrary();
-		
+
 		if (musicalSyncClient == null || greenstoneMusicLibrary == null) {
-			onBackPressed();  Log.v("Hello!", "Sup"); return;
+			onBackPressed();
+			return;
 		}
-		
+
 		//final ScrollView scrollView = (ScrollView) findViewById(R.id.imageScrollView);
 
 		// Get the extra data bundled with this activities
@@ -83,12 +69,12 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 		} else {
 			formattedText.setText("Status:\n\tWaiting for the conductor to select a sheet ..");
 			musicalSyncClient.setOnSyncUpdateListener(new SyncedLibraryUpdateListener() {
-				
+
 				@Override
 				public void onSyncViewUpdate(MusicView mv) {
 					// TODO Auto-generated method stub
 				}
-				
+
 				@Override
 				public void onSyncUploaded(Boolean uploaded) {
 					// TODO Auto-generated method stub
@@ -97,17 +83,17 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 				public void onMusicalDataFrameUpdated(MusicalDataFrame mdf) {
 					final GreenstoneMusicLibrary gml = new GreenstoneMusicLibrary(mdf.getLibraryLocation());
 					gml.setCurrentSheet(mdf.getSheetID());
-					
+
 					final MusicSheet currentSheet = gml.getCurrentSheet();
 					formattedText.setText("<track> by <name> .. fetching data");
-				
+
 					currentSheet.setOnSheetMetaDataUpdateListener(new MetaDataDownloadListener() {
 						@Override
 						public void onMetaDataDownloaded(MusicSheet ms) {
 							formattedText.setText(ms.toString());
 						}
 					});
-					
+
 					currentSheet.setOnImageDownloadedListener(new MusicSheet.ImageDataDownloadListener() {
 						@Override
 						public void onImageChanged(MusicSheet ms) {
@@ -120,19 +106,23 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 					currentSheet.setBitmap(mdf.getBitmap());
 				}
 			});
-			
+
 			Toast.makeText(getApplicationContext(), "Waiting for the conductor...", Toast.LENGTH_SHORT).show();
 		}
 	}
 
-
 	@Override
 	public void onBackPressed() {
-		Intent intent = new Intent();
-		
-		setResult(RESULT_OK, intent);
-		finish();
-		
+		KIMTClient kimtClient = (KIMTClient) getApplication();
+		MusicalSyncClient musicalSyncClient = kimtClient.getSyncClient();
+		if (musicalSyncClient.isLeader() == true) {
+			Intent intent = new Intent();
+			setResult(RESULT_OK, intent);
+			finish();
+		} else {
+			Toast.makeText(getApplicationContext(), "Can not load list item. You are not the conductor.", Toast.LENGTH_SHORT).show();
+		}
+
 		return;
 	}
 }

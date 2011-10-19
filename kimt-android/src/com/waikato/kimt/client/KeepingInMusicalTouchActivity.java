@@ -21,12 +21,10 @@ import com.waikato.kimt.KIMTClient;
 import com.waikato.kimt.KIMTServer;
 import com.waikato.kimt.R;
 import com.waikato.kimt.greenstone.GreenstoneMusicLibrary;
-import com.waikato.kimt.greenstone.MusicView;
 import com.waikato.kimt.greenstone.GreenstoneMusicLibrary.SyncedLibraryBrowserUpdateListener;
 import com.waikato.kimt.greenstone.MusicSheet;
 import com.waikato.kimt.sync.MusicalDataFrame;
 import com.waikato.kimt.sync.MusicalSyncClient;
-import com.waikato.kimt.sync.SyncedLibraryUpdateListener;
 import com.waikato.kimt.sync.SyncedLoginListener;
 
 
@@ -46,13 +44,11 @@ public class KeepingInMusicalTouchActivity extends Activity {
 		// Get the musical sync client and greenstone library that have been
 		// created for this application.
 		MusicalSyncClient musicalSyncClient = kimtClient.getSyncClient();
-		GreenstoneMusicLibrary greenstoneMusicLibrary = null;//kimtClient.getLibrary();
+		GreenstoneMusicLibrary greenstoneMusicLibrary = null;
 
 		listview.setAdapter(adapter);
-//		listview.setEnabled(false);
 		
 		if (greenstoneMusicLibrary == null) {
-			Toast.makeText(getApplicationContext(), "Greenstone was null", Toast.LENGTH_SHORT).show();
 			greenstoneMusicLibrary = new GreenstoneMusicLibrary(getString(R.string.defaultLibraryLocation));
 			greenstoneMusicLibrary.requestTrackList();
 			greenstoneMusicLibrary.setLibraryBrowserUpdateListener(new SyncedLibraryBrowserUpdateListener() {
@@ -72,12 +68,8 @@ public class KeepingInMusicalTouchActivity extends Activity {
 			kimtClient.setLibrary(greenstoneMusicLibrary);
 			listview.setEnabled(true); 
 		}
-//		 else {
-//			Toast.makeText(getApplicationContext(), "Greenstone has been created, listview is disabled", Toast.LENGTH_SHORT).show();
-//		}
 		
 		if (musicalSyncClient == null) {
-			Toast.makeText(getApplicationContext(), "MusicalSync was null", Toast.LENGTH_SHORT).show();
 			// Get the musical touch address, port and then
 			// create a socket address from it.
 			InetSocketAddress inetSocketAddress = new InetSocketAddress(getString(R.string.kimt_ip), KIMTServer.defaultServerPort);
