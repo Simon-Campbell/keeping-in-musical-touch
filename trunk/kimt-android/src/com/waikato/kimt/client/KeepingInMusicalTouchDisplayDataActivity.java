@@ -116,10 +116,14 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 					if (olderSheet == null || olderSheet.getSheetID().compareTo(mdf.getSheetID()) != 0) {
 						// Set the music sheet to a newer one ..
 						gml.setCurrentSheet(mdf.getSheetID());
-						
-						if (gml.getCurrentSheet().getAuthor() == null && gml.getCurrentSheet().getTitle() == null)
-							formattedText.setText("Getting metadata for sheet ..");
-					} 
+					}
+					
+					currentSheet = gml.getCurrentSheet();
+					
+					if (gml.getCurrentSheet().getAuthor() == null && gml.getCurrentSheet().getTitle() == null)
+						formattedText.setText("Fetching meta-data");
+					else
+						formattedText.setText(currentSheet.toString());
 
 					currentSheet = gml.getCurrentSheet();
 					currentSheet.setOnSheetMetaDataUpdateListener(new MetaDataDownloadListener() {
@@ -139,7 +143,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 		
 					// Set the bitmap from the internet ..
 					currentSheet.setBitmapFromInternet(mdf.getPage());
-					Toast.makeText(getApplicationContext(), "Getting page " + Integer.toString(mdf.getPage()), Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), "Page " + Integer.toString(mdf.getPage() + 1), Toast.LENGTH_SHORT).show();
 				}
 			});
 
@@ -193,7 +197,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 
 					if (currentPage > 0) {
 						selectedSheet.setBitmapFromInternet(--currentPage);
-						Toast.makeText(getApplicationContext(), "LS/Setting page " + Integer.toString(currentPage), Toast.LENGTH_SHORT).show();
+						Toast.makeText(getApplicationContext(), "LS/Page " + Integer.toString(currentPage + 1), Toast.LENGTH_SHORT).show();
 					
 						newMusicalDataFrame.setLibraryLocation(oldMusicalDataFrame.getLibraryLocation());
 						newMusicalDataFrame.setSheetID(selectedSheet.getSheetID());
@@ -209,7 +213,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 
 					if ((currentPage + 1) < selectedSheet.getNumberOfPages()) {
 						selectedSheet.setBitmapFromInternet(++currentPage);
-						Toast.makeText(getApplicationContext(), "RS/Setting page " + Integer.toString(currentPage), Toast.LENGTH_SHORT).show();
+						Toast.makeText(getApplicationContext(), "RS/Page " + Integer.toString(currentPage + 1), Toast.LENGTH_SHORT).show();
 						
 						newMusicalDataFrame.setLibraryLocation(oldMusicalDataFrame.getLibraryLocation());
 						newMusicalDataFrame.setSheetID(selectedSheet.getSheetID());
