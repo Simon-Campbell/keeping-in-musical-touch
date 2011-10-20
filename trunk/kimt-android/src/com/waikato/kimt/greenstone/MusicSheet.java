@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -53,7 +54,7 @@ public class MusicSheet implements Serializable {
 	private int	maximumPages= 1337;
 	
 	private	Bitmap currentBitmap;
-	private ArrayList<Bitmap> bitmapList;
+	private Vector<Bitmap> bitmapList;
 
 	public MusicSheet(GreenstoneMusicLibrary owner, String sheetID) {
 		this(owner, sheetID, false);
@@ -64,7 +65,7 @@ public class MusicSheet implements Serializable {
 		this.libraryAddress = owner.getUri();
 		this.fullAddress	= owner.getUri() + "/dev?a=d&ed=1&book=off&c=musical-touch&d=" +sheetID + "&o=xml";
 		this.maximumPages	= 1337;
-		this.bitmapList		= new ArrayList<Bitmap>();
+		this.bitmapList		= new Vector<Bitmap>(16);
 		
 		if (download) {
 			// Start actually fetching the data
@@ -103,7 +104,7 @@ public class MusicSheet implements Serializable {
     				this.filenameRoot = XMLUtilities.getCharacterDataFromElement(finalElement);
     			} else if (metadataName.compareTo("current_NumPages") == 0) {
     				this.maximumPages = Integer.parseInt(XMLUtilities.getCharacterDataFromElement(finalElement));
-    				this.bitmapList = new ArrayList<Bitmap>(this.maximumPages + 2);
+    				this.bitmapList = new Vector<Bitmap>(this.maximumPages);
     			}
     		}
     	}
@@ -159,12 +160,27 @@ public class MusicSheet implements Serializable {
 		if (this.documentFolder == null || this.filenameRoot == null) {
 			new AsyncGreenstoneXMLDownload().execute(fullAddress);
 		} else {
-			if (page >= bitmapList.size() || bitmapList.get(page) == null) {
-				new AsyncImageDownload().execute(page);
-			} else {
+			boolean isAllCached = true ;
+			
+			Log.v("KeepingInMusicalTouch", "Checking if TARGET bitmap exists");
+			if (page < bitmapList.size() && bitmapList.get(page) != null) {
 				setBitmap(bitmapList.get(page));
 			}
+			
+			Log.v("KeepingInMusicalTouch", "Checking if the others are cached.");
+			for (int i = 1; i < 3; i++) {
+				if (page + i >= bitmapList.size() || bitmapList.get(page) == null) {
+					isAllCached = false; break;
+				}
+			}
+			
+			
+			if (!isAllCached) {
+				Log.v("KeepingInMusicalTouch", "Starting the AsyncImageDownload.");
+				new AsyncImageDownload().execute(page, page + 1, page + 2);
+			}
 		}
+		
 	}
 	
 	public Bitmap getBitmap() {
@@ -306,7 +322,7 @@ public class MusicSheet implements Serializable {
 		}
 	}
 	
-	private class AsyncImageDownload extends AsyncTask<Integer, Void, Bitmap> {
+	private class AsyncImageDownload extends AsyncTask<Integer, Integer, Bitmap> {
 		private int downloadingPage;
 		
 		protected Bitmap doInBackground(Integer... imagePage) {
@@ -317,7 +333,25 @@ public class MusicSheet implements Serializable {
 			downloadingPage = imagePage[0];
 			
 			try {
-				returnImage = BitmapFactory.decodeStream(new URL(getImageLocation(downloadingPage, 800, 1280)).openStream());
+
+				Log.v("KeepingInMusicalTouch", "Ensuring the size of the vector!");
+				ensureVectorSize(imagePage.length);
+				returnImage = bitmapList.get(downloadingPage);
+				
+				Log.v("KeepingInMusicalTouch", "Going to download the image!");
+				if (returnImage == null) {
+					returnImage = BitmapFactory.decodeStream(new URL(getImageLocation(downloadingPage, 800, 1280)).openStream());
+				
+					MusicSheet.this.bitmapList.set(downloadingPage, returnImage);
+					MusicSheet.this.currentBitmap = returnImage;
+				}
+				
+				publishProgress(downloadingPage);
+				
+				for (int i = 1; i < imagePage.length; i++) { 
+					if (bitmapList.get(imagePage[i]) == null)
+						MusicSheet.this.bitmapList.set(imagePage[i], BitmapFactory.decodeStream(new URL(getImageLocation(imagePage[i], 800, 1280)).openStream()));
+				}
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -326,27 +360,25 @@ public class MusicSheet implements Serializable {
 				e.printStackTrace();
 			}
 			
-			return
-				returnImage;
+			return returnImage;
 		}
 		
-		protected void onPostExecute(Bitmap result) {
+		protected void onProgressUpdate(Integer... progress) {
 			// Set the result of the current MusicSheet
 			// instance.
-			if (MusicSheet.this.bitmapList.size() < downloadingPage) {
-				ArrayList<Bitmap> old = MusicSheet.this.bitmapList;
-
-				// Double in size so we don't have to reallocate arrays
-				MusicSheet.this.bitmapList = new ArrayList<Bitmap>(downloadingPage * 2);
-				MusicSheet.this.bitmapList.addAll(old);
+			MusicSheet.this.setBitmap(bitmapList.get(progress[0]));
+			Log.v("KeepingInMusicalTouch", "First Bitmap set");
+		}
+		
+		
+		protected void onPostExecute(Bitmap result) {
+			Log.v("KeepingInMusicalTouch", "All Images set");
+		}
+		
+		private void ensureVectorSize(int upperLimit) {
+			if (upperLimit >= MusicSheet.this.bitmapList.size()) {
+				MusicSheet.this.bitmapList.setSize((upperLimit * 2) + 1);
 			}
-			
-			MusicSheet.this.bitmapList.set(downloadingPage, result);
-			MusicSheet.this.setBitmap(result);
-			
-			// Notify the listeners that the image is
-			// ready to be shown
-			notifyImageChanged();
 		}
 	}
 

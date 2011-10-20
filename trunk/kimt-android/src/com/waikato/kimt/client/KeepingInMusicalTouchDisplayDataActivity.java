@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewAnimator;
 
 import com.waikato.kimt.KIMTClient;
 import com.waikato.kimt.R;
@@ -98,11 +99,9 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 				}
 				@Override
 				public void onMusicalDataFrameUpdated(MusicalDataFrame mdf) {
-					KIMTClient kimtClient = (KIMTClient) getApplication();
-					
+					KIMTClient kimtClient = (KIMTClient) getApplication();					
 					GreenstoneMusicLibrary gml = kimtClient.getLibrary();
-					MusicalSyncClient musicalSyncClient = kimtClient.getSyncClient();
-					
+
 					if (gml == null || gml.getUri().compareTo(mdf.getLibraryLocation()) != 0) {
 						// This is a new library
 						gml = new GreenstoneMusicLibrary(mdf.getLibraryLocation());
@@ -152,17 +151,21 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 	public void onBackPressed() {
 		KIMTClient kimtClient = (KIMTClient) getApplication();
 		MusicalSyncClient musicalSyncClient = kimtClient.getSyncClient();
-		if (musicalSyncClient.isLeader()) {
+
+		if (musicalSyncClient == null || musicalSyncClient.isLeader()) {
 			Intent intent = new Intent();
 			setResult(RESULT_OK, intent);
 			finish();
 		} else {
-			Toast.makeText(getApplicationContext(), "Can not load list item. You are not the conductor.", Toast.LENGTH_SHORT).show();
+			Intent intent = new Intent();
+			setResult(0xF, intent);
+			finish();
 		}
 
 		return;
 	}
 	
+
 	private class PageTurnDetector extends SimpleOnGestureListener {
 		private int currentPage = 0;
 		
@@ -221,7 +224,6 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 			} catch (Exception e) {
 				// nothing
 			}
-
 			return false;
 		}
 	}

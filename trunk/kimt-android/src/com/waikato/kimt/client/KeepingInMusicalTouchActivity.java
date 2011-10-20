@@ -163,6 +163,13 @@ public class KeepingInMusicalTouchActivity extends Activity {
 	}
 	
 	@Override
+	protected void onActivityResult (int requestCode, int resultCode, Intent data) {
+		if (resultCode == 0xF) {
+			finish();
+		}
+	}
+	
+	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		
