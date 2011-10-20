@@ -84,9 +84,9 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		this.dataframe = mdf;
 		
 		if (isLeader) {
-			new UploadSyncTask().execute(dataframe);
+			new UploadSyncTask().execute(mdf);
 		} else {
-			notifyMusicalDataFrameUpdated(dataframe);
+			notifyMusicalDataFrameUpdated(mdf);
 		}
 	}
 	
@@ -214,12 +214,16 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 											if (extra instanceof MusicalDataFrame) {
 												final MusicalDataFrame musicalDataFrame = (MusicalDataFrame) extra;
 												
-												handler.post(new Runnable() {													
-													@Override
-													public void run() {
-														setMusicalDataFrame(musicalDataFrame);
-													}
-												});
+												if (!isLeader) {
+													handler.post(new Runnable() {													
+														@Override
+														public void run() {
+															setMusicalDataFrame(musicalDataFrame);
+														}
+													});
+												} else {
+													
+												}
 											}
 										}
 									}
@@ -257,10 +261,11 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 				out = getObjectOutputStream();
 
 				writeHeaders(out, "PUT SYNC");
-				out.writeObject(dataframe);
+				out.flush();
+				out.writeObject(params[0]);
 				out.flush();
 				
-				Log.v("KeepingInMusicalTouch", "Uploaded Dataframe " + dataframe.toString());
+				Log.v("KeepingInMusicalTouch", "Uploaded Dataframe " + params[0].toString());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

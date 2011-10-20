@@ -14,10 +14,9 @@ public class MusicalDataFrame implements Serializable {
 	private String	trackLocation;
 	private String	trackIdentifier;
 //	private byte[]	bitmapBytes;
-	private int currentPage;
+	private String currentPage;
 
-	public MusicalDataFrame() {
-	}
+	public MusicalDataFrame() { }
 	
 	public MusicalDataFrame(String libraryLocation) {
 		this.libraryLocation = libraryLocation;
@@ -32,11 +31,14 @@ public class MusicalDataFrame implements Serializable {
 	}
 	
 	public synchronized int getPage() {
-		return currentPage;
+		if (currentPage == null)
+			currentPage = "0";
+		
+		return Integer.decode(currentPage);
 	}
 	
 	public synchronized void setPage(int page) {
-		this.currentPage = page;
+		this.currentPage = Integer.toString(page);
 	}
 	
 	public void setTrackLocation(String location) {

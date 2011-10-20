@@ -333,7 +333,15 @@ public class MusicSheet implements Serializable {
 		protected void onPostExecute(Bitmap result) {
 			// Set the result of the current MusicSheet
 			// instance.
-			MusicSheet.this.bitmapList.add(result);
+			if (MusicSheet.this.bitmapList.size() < downloadingPage) {
+				ArrayList<Bitmap> old = MusicSheet.this.bitmapList;
+
+				// Double in size so we don't have to reallocate arrays
+				MusicSheet.this.bitmapList = new ArrayList<Bitmap>(downloadingPage * 2);
+				MusicSheet.this.bitmapList.addAll(old);
+			}
+			
+			MusicSheet.this.bitmapList.set(downloadingPage, result);
 			MusicSheet.this.setBitmap(result);
 			
 			// Notify the listeners that the image is
