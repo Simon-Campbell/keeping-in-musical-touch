@@ -80,7 +80,7 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 		setMusicalDataFrame(dataframe);
 	}
 	
-	public void setMusicalDataFrame(MusicalDataFrame mdf) {
+	public synchronized void setMusicalDataFrame(MusicalDataFrame mdf) {
 		this.dataframe = mdf;
 		
 		if (isLeader) {
@@ -260,7 +260,7 @@ public class MusicalSyncClient implements MusicalLibrarySync {
 				out.writeObject(dataframe);
 				out.flush();
 				
-				Log.v("KeepingInMusicalTouch", "Uploaded dataframe " + dataframe.toString());
+				Log.v("KeepingInMusicalTouch", "Uploaded Dataframe " + dataframe.toString());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

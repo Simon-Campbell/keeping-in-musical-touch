@@ -118,10 +118,13 @@ public class Client implements IClient
 								Object read = getConnection().getInputStream().readObject();
 								if (read instanceof MusicalDataFrame)
 								{
+									MusicalDataFrame newState = (MusicalDataFrame) read;
+									
 									//Stores the MusicalDataFrame, overwriting the previous value
 									//and broadcasts this to all non-conductor clients
-									StateManager.getSingleton().states.put("MusicalDataFrame", read);
-									StateManager.getSingleton().setSync((MusicalDataFrame)StateManager.getSingleton().states.get("MusicalDataFrame"));
+									System.out.println("<GOT SYNC> " + newState);
+									StateManager.getSingleton().states.put("MusicalDataFrame", newState);
+									StateManager.getSingleton().setSync(newState);
 								}
 							}
 						}	
