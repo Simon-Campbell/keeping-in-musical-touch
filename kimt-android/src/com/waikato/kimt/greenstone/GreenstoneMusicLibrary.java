@@ -152,32 +152,7 @@ public class GreenstoneMusicLibrary implements MusicLibrary, Serializable {
 	        		sheetID = e.getAttribute("nodeID");
 	        	
 	        	if (!isCached(sheetID)) {
-		        	MusicSheet
-		        		ms = new MusicSheet(this, sheetID, false);
-		
-		        	NodeList
-		        		metadataListNodes = e.getElementsByTagName("metadataList");
-			        
-		        	for (int i = 0; i < metadataListNodes.getLength(); i++) {
-		        		NodeList
-		        			metadataNodes = ((Element) metadataListNodes.item(i)).getElementsByTagName("metadata");
-		        		
-		        		for (int j = 0; j < metadataNodes.getLength(); j++) {
-		        			Element
-		        				finalElement = (Element) metadataNodes.item(j);
-		        			
-		        			String
-		        				metaType = finalElement.getAttribute("name");
-		        		
-		        			if (metaType.compareTo("mp.title") == 0) {
-		        				ms.setAuthor(XMLUtilities.getCharacterDataFromElement(finalElement));
-		        			} else if (metaType.compareTo("mp.composer") == 0) {
-		        				ms.setTitle(XMLUtilities.getCharacterDataFromElement(finalElement));
-		        			}
-		        		}
-		        	}
-		        	
-		        	cache.add(ms);
+	        		cache.add(new MusicSheet(this, e));
 	        	}
 	        }
 	    }

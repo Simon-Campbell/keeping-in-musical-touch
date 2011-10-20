@@ -41,17 +41,18 @@ public class MusicSheet implements Serializable {
 	
 	/**
 	 * Internal Greenstone variable:
-	 * 	Title of the document to help find
+	 * 	Filename root of the document to help find
 	 * 	associated files.
 	 */
-	private String	documentTitle;
+	private String	filenameRoot;
 	
 	private String title;
 	private String author;
+
+	private int currentPage;
+	private int	maximumPages= 1337;
 	
-	private int	pages;
-	
-	private Bitmap bitmap;
+	private	Bitmap currentBitmap;
 	private ArrayList<Bitmap> bitmapList;
 
 	public MusicSheet(GreenstoneMusicLibrary owner, String sheetID) {
@@ -62,20 +63,65 @@ public class MusicSheet implements Serializable {
 		this.sheetID		= sheetID;
 		this.libraryAddress = owner.getUri();
 		this.fullAddress	= owner.getUri() + "/dev?a=d&ed=1&book=off&c=musical-touch&d=" +sheetID + "&o=xml";
-
-		this.pages			= 1337;
+		this.maximumPages	= 1337;
+		this.bitmapList		= new ArrayList<Bitmap>();
+		
 		if (download) {
 			// Start actually fetching the data
 			new AsyncGreenstoneXMLDownload().execute(this.fullAddress);
 		}
 	}
 	
+	public MusicSheet(GreenstoneMusicLibrary owner, Element documentElement) {
+        // Iterate through all the documents contained in the search 
+        // results ..
+    	String sheetID = documentElement.getAttribute("nodeID");
+    	NodeList metadataListNodes = documentElement.getElementsByTagName("metadataList");
+		
+    	this.sheetID = sheetID;
+		this.libraryAddress = owner.getUri();
+		this.fullAddress = owner.getUri() + "/dev?a=d&ed=1&book=off&c=musical-touch&d=" +sheetID + "&o=xml";
+
+    	for (int i = 0; i < metadataListNodes.getLength(); i++) {
+    		NodeList
+    			metadataNodes = ((Element) metadataListNodes.item(i)).getElementsByTagName("metadata");
+    		
+    		for (int j = 0; j < metadataNodes.getLength(); j++) {
+    			Element
+    				finalElement = (Element) metadataNodes.item(j);
+    			
+    			String
+    				metadataName = finalElement.getAttribute("name");
+    		
+    			if (metadataName.compareTo("mp.title") == 0) {
+    				this.author = XMLUtilities.getCharacterDataFromElement(finalElement);
+    			} else if (metadataName.compareTo("mp.composer") == 0) {
+    				this.title = XMLUtilities.getCharacterDataFromElement(finalElement);
+    			} else if (metadataName.compareTo("assocfilepath") == 0) {
+    				this.documentFolder = XMLUtilities.getCharacterDataFromElement(finalElement);
+    			} else if (metadataName.compareTo("FilenameRoot") == 0) {
+    				this.filenameRoot = XMLUtilities.getCharacterDataFromElement(finalElement);
+    			} else if (metadataName.compareTo("current_NumPages") == 0) {
+    				this.maximumPages = Integer.parseInt(XMLUtilities.getCharacterDataFromElement(finalElement));
+    				this.bitmapList = new ArrayList<Bitmap>(this.maximumPages + 2);
+    			}
+    		}
+    	}
+	}
+	
 	public String toString() {
-		return (this.title + " by " + this.author + " (" + this.pages + ")");
+		if (this.maximumPages != 1337)
+			return (this.title + " by " + this.author + " (" + this.currentPage + "/" + this.maximumPages + ")");
+		else
+			return (this.title + " by " + this.author);
 	}
 	
 	public String getFullAddress() {
 		return this.fullAddress;
+	}
+	
+	public int getNumberOfPages() {
+		return this.maximumPages;
 	}
 	
 	public String getImageLocation(int page, int x, int y) {
@@ -86,7 +132,7 @@ public class MusicSheet implements Serializable {
 		
 		return
 			this.libraryAddress + "/cgi-bin/image-server.pl?a=fit-screen&c=musical-touch&site=localsite&pageWidth=" + Integer.toString(x) + "&pageHeight=" + Integer.toString(y) +"&assocDir=" + 
-			this.documentFolder + "&assocFile=" + this.documentTitle + "-" + Integer.toString(page) + ".png";
+			this.documentFolder + "&assocFile=" + this.filenameRoot + "-" + Integer.toString(page) + ".png";
 	}
 	
 	public String getTitle() {
@@ -109,17 +155,20 @@ public class MusicSheet implements Serializable {
 		return this.sheetID;
 	}
 	
-	public void setBitmapFromInternet(int page, int x, int y) {
-		if (this.documentFolder == null || this.documentTitle == null) {
+	public void setBitmapFromInternet(int page) {
+		if (this.documentFolder == null || this.filenameRoot == null) {
 			new AsyncGreenstoneXMLDownload().execute(fullAddress);
-			
 		} else {
-			new AsyncImageDownload().execute(getImageLocation(page, x, y));
+			if (page >= bitmapList.size() || bitmapList.get(page) == null) {
+				new AsyncImageDownload().execute(page);
+			} else {
+				setBitmap(bitmapList.get(page));
+			}
 		}
 	}
 	
 	public Bitmap getBitmap() {
-		return this.bitmap;
+		return this.currentBitmap;
 	}
 	
 	private void setDataFromGreenstoneXML(String uri) {
@@ -150,12 +199,12 @@ public class MusicSheet implements Serializable {
 	        	if (metadataName.compareTo("Title") == 0) {
  	        	   // Set this document title to use so that the image can be
  	        	   // retrieved
- 	        	   this.documentTitle = XMLUtilities.getCharacterDataFromElement(metadataElement);
+ 	        	   this.filenameRoot = XMLUtilities.getCharacterDataFromElement(metadataElement);
  	        	   
  	        	   // If the document title hasn't already been set then we'll 
  	        	   // set it to this one, however "mp.title" is preferred.
  	        	   if (this.title == null) {
- 	        		   this.title = documentTitle;
+ 	        		   this.title = filenameRoot;
  	        	   }
  	        	   
  	           	}
@@ -178,7 +227,7 @@ public class MusicSheet implements Serializable {
 	        	this.title	= "N/A";
 	        }
 
-	        this.bitmap = BitmapFactory.decodeStream(new URL(getImageLocation(0, 0, 0)).openStream());
+	        this.currentBitmap = BitmapFactory.decodeStream(new URL(getImageLocation(0, 0, 0)).openStream());
 	    }
 	    
 	    catch (Exception e) {
@@ -257,13 +306,18 @@ public class MusicSheet implements Serializable {
 		}
 	}
 	
-	private class AsyncImageDownload extends AsyncTask<String, Void, Bitmap> {
-		protected Bitmap doInBackground(String... imageAddress) {
+	private class AsyncImageDownload extends AsyncTask<Integer, Void, Bitmap> {
+		private int downloadingPage;
+		
+		protected Bitmap doInBackground(Integer... imagePage) {
+			// The image to be returned!
 			Bitmap returnImage = null;
 			
+			// The page that is being downloaded by this AsyncTask
+			downloadingPage = imagePage[0];
+			
 			try {
-				Log.v("Debugging", imageAddress[0]);
-				returnImage = BitmapFactory.decodeStream(new URL(imageAddress[0]).openStream());
+				returnImage = BitmapFactory.decodeStream(new URL(getImageLocation(downloadingPage, 800, 1280)).openStream());
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -279,7 +333,8 @@ public class MusicSheet implements Serializable {
 		protected void onPostExecute(Bitmap result) {
 			// Set the result of the current MusicSheet
 			// instance.
-			MusicSheet.this.bitmap = result ;
+			MusicSheet.this.bitmapList.add(result);
+			MusicSheet.this.setBitmap(result);
 			
 			// Notify the listeners that the image is
 			// ready to be shown
@@ -288,7 +343,7 @@ public class MusicSheet implements Serializable {
 	}
 
 	public void setBitmap(Bitmap bitmap) {
-		this.bitmap = bitmap;
+		this.currentBitmap = bitmap;
 		
 		notifyImageChanged();
 	}
