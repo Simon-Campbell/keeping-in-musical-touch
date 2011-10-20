@@ -112,7 +112,7 @@ public class MusicSheet implements Serializable {
 	
 	public String toString() {
 		if (this.maximumPages != 1337)
-			return (this.title + " by " + this.author + " (" + this.currentPage + "/" + this.maximumPages + ")");
+			return (this.title + " by " + this.author + " (" + this.maximumPages + " pages)");
 		else
 			return (this.title + " by " + this.author);
 	}
