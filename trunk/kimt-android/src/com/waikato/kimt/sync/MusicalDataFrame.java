@@ -10,14 +10,14 @@ public class MusicalDataFrame implements Serializable {
 	private String	trackIdentifier;
 //	private byte[]	bitmapBytes;
 	
-	private int page;
+	private Integer currentPage;
 	/**
 	 * The serial version of this object. Update when the object changes.
 	 */
 	private static final long serialVersionUID = 1L;
 
 	public MusicalDataFrame() {
-		
+		currentPage = new Integer(0);
 	}
 	
 	public MusicalDataFrame(String libraryLocation) {
@@ -32,12 +32,12 @@ public class MusicalDataFrame implements Serializable {
 		return libraryLocation;
 	}
 	
-	public int getPage() {
-		return page;
+	public Integer getPage() {
+		return currentPage;
 	}
 	
 	public void setPage(int page) {
-		this.page = page;
+		this.currentPage = new Integer(page);
 	}
 	
 	public void setTrackLocation(String location) {
@@ -49,7 +49,7 @@ public class MusicalDataFrame implements Serializable {
 	}
 	
 	public String toString() {
-		return "MusicDataFrame: " + "LibraryLocation: " + getLibraryLocation() + " TrackLocation: " + getTrackLocation();
+		return "MusicDataFrame: " + " LibraryLocation: " + getLibraryLocation() + " TrackLocation: " + getTrackLocation() + " Current Page: " + Integer.toString(getPage());
 	}
 	
 	public String getSheetID() {
