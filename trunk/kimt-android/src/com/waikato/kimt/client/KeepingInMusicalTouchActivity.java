@@ -143,6 +143,7 @@ public class KeepingInMusicalTouchActivity extends Activity {
 				mdf.setLibraryLocation(gml.getUri());
 				mdf.setSheetID(musicSheet.getSheetID());
 				mdf.setTrackLocation(musicSheet.getFullAddress());
+				mdf.setPage(0);
 				
 				Log.v("KeepingInMusicalTouch", "SheetID: " + musicSheet.getSheetID());
 				Log.v("KeepingInMusicalTouch", "DataFrame:" + mdf);

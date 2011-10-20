@@ -26,9 +26,9 @@ import com.waikato.kimt.sync.SyncedLibraryUpdateListener;
 
 public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 	/* http://www.codeshogun.com/blog/2009/04/16/how-to-implement-swipe-action-in-android/ */
-	private static final int SWIPE_MIN_DISTANCE = 50;
+	private static final int SWIPE_MIN_DISTANCE = 120;
 	private static final int SWIPE_MAX_OFF_PATH = 250;
-	private static final int SWIPE_THRESHOLD_VELOCITY = 250;
+	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -47,8 +47,7 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 		final GreenstoneMusicLibrary greenstoneMusicLibrary = kimtClient.getLibrary();
 
 		if (musicalSyncClient == null || greenstoneMusicLibrary == null) {
-			onBackPressed();
-			return;
+			onBackPressed(); return;
 		}
 
 		//final ScrollView scrollView = (ScrollView) findViewById(R.id.imageScrollView);
@@ -73,8 +72,8 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 			});
 			
 			final GestureDetector gs = new GestureDetector(new PageTurnDetector(selectedSheet, musicalSyncClient));
-			
-			imageSheet.setOnTouchListener(new OnTouchListener() {
+
+			scrollView.setOnTouchListener(new OnTouchListener() {
 				@Override
 				public boolean onTouch(View v, MotionEvent event) {
 					return gs.onTouchEvent(event);
@@ -99,44 +98,46 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 				}
 				@Override
 				public void onMusicalDataFrameUpdated(MusicalDataFrame mdf) {
-					final GreenstoneMusicLibrary gml;
+					KIMTClient kimtClient = (KIMTClient) getApplication();
+					
+					GreenstoneMusicLibrary gml = kimtClient.getLibrary();
+					MusicalSyncClient musicalSyncClient = kimtClient.getSyncClient();
+					
+					if (gml == null || gml.getUri().compareTo(mdf.getLibraryLocation()) != 0) {
+						// This is a new library
+						gml = new GreenstoneMusicLibrary(mdf.getLibraryLocation());
+						gml.requestTrackList();
+						
+						kimtClient.setLibrary(gml);
+					}
+					
 					MusicSheet currentSheet;
+					MusicSheet olderSheet = gml.getCurrentSheet();
 					
-					boolean isNewSheet = false;
-					
-					try {
-						String previousSheetID = musicalSyncClient.getDataFrame().getSheetID();
-						
-						isNewSheet = (previousSheetID.compareTo(mdf.getSheetID()) != 0);
-					} catch (NullPointerException ex) {
-						isNewSheet = true;
-					}
-					
-					gml	= new GreenstoneMusicLibrary(mdf.getLibraryLocation());
-					currentSheet = gml.getCurrentSheet();
-					
-					if (isNewSheet || gml.getCurrentSheet() == null) {
+					if (olderSheet == null || olderSheet.getSheetID().compareTo(mdf.getSheetID()) != 0) {
+						// Set the music sheet to a newer one ..
 						gml.setCurrentSheet(mdf.getSheetID());
-						currentSheet = gml.getCurrentSheet();
 						
-						formattedText.setText("Getting metadata for sheet ..");
-						
-						currentSheet.setOnSheetMetaDataUpdateListener(new MetaDataDownloadListener() {
-							@Override
-							public void onMetaDataDownloaded(MusicSheet ms) {
-								formattedText.setText(ms.toString());
-							}
-						});
+						if (gml.getCurrentSheet().getAuthor() == null && gml.getCurrentSheet().getTitle() == null)
+							formattedText.setText("Getting metadata for sheet ..");
+					} 
 
-						currentSheet.setOnImageDownloadedListener(new MusicSheet.ImageDataDownloadListener() {
-							@Override
-							public void onImageChanged(MusicSheet ms) {
-								imageSheet.setLayoutParams(new ScrollView.LayoutParams(800, 1280));
-								imageSheet.setImageBitmap(ms.getBitmap());
-							}
-						});
-					}
-					
+					currentSheet = gml.getCurrentSheet();
+					currentSheet.setOnSheetMetaDataUpdateListener(new MetaDataDownloadListener() {
+						@Override
+						public void onMetaDataDownloaded(MusicSheet ms) {
+							formattedText.setText(ms.toString());
+						}
+					});
+
+					currentSheet.setOnImageDownloadedListener(new MusicSheet.ImageDataDownloadListener() {
+						@Override
+						public void onImageChanged(MusicSheet ms) {
+							imageSheet.setLayoutParams(new ScrollView.LayoutParams(800, 1280));
+							imageSheet.setImageBitmap(ms.getBitmap());
+						}
+					});
+		
 					// Set the bitmap from the internet ..
 					currentSheet.setBitmapFromInternet(mdf.getPage());
 					Toast.makeText(getApplicationContext(), "Getting page " + Integer.toString(mdf.getPage()), Toast.LENGTH_SHORT).show();
@@ -172,39 +173,46 @@ public class KeepingInMusicalTouchDisplayDataActivity extends Activity {
 			this.selectedSheet = selectedSheet;
 			this.musicalSyncClient = musicalSyncClient;
 			
-			Log.v("KeepingInMusicalTouch", "Created PageTurnDetector" + selectedSheet.toString() + " " + musicalSyncClient.toString());
+			Log.v("KeepingInMusicalTouch", "Created PageTurnDetector " + selectedSheet.toString() + " " + musicalSyncClient.toString());
 		}
 		
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-			MusicalDataFrame newMusicalDataFrame = musicalSyncClient.getDataFrame(); 
-			
-			Log.v("KeepingInMusicalTouch", "onFling");
-			Toast.makeText(getApplicationContext(), "onFling", Toast.LENGTH_SHORT).show();
-			
+			MusicalDataFrame newMusicalDataFrame = new MusicalDataFrame();
+			MusicalDataFrame oldMusicalDataFrame = musicalSyncClient.getDataFrame();
+
 			try {
 				if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
 					return false;
 				// right to left swipe
 				if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
 					// left swipe
-					Toast.makeText(getApplicationContext(), "LS/Setting page " + Integer.toString(currentPage), Toast.LENGTH_SHORT).show();
-					
+
 					if (currentPage > 0) {
 						selectedSheet.setBitmapFromInternet(--currentPage);
+						Toast.makeText(getApplicationContext(), "LS/Setting page " + Integer.toString(currentPage), Toast.LENGTH_SHORT).show();
+					
+						newMusicalDataFrame.setLibraryLocation(oldMusicalDataFrame.getLibraryLocation());
+						newMusicalDataFrame.setSheetID(selectedSheet.getSheetID());
+						newMusicalDataFrame.setTrackLocation(selectedSheet.getFullAddress());
 						newMusicalDataFrame.setPage(currentPage);
-						musicalSyncClient.setMusicalDataFrame(newMusicalDataFrame);
-						
+
+						musicalSyncClient.setMusicalDataFrame(newMusicalDataFrame);		
 						
 						return true;
 					}
 				} else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
 					// right swipe
-					Toast.makeText(getApplicationContext(), "RS/Setting page " + Integer.toString(currentPage), Toast.LENGTH_SHORT).show();
-					
+
 					if ((currentPage + 1) < selectedSheet.getNumberOfPages()) {
 						selectedSheet.setBitmapFromInternet(++currentPage);
+						Toast.makeText(getApplicationContext(), "RS/Setting page " + Integer.toString(currentPage), Toast.LENGTH_SHORT).show();
+						
+						newMusicalDataFrame.setLibraryLocation(oldMusicalDataFrame.getLibraryLocation());
+						newMusicalDataFrame.setSheetID(selectedSheet.getSheetID());
+						newMusicalDataFrame.setTrackLocation(selectedSheet.getFullAddress());
 						newMusicalDataFrame.setPage(currentPage);
+
 						musicalSyncClient.setMusicalDataFrame(newMusicalDataFrame);
 						
 						return true;
