@@ -17,7 +17,7 @@ public class MusicalDataFrame implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public MusicalDataFrame() {
-		currentPage = new Integer(0);
+		//currentPage = new Integer(0);
 	}
 	
 	public MusicalDataFrame(String libraryLocation) {
